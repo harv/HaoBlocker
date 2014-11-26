@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#ff2196f3</color>
+    <color name="colorPrimaryDark">#ff2196f3</color>
+    <color name="textColorPrimary">#ddffffff</color>
+    <color name="textColorPrimaryDark">#dd000000</color>
+    <color name="textColorSecondary">#88ffffff</color>
+    <color name="textColorSecondaryDark">#89000000</color>
+    <color name="textColorDividers">#1e000000</color>
+    <color name="textColorHint">#64ffffff</color>
+    <color name="colorControlNormal">#42000000</color>
+    <color name="drawerBackground">#ddffffff</color>
+</resources>

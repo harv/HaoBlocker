@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="array_menus">
+        <item>General</item>
+        <item>Rule Settings</item>
+        <item>SMS Block History</item>
+        <item>Call Block History</item>
+    </string-array>
+</resources>
