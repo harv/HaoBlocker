@@ -1,6 +1,5 @@
 package com.haoutil.xposed.haoblocker.fragment;
 
-import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,7 +12,7 @@ import android.widget.TextView;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.util.SettingsHelper;
 
-public class GeneralFragment extends Fragment implements CompoundButton.OnCheckedChangeListener {
+public class GeneralFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener {
     private SettingsHelper settingsHelper;
 
     private Switch sw_enable;
@@ -72,5 +71,10 @@ public class GeneralFragment extends Fragment implements CompoundButton.OnChecke
                 settingsHelper.setEnableCall(b);
                 break;
         }
+    }
+
+    @Override
+    public void onResetActionBarButtons(boolean isMenuOpen) {
+
     }
 }

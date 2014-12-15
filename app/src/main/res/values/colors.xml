@@ -10,4 +10,6 @@
     <color name="textColorHint">#64ffffff</color>
     <color name="colorControlNormal">#42000000</color>
     <color name="drawerBackground">#ddffffff</color>
+    <color name="textColorRed">#fff44336</color>
+    <color name="textColorGreen">#ff4caf50</color>
 </resources>

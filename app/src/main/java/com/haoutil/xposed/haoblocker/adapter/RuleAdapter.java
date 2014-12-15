@@ -71,14 +71,20 @@ public class RuleAdapter extends BaseAdapter implements View.OnClickListener {
             holder.cb_item_check.setTag(item);
             holder.tv_item_rule.setText(item.getContent());
             String blockItems = "";
-            if (item.getSms() == 1) {
-                blockItems = "SMS";
-            }
-            if (item.getCall() == 1) {
-                if (!TextUtils.isEmpty(blockItems)) {
-                    blockItems += ", ";
+            if (item.getException() == 1) {
+                holder.tv_item_block.setTextColor(view.getResources().getColor(R.color.textColorGreen));
+                blockItems = "Exception";
+            } else {
+                holder.tv_item_block.setTextColor(view.getResources().getColor(R.color.textColorRed));
+                if (item.getSms() == 1) {
+                    blockItems = "SMS";
                 }
-                blockItems += "Call";
+                if (item.getCall() == 1) {
+                    if (!TextUtils.isEmpty(blockItems)) {
+                        blockItems += ", ";
+                    }
+                    blockItems += "Call";
+                }
             }
             holder.tv_item_block.setText(blockItems);
         }

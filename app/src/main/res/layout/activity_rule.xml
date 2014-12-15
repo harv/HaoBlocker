@@ -106,5 +106,14 @@
                 android:text="@string/rule_label_block_call"
                 android:textColor="@color/textColorSecondaryDark" />
         </LinearLayout>
+
+
+        <CheckBox
+            android:id="@+id/cb_exception"
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rule_label_exceptionsrule"
+            android:textColor="@color/textColorSecondaryDark" />
     </LinearLayout>
 </LinearLayout>

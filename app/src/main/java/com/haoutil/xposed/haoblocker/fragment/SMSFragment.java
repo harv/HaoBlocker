@@ -1,6 +1,6 @@
 package com.haoutil.xposed.haoblocker.fragment;
 
-import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,7 +21,7 @@ import com.haoutil.xposed.haoblocker.adapter.SMSAdaptor;
 import com.haoutil.xposed.haoblocker.model.SMS;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 
-public class SMSFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class SMSFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private DbManager dbManager;
 
     private SMSAdaptor adapter;
@@ -29,6 +29,8 @@ public class SMSFragment extends Fragment implements View.OnClickListener, Adapt
     private CheckBox cb_check_all;
 
     private boolean showDiscardAction = false;
+
+    private MenuItem action_discard;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -64,7 +66,8 @@ public class SMSFragment extends Fragment implements View.OnClickListener, Adapt
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.activity_actions, menu);
 
-        menu.findItem(R.id.action_discard).setVisible(showDiscardAction);
+        action_discard = menu.findItem(R.id.action_discard);
+        action_discard.setVisible(showDiscardAction);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -73,10 +76,15 @@ public class SMSFragment extends Fragment implements View.OnClickListener, Adapt
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_discard:
-                dbManager.deleteSMS(adapter.getCheckedSMSes());
+                this.confirm(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dbManager.deleteSMS(adapter.getCheckedSMSes());
 
-                adapter.clearChecked();
-                adapter.notifyDataSetChanged();
+                        adapter.clearChecked();
+                        adapter.notifyDataSetChanged();
+                    }
+                }, null);
                 break;
         }
 
@@ -126,5 +134,18 @@ public class SMSFragment extends Fragment implements View.OnClickListener, Adapt
         intent.putExtras(bundle);
 
         startActivity(intent);
+    }
+
+    @Override
+    public void onResetActionBarButtons(boolean isMenuOpen) {
+        if (action_discard == null) {
+            return;
+        }
+
+        if (isMenuOpen) {
+            action_discard.setVisible(false);
+        } else {
+            action_discard.setVisible(showDiscardAction);
+        }
     }
 }

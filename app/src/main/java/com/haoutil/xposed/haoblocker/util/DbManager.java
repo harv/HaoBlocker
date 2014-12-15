@@ -19,6 +19,7 @@ public class DbManager {
     public static final int TYPE_ALL = 0;
     public static final int TYPE_SMS = 1;
     public static final int TYPE_CALL = 2;
+    public static final int TYPE_EXCEPTION = 3;
 
     private static final String AUTHORITY = "com.haoutil.xposed.haoblocker.provider.BlockProvider";
 
@@ -37,11 +38,13 @@ public class DbManager {
 
         Cursor cursor = null;
         if (type == TYPE_ALL) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "created"}, null, null, null);
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, null, null, null);
         } else if (type == TYPE_SMS) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "created"}, "sms = ?", new String[]{"1"}, null);
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "sms = ?", new String[]{"1"}, null);
         } else if (type == TYPE_CALL) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "created"}, "call = ?", new String[]{"1"}, null);
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "call = ?", new String[]{"1"}, null);
+        } else if (type == TYPE_EXCEPTION) {
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "exception = ?", new String[]{"1"}, null);
         }
 
         if (cursor != null && cursor.moveToFirst()) {
@@ -52,7 +55,8 @@ public class DbManager {
                 rule.setType(cursor.getInt(2));
                 rule.setSms(cursor.getInt(3));
                 rule.setCall(cursor.getInt(4));
-                rule.setCreated(cursor.getLong(4));
+                rule.setException(cursor.getInt(5));
+                rule.setCreated(cursor.getLong(6));
 
                 list.add(rule);
             } while (cursor.moveToNext());
@@ -67,6 +71,7 @@ public class DbManager {
         values.put("type", rule.getType());
         values.put("sms", rule.getSms());
         values.put("call", rule.getCall());
+        values.put("exception", rule.getException());
         values.put("created", new Date().getTime());
 
         return ContentUris.parseId(resolver.insert(URI_RULE_ALL, values));
@@ -78,6 +83,7 @@ public class DbManager {
         values.put("type", rule.getType());
         values.put("sms", rule.getSms());
         values.put("call", rule.getCall());
+        values.put("exception", rule.getException());
         values.put("created", new Date().getTime());
 
         resolver.update(ContentUris.withAppendedId(URI_RULE_ALL, rule.getId()), values, null, null);
@@ -169,9 +175,31 @@ public class DbManager {
     }
 
     public boolean blockSMS(String sender, String content) {
-        List<Rule> list = getRules(TYPE_SMS);
-        if (list != null && list.size() > 0) {
-            for (Rule rule : list) {
+        List<Rule> exceptions = getRules(TYPE_EXCEPTION);
+        if (exceptions != null && exceptions.size() > 0) {
+            for (Rule exception : exceptions) {
+                switch (exception.getType()) {
+                    case Rule.TYPE_STRING:
+                        if (sender.equals(exception.getContent())) {
+                            return false;
+                        }
+                        break;
+                    case Rule.TYPE_WILDCARD:
+                        if (wildcardMatch(exception.getContent(), sender)) {
+                            return false;
+                        }
+                        break;
+                    case Rule.TYPE_KEYWORD:
+                        if (exception.getContent().contains(content)) {
+                            return false;
+                        }
+                        break;
+                }
+            }
+        }
+        List<Rule> rules = getRules(TYPE_SMS);
+        if (rules != null && rules.size() > 0) {
+            for (Rule rule : rules) {
                 switch (rule.getType()) {
                     case Rule.TYPE_STRING:
                         if (sender.equals(rule.getContent())) {
@@ -187,6 +215,7 @@ public class DbManager {
                         if (rule.getContent().contains(content)) {
                             return true;
                         }
+                        break;
                 }
             }
         }
@@ -194,6 +223,23 @@ public class DbManager {
     }
 
     public boolean blockCall(String caller) {
+        List<Rule> exceptions = getRules(TYPE_EXCEPTION);
+        if (exceptions != null && exceptions.size() > 0) {
+            for (Rule exception : exceptions) {
+                switch (exception.getType()) {
+                    case Rule.TYPE_STRING:
+                        if (caller.equals(exception.getContent())) {
+                            return false;
+                        }
+                        break;
+                    case Rule.TYPE_WILDCARD:
+                        if (wildcardMatch(exception.getContent(), caller)) {
+                            return false;
+                        }
+                        break;
+                }
+            }
+        }
         List<Rule> list = getRules(TYPE_CALL);
         if (list != null && list.size() > 0) {
             for (Rule rule : list) {

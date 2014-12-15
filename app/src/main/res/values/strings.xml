@@ -21,14 +21,16 @@
     <string name="rule_block_items">Block</string>
 
     <string name="rule_label">Rule:</string>
-    <string name="rule_label_string">String</string>
+    <string name="rule_label_string">Constant</string>
     <string name="rule_label_wildcard">Wildcard</string>
     <string name="rule_label_keyword">Keyword</string>
     <string name="rule_label_block">Block:</string>
     <string name="rule_label_block_sms">SMS/MMS</string>
     <string name="rule_label_block_call">Call</string>
+    <string name="rule_label_exceptionsrule">Exceptions Rule</string>
     <string name="rule_tip_empty_rule">Please provide a rule.</string>
-    <string name="rule_tip_rule_added">One rule added/modified.</string>
+    <string name="rule_tip_empty_block">Please select which item you want to block.</string>
+    <string name="rule_tip_rule_added">Rule added/modified.</string>
 
     <string name="sms_sender">Sender</string>
     <string name="sms_date">Received At</string>
@@ -41,4 +43,9 @@
     <string name="call_date">Call At</string>
 
     <string name="notification_content_text"> %SMS% message(s), %CALL% calls blocked.</string>
+
+    <string name="discard_dialog_title">Confirm</string>
+    <string name="discard_dialog_message">Delete selected items?</string>
+    <string name="discard_dialog_button_ok">OK</string>
+    <string name="discard_dialog_button_cancel">Cancel</string>
 </resources>

@@ -1,6 +1,6 @@
 package com.haoutil.xposed.haoblocker.fragment;
 
-import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -19,7 +19,7 @@ import com.haoutil.xposed.haoblocker.adapter.CallAdaptor;
 import com.haoutil.xposed.haoblocker.model.Call;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 
-public class CallFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class CallFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private DbManager dbManager;
 
     private CallAdaptor adapter;
@@ -27,6 +27,8 @@ public class CallFragment extends Fragment implements View.OnClickListener, Adap
     private CheckBox cb_check_all;
 
     private boolean showDiscardAction = false;
+
+    private MenuItem action_discard;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -64,7 +66,8 @@ public class CallFragment extends Fragment implements View.OnClickListener, Adap
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.activity_actions, menu);
 
-        menu.findItem(R.id.action_discard).setVisible(showDiscardAction);
+        action_discard = menu.findItem(R.id.action_discard);
+        action_discard.setVisible(showDiscardAction);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -73,10 +76,15 @@ public class CallFragment extends Fragment implements View.OnClickListener, Adap
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_discard:
-                dbManager.deleteCall(adapter.getCheckedCalls());
+                this.confirm(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dbManager.deleteCall(adapter.getCheckedCalls());
 
-                adapter.clearChecked();
-                adapter.notifyDataSetChanged();
+                        adapter.clearChecked();
+                        adapter.notifyDataSetChanged();
+                    }
+                }, null);
                 break;
         }
 
@@ -120,5 +128,18 @@ public class CallFragment extends Fragment implements View.OnClickListener, Adap
 //        intent.putExtras(bundle);
 //
 //        startActivity(intent);
+    }
+
+    @Override
+    public void onResetActionBarButtons(boolean isMenuOpen) {
+        if (action_discard == null) {
+            return;
+        }
+
+        if (isMenuOpen) {
+            action_discard.setVisible(false);
+        } else {
+            action_discard.setVisible(showDiscardAction);
+        }
     }
 }

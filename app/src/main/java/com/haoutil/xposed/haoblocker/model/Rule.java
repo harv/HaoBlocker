@@ -12,6 +12,7 @@ public class Rule implements Serializable {
     private int type;
     private int sms;
     private int call;
+    private int exception;
     private long created;
     private boolean checked;
 
@@ -53,6 +54,14 @@ public class Rule implements Serializable {
 
     public void setCall(int call) {
         this.call = call;
+    }
+
+    public int getException() {
+        return exception;
+    }
+
+    public void setException(int exception) {
+        this.exception = exception;
     }
 
     public long getCreated() {

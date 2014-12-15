@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -16,7 +17,7 @@ import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.Rule;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 
-public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
+public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener, CompoundButton.OnCheckedChangeListener {
     private DbManager dbManager;
 
     private int ruleType = Rule.TYPE_STRING;
@@ -25,6 +26,7 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     private EditText et_rule;
     private CheckBox cb_sms;
     private CheckBox cb_call;
+    private CheckBox cb_exception;
 
     private int position = -1;
 
@@ -36,11 +38,12 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
         RadioGroup rg_group = (RadioGroup) findViewById(R.id.rg_group);
         rg_group.setOnCheckedChangeListener(this);
-
         tv_id = (TextView) findViewById(R.id.tv_id);
         et_rule = (EditText) findViewById(R.id.et_rule);
         cb_sms = (CheckBox) findViewById(R.id.cb_sms);
         cb_call = (CheckBox) findViewById(R.id.cb_call);
+        cb_exception = (CheckBox) findViewById(R.id.cb_exception);
+        cb_exception.setOnCheckedChangeListener(this);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -54,7 +57,8 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             et_rule.setText(rule.getContent());
             cb_sms.setChecked(rule.getSms() == 1);
             cb_call.setChecked(rule.getCall() == 1);
-            switch (rule.getType()){
+            cb_exception.setChecked(rule.getException() == 1);
+            switch (rule.getType()) {
                 case Rule.TYPE_STRING:
                     ((RadioButton) findViewById(R.id.rb_string)).setChecked(true);
                     ruleType = Rule.TYPE_STRING;
@@ -89,6 +93,17 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     }
 
     @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        if (b) {
+            cb_sms.setEnabled(false);
+            cb_call.setEnabled(false);
+        } else {
+            cb_sms.setEnabled(true);
+            cb_call.setEnabled(true);
+        }
+    }
+
+    @Override
     protected int getLayoutResource() {
         return R.layout.activity_rule;
     }
@@ -111,8 +126,9 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
             case R.id.action_accept:
                 if (TextUtils.isEmpty(et_rule.getText())) {
                     et_rule.requestFocus();
-
                     Toast.makeText(this, getResources().getString(R.string.rule_tip_empty_rule), Toast.LENGTH_SHORT).show();
+                } else if (!(cb_exception.isChecked() || cb_sms.isChecked() || cb_call.isChecked())) {
+                    Toast.makeText(this, getResources().getString(R.string.rule_tip_empty_block), Toast.LENGTH_SHORT).show();
                 } else {
                     Rule rule = new Rule();
                     boolean isModify = !TextUtils.isEmpty(tv_id.getText());
@@ -121,8 +137,9 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                     }
                     rule.setContent(et_rule.getText().toString().trim());
                     rule.setType(ruleType);
-                    rule.setSms(cb_sms.isChecked() ? 1 : 0);
+                    rule.setSms(cb_sms.isEnabled() && cb_sms.isChecked() ? 1 : 0);
                     rule.setCall((cb_call.isEnabled() && cb_call.isChecked()) ? 1 : 0);
+                    rule.setException(cb_exception.isChecked() ? 1 : 0);
 
                     if (isModify) {
                         dbManager.updateRule(rule);

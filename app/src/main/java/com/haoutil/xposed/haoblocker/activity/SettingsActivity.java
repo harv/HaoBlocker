@@ -1,6 +1,5 @@
 package com.haoutil.xposed.haoblocker.activity;
 
-import android.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -11,6 +10,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 import com.haoutil.xposed.haoblocker.R;
+import com.haoutil.xposed.haoblocker.fragment.BaseFragment;
 import com.haoutil.xposed.haoblocker.fragment.CallFragment;
 import com.haoutil.xposed.haoblocker.fragment.GeneralFragment;
 import com.haoutil.xposed.haoblocker.fragment.RuleFragment;
@@ -24,6 +24,8 @@ public class SettingsActivity extends BaseActivity {
     private CharSequence mTitle;
     private String[] mMenuTitles;
 
+    private BaseFragment mFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +36,7 @@ public class SettingsActivity extends BaseActivity {
 
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mMenuTitles = getResources().getStringArray(R.array.array_menus);
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this, R.layout.drawer_list_item, mMenuTitles));
+        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mMenuTitles));
         mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -46,11 +48,17 @@ public class SettingsActivity extends BaseActivity {
             @Override
             public void onDrawerOpened(View drawerView) {
                 getSupportActionBar().setTitle(mDrawerTitle);
+                if (mFragment != null) {
+                    mFragment.onResetActionBarButtons(true);
+                }
             }
 
             @Override
             public void onDrawerClosed(View drawerView) {
                 getSupportActionBar().setTitle(mTitle);
+                if (mFragment != null) {
+                    mFragment.onResetActionBarButtons(false);
+                }
             }
         };
         mDrawerToggle.syncState();
@@ -76,24 +84,23 @@ public class SettingsActivity extends BaseActivity {
     }
 
     private void selectItem(int position) {
-        Fragment fragment = null;
         switch (position) {
             case 0:
-                fragment = new GeneralFragment();
+                mFragment = new GeneralFragment();
                 break;
             case 1:
-                fragment = new RuleFragment();
+                mFragment = new RuleFragment();
                 break;
             case 2:
-                fragment = new SMSFragment();
+                mFragment = new SMSFragment();
                 break;
             case 3:
-                fragment = new CallFragment();
+                mFragment = new CallFragment();
                 break;
         }
 
-        if (fragment != null) {
-            getFragmentManager().beginTransaction().replace(R.id.content_frame, fragment).commit();
+        if (mFragment != null) {
+            getFragmentManager().beginTransaction().replace(R.id.content_frame, mFragment).commit();
         }
 
         setTitle(mMenuTitles[position]);

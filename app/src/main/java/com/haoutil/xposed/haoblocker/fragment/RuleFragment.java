@@ -1,7 +1,7 @@
 package com.haoutil.xposed.haoblocker.fragment;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,7 +23,7 @@ import com.haoutil.xposed.haoblocker.adapter.RuleAdapter;
 import com.haoutil.xposed.haoblocker.model.Rule;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 
-public class RuleFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class RuleFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     private DbManager dbManager;
 
     private RuleAdapter adapter;
@@ -31,6 +31,9 @@ public class RuleFragment extends Fragment implements View.OnClickListener, Adap
     private CheckBox cb_check_all;
 
     private boolean showDiscardAction = false;
+
+    private MenuItem action_new;
+    private MenuItem action_discard;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -66,8 +69,10 @@ public class RuleFragment extends Fragment implements View.OnClickListener, Adap
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.activity_actions, menu);
 
-        menu.findItem(R.id.action_new).setVisible(true);
-        menu.findItem(R.id.action_discard).setVisible(showDiscardAction);
+        action_new = menu.findItem(R.id.action_new);
+        action_new.setVisible(true);
+        action_discard = menu.findItem(R.id.action_discard);
+        action_discard.setVisible(showDiscardAction);
 
         super.onCreateOptionsMenu(menu, inflater);
     }
@@ -81,10 +86,15 @@ public class RuleFragment extends Fragment implements View.OnClickListener, Adap
                 startActivityForResult(intent, 0);
                 break;
             case R.id.action_discard:
-                dbManager.deleteRule(adapter.getCheckedRules());
+                this.confirm(new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dbManager.deleteRule(adapter.getCheckedRules());
 
-                adapter.clearChecked();
-                adapter.notifyDataSetChanged();
+                        adapter.clearChecked();
+                        adapter.notifyDataSetChanged();
+                    }
+                }, null);
                 break;
         }
 
@@ -142,6 +152,21 @@ public class RuleFragment extends Fragment implements View.OnClickListener, Adap
             adapter.notifyDataSetChanged();
 
             Toast.makeText(getActivity(), getActivity().getResources().getString(R.string.rule_tip_rule_added), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onResetActionBarButtons(boolean isMenuOpen) {
+        if (action_new == null || action_discard == null) {
+            return;
+        }
+
+        if (isMenuOpen) {
+            action_new.setVisible(false);
+            action_discard.setVisible(false);
+        } else {
+            action_new.setVisible(true);
+            action_discard.setVisible(showDiscardAction);
         }
     }
 }
