@@ -94,7 +94,7 @@ public class RuleAdapter extends BaseAdapter implements View.OnClickListener {
 
     public void addItem(Rule rule, int position) {
         if (position == -1) {   // add
-            list.add(rule);
+            list.add(0, rule);
         } else {    // modify
             list.set(position, rule);
         }

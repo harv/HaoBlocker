@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,12 +20,15 @@ import com.haoutil.xposed.haoblocker.adapter.CallAdaptor;
 import com.haoutil.xposed.haoblocker.model.Call;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 
-public class CallFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+import java.util.List;
+
+public class CallFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
     private DbManager dbManager;
 
     private CallAdaptor adapter;
 
     private CheckBox cb_check_all;
+    private SwipeRefreshLayout srl_rules;
 
     private boolean showDiscardAction = false;
 
@@ -98,8 +102,12 @@ public class CallFragment extends BaseFragment implements View.OnClickListener, 
         cb_check_all = (CheckBox) view.findViewById(R.id.cb_check_all);
         cb_check_all.setOnClickListener(this);  // do not use setOnCheckedChangeListener, because it will trigger checkAll method of RuleAdapter
 
+        srl_rules = (SwipeRefreshLayout) view.findViewById(R.id.srl_rules);
+        srl_rules.setOnRefreshListener(this);
+        setColorSchemeResources(srl_rules);
+
         ListView lv_rules = (ListView) view.findViewById(R.id.lv_rules);
-        adapter = new CallAdaptor(getActivity().getLayoutInflater(), mHandler, dbManager.getCalls());
+        adapter = new CallAdaptor(getActivity().getLayoutInflater(), mHandler, dbManager.getCalls(-1));
         lv_rules.setAdapter(adapter);
         lv_rules.setOnItemClickListener(this);
 
@@ -128,6 +136,25 @@ public class CallFragment extends BaseFragment implements View.OnClickListener, 
 //        intent.putExtras(bundle);
 //
 //        startActivity(intent);
+    }
+
+    @Override
+    public void onRefresh() {
+        srl_rules.setEnabled(false);
+        new Handler().postDelayed(new Runnable() {
+            public void run() {
+                List<Call> list = dbManager.getCalls(adapter.getCount() > 0 ? ((Call) adapter.getItem(0)).getId() : -1);
+                if (list != null && list.size() > 0) {
+                    for (int i = list.size() - 1; i >= 0; i--) {
+                        adapter.addItem(list.get(i));
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+
+                srl_rules.setRefreshing(false);
+                srl_rules.setEnabled(true);
+            }
+        }, 1500);
     }
 
     @Override

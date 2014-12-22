@@ -34,17 +34,17 @@ public class DbManager {
     }
 
     public List<Rule> getRules(int type) {
-        List<Rule> list = new ArrayList<Rule>();
+        List<Rule> list = new ArrayList<>();
 
         Cursor cursor = null;
         if (type == TYPE_ALL) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, null, null, null);
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, null, null, "created DESC");
         } else if (type == TYPE_SMS) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "sms = ?", new String[]{"1"}, null);
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "sms = ?", new String[]{"1"}, "created DESC");
         } else if (type == TYPE_CALL) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "call = ?", new String[]{"1"}, null);
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "call = ?", new String[]{"1"}, "created DESC");
         } else if (type == TYPE_EXCEPTION) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "exception = ?", new String[]{"1"}, null);
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "exception = ?", new String[]{"1"}, "created DESC");
         }
 
         if (cursor != null && cursor.moveToFirst()) {
@@ -95,9 +95,9 @@ public class DbManager {
         }
     }
 
-    public List<SMS> getSMSes() {
-        List<SMS> list = new ArrayList<SMS>();
-        Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id", "sender", "content", "created", "read"}, null, null, "created DESC");
+    public List<SMS> getSMSes(long id) {
+        List<SMS> list = new ArrayList<>();
+        Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id", "sender", "content", "created", "read"}, "_id > ?", new String[] {String.valueOf(id)}, "created DESC");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 SMS sms = new SMS();
@@ -136,9 +136,9 @@ public class DbManager {
         resolver.update(ContentUris.withAppendedId(URI_SMS_ALL, sms.getId()), values, null, null);
     }
 
-    public List<Call> getCalls() {
-        List<Call> list = new ArrayList<Call>();
-        Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id", "caller", "created", "read"}, null, null, "created DESC");
+    public List<Call> getCalls(long id) {
+        List<Call> list = new ArrayList<>();
+        Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id", "caller", "created", "read"}, "_id > ?", new String[] {String.valueOf(id)}, "created DESC");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Call call = new Call();

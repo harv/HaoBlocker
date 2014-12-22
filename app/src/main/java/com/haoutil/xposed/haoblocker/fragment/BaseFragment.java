@@ -3,6 +3,7 @@ package com.haoutil.xposed.haoblocker.fragment;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.support.v4.widget.SwipeRefreshLayout;
 
 import com.haoutil.xposed.haoblocker.R;
 
@@ -37,5 +38,9 @@ public abstract class BaseFragment extends Fragment {
                     .create();
         }
         discardConfirm.show();
+    }
+
+    public void setColorSchemeResources(SwipeRefreshLayout layout) {
+        layout.setColorSchemeResources(android.R.color.holo_red_light, android.R.color.holo_green_light, android.R.color.holo_blue_bright, android.R.color.holo_orange_light);
     }
 }

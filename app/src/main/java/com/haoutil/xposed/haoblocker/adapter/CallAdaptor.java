@@ -80,6 +80,10 @@ public class CallAdaptor extends BaseAdapter implements View.OnClickListener {
         return view;
     }
 
+    public void addItem(Call call) {
+        list.add(0, call);
+    }
+
     public List<Call> getCheckedCalls() {
         return checkedCalls;
     }

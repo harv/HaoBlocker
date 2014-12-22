@@ -89,6 +89,10 @@ public class SMSAdaptor extends BaseAdapter implements View.OnClickListener {
         return view;
     }
 
+    public void addItem(SMS sms) {
+        list.add(0, sms);
+    }
+
     public List<SMS> getCheckedSMSes() {
         return checkedSMSes;
     }
