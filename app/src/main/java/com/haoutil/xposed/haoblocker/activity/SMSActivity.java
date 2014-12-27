@@ -11,7 +11,16 @@ import com.haoutil.xposed.haoblocker.model.SMS;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import butterknife.InjectView;
+
 public class SMSActivity extends BaseActivity {
+    @InjectView(R.id.tv_caller)
+    TextView tv_caller;
+    @InjectView(R.id.tv_content)
+    TextView tv_content;
+    @InjectView(R.id.tv_date)
+    TextView tv_date;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,9 +29,9 @@ public class SMSActivity extends BaseActivity {
         Bundle bundle = intent.getExtras();
         SMS sms = (SMS) bundle.get("sms");
 
-        ((TextView) findViewById(R.id.tv_caller)).setText(sms.getSender());
-        ((TextView) findViewById(R.id.tv_content)).setText(sms.getContent());
-        ((TextView) findViewById(R.id.tv_date)).setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(sms.getCreated())));
+        tv_caller.setText(sms.getSender());
+        tv_content.setText(sms.getContent());
+        tv_date.setText(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(sms.getCreated())));
     }
 
     @Override

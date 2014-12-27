@@ -3,15 +3,43 @@ package com.haoutil.xposed.haoblocker.fragment;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.haoutil.xposed.haoblocker.R;
 
+import butterknife.ButterKnife;
+
 public abstract class BaseFragment extends Fragment {
+
+    private View view;
 
     private AlertDialog discardConfirm;
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        view = inflater.inflate(getLayoutResource(), container, false);
+        ButterKnife.inject(this, view);
+
+        return super.onCreateView(inflater, container, savedInstanceState);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.reset(this);
+    }
+
+    protected abstract int getLayoutResource();
+
     public abstract void onResetActionBarButtons(boolean isMenuOpen);
+
+    public View getView() {
+        return view;
+    }
 
     public void confirm(final DialogInterface.OnClickListener positiveOnClickListener, final DialogInterface.OnClickListener negativeOnClickListener) {
         if (discardConfirm == null) {

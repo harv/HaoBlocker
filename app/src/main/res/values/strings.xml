@@ -42,7 +42,7 @@
     <string name="call_caller">Caller</string>
     <string name="call_date">Call At</string>
 
-    <string name="notification_content_text"> %SMS% message(s), %CALL% calls blocked.</string>
+    <string name="notification_content_text" formatted="false"> %s message(s), %s call(s) blocked.</string>
 
     <string name="discard_dialog_title">Confirm</string>
     <string name="discard_dialog_message">Delete selected items?</string>

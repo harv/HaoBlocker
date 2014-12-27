@@ -3,7 +3,6 @@ package com.haoutil.xposed.haoblocker.fragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -17,44 +16,32 @@ import android.widget.ListView;
 
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.adapter.CallAdaptor;
+import com.haoutil.xposed.haoblocker.event.CallUpdateEvent;
 import com.haoutil.xposed.haoblocker.model.Call;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 
 import java.util.List;
 
-public class CallFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener, SwipeRefreshLayout.OnRefreshListener {
+import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
+import de.greenrobot.event.EventBus;
+
+public class CallFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private DbManager dbManager;
 
     private CallAdaptor adapter;
 
-    private CheckBox cb_check_all;
-    private SwipeRefreshLayout srl_rules;
+    @InjectView(R.id.cb_check_all)
+    CheckBox cb_check_all;
+    @InjectView(R.id.srl_rules)
+    SwipeRefreshLayout srl_rules;
+    @InjectView(R.id.lv_rules)
+    ListView lv_rules;
 
     private boolean showDiscardAction = false;
 
     private MenuItem action_discard;
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    showDiscardAction = false;
-                    getActivity().invalidateOptionsMenu();
-                    break;
-                case 1:
-                    showDiscardAction = true;
-                    getActivity().invalidateOptionsMenu();
-                    break;
-                case 2:
-                    cb_check_all.setChecked(false);
-                    break;
-                case 3:
-                    cb_check_all.setChecked(true);
-                    break;
-            }
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,8 +49,9 @@ public class CallFragment extends BaseFragment implements View.OnClickListener, 
         setHasOptionsMenu(true);
 
         dbManager = new DbManager(getActivity());
-
         dbManager.readAllCall();
+
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -97,26 +85,27 @@ public class CallFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_call, container, false);
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = getView();
 
-        cb_check_all = (CheckBox) view.findViewById(R.id.cb_check_all);
-        cb_check_all.setOnClickListener(this);  // do not use setOnCheckedChangeListener, because it will trigger checkAll method of RuleAdapter
-
-        srl_rules = (SwipeRefreshLayout) view.findViewById(R.id.srl_rules);
         srl_rules.setOnRefreshListener(this);
         setColorSchemeResources(srl_rules);
 
-        ListView lv_rules = (ListView) view.findViewById(R.id.lv_rules);
-        adapter = new CallAdaptor(getActivity().getLayoutInflater(), mHandler, dbManager.getCalls(-1));
+        adapter = new CallAdaptor(getActivity().getLayoutInflater(), dbManager.getCalls(-1));
         lv_rules.setAdapter(adapter);
-        lv_rules.setOnItemClickListener(this);
 
         return view;
     }
 
     @Override
+    protected int getLayoutResource() {
+        return R.layout.fragment_call;
+    }
+
+    @OnClick(R.id.cb_check_all)
     public void onClick(View view) {
         switch (view.getId()) {
+            // do not use setOnCheckedChangeListener, because it will trigger checkAll method of RuleAdapter
             case R.id.cb_check_all:
                 boolean b = ((CheckBox) view).isChecked();
 
@@ -126,9 +115,9 @@ public class CallFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
-    @Override
+    @OnItemClick(R.id.lv_rules)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        Call call = (Call) adapter.getItem(position);
+//        Call call = (Call) adapter.getItem(position);
 //
 //        Intent intent = new Intent(getActivity(), RuleActivity.class);
 //        Bundle bundle = new Bundle();
@@ -167,6 +156,25 @@ public class CallFragment extends BaseFragment implements View.OnClickListener, 
             action_discard.setVisible(false);
         } else {
             action_discard.setVisible(showDiscardAction);
+        }
+    }
+
+    public void onEvent(CallUpdateEvent event) {
+        switch (event.getWhat()) {
+            case 0:
+                showDiscardAction = false;
+                getActivity().invalidateOptionsMenu();
+                break;
+            case 1:
+                showDiscardAction = true;
+                getActivity().invalidateOptionsMenu();
+                break;
+            case 2:
+                cb_check_all.setChecked(false);
+                break;
+            case 3:
+                cb_check_all.setChecked(true);
+                break;
         }
     }
 }

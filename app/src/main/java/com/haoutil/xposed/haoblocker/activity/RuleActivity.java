@@ -17,16 +17,24 @@ import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.Rule;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 
-public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener, CompoundButton.OnCheckedChangeListener {
+import butterknife.InjectView;
+import butterknife.OnCheckedChanged;
+
+public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
     private DbManager dbManager;
 
     private int ruleType = Rule.TYPE_STRING;
 
-    private TextView tv_id;
-    private EditText et_rule;
-    private CheckBox cb_sms;
-    private CheckBox cb_call;
-    private CheckBox cb_exception;
+    @InjectView(R.id.tv_id)
+    TextView tv_id;
+    @InjectView(R.id.et_rule)
+    EditText et_rule;
+    @InjectView(R.id.cb_sms)
+    CheckBox cb_sms;
+    @InjectView(R.id.cb_call)
+    CheckBox cb_call;
+    @InjectView(R.id.cb_exception)
+    CheckBox cb_exception;
 
     private int position = -1;
 
@@ -38,12 +46,6 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
         RadioGroup rg_group = (RadioGroup) findViewById(R.id.rg_group);
         rg_group.setOnCheckedChangeListener(this);
-        tv_id = (TextView) findViewById(R.id.tv_id);
-        et_rule = (EditText) findViewById(R.id.et_rule);
-        cb_sms = (CheckBox) findViewById(R.id.cb_sms);
-        cb_call = (CheckBox) findViewById(R.id.cb_call);
-        cb_exception = (CheckBox) findViewById(R.id.cb_exception);
-        cb_exception.setOnCheckedChangeListener(this);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -92,7 +94,7 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
         }
     }
 
-    @Override
+    @OnCheckedChanged(R.id.cb_exception)
     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
         if (b) {
             cb_sms.setEnabled(false);

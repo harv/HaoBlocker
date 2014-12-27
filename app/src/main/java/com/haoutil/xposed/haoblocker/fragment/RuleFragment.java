@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -20,42 +18,29 @@ import android.widget.Toast;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.activity.RuleActivity;
 import com.haoutil.xposed.haoblocker.adapter.RuleAdapter;
+import com.haoutil.xposed.haoblocker.event.RuleUpdateEvent;
 import com.haoutil.xposed.haoblocker.model.Rule;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 
-public class RuleFragment extends BaseFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+import butterknife.InjectView;
+import butterknife.OnClick;
+import butterknife.OnItemClick;
+import de.greenrobot.event.EventBus;
+
+public class RuleFragment extends BaseFragment {
     private DbManager dbManager;
 
     private RuleAdapter adapter;
 
-    private CheckBox cb_check_all;
+    @InjectView(R.id.cb_check_all)
+    CheckBox cb_check_all;
+    @InjectView(R.id.lv_rules)
+    ListView lv_rules;
 
     private boolean showDiscardAction = false;
 
     private MenuItem action_new;
     private MenuItem action_discard;
-
-    private Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case 0:
-                    showDiscardAction = false;
-                    getActivity().invalidateOptionsMenu();
-                    break;
-                case 1:
-                    showDiscardAction = true;
-                    getActivity().invalidateOptionsMenu();
-                    break;
-                case 2:
-                    cb_check_all.setChecked(false);
-                    break;
-                case 3:
-                    cb_check_all.setChecked(true);
-                    break;
-            }
-        }
-    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,6 +48,8 @@ public class RuleFragment extends BaseFragment implements View.OnClickListener, 
         setHasOptionsMenu(true);
 
         dbManager = new DbManager(getActivity());
+
+        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -103,22 +90,24 @@ public class RuleFragment extends BaseFragment implements View.OnClickListener, 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_rule, container, false);
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = getView();
 
-        cb_check_all = (CheckBox) view.findViewById(R.id.cb_check_all);
-        cb_check_all.setOnClickListener(this);  // do not use setOnCheckedChangeListener, because it will trigger checkAll method of RuleAdapter
-
-        ListView lv_rules = (ListView) view.findViewById(R.id.lv_rules);
-        adapter = new RuleAdapter(getActivity().getLayoutInflater(), mHandler, dbManager.getRules(DbManager.TYPE_ALL));
+        adapter = new RuleAdapter(getActivity().getLayoutInflater(), dbManager.getRules(DbManager.TYPE_ALL));
         lv_rules.setAdapter(adapter);
-        lv_rules.setOnItemClickListener(this);
 
         return view;
     }
 
     @Override
+    protected int getLayoutResource() {
+        return R.layout.fragment_rule;
+    }
+
+    @OnClick(R.id.cb_check_all)
     public void onClick(View view) {
         switch (view.getId()) {
+            // do not use setOnCheckedChangeListener, because it will trigger checkAll method of RuleAdapter
             case R.id.cb_check_all:
                 boolean b = ((CheckBox) view).isChecked();
 
@@ -128,7 +117,7 @@ public class RuleFragment extends BaseFragment implements View.OnClickListener, 
         }
     }
 
-    @Override
+    @OnItemClick(R.id.lv_rules)
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Rule rule = (Rule) adapter.getItem(position);
 
@@ -167,6 +156,25 @@ public class RuleFragment extends BaseFragment implements View.OnClickListener, 
         } else {
             action_new.setVisible(true);
             action_discard.setVisible(showDiscardAction);
+        }
+    }
+
+    public void onEvent(RuleUpdateEvent event) {
+        switch (event.getWhat()) {
+            case 0:
+                showDiscardAction = false;
+                getActivity().invalidateOptionsMenu();
+                break;
+            case 1:
+                showDiscardAction = true;
+                getActivity().invalidateOptionsMenu();
+                break;
+            case 2:
+                cb_check_all.setChecked(false);
+                break;
+            case 3:
+                cb_check_all.setChecked(true);
+                break;
         }
     }
 }

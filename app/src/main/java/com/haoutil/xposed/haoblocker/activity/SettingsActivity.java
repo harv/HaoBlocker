@@ -1,5 +1,6 @@
 package com.haoutil.xposed.haoblocker.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,9 +17,14 @@ import com.haoutil.xposed.haoblocker.fragment.GeneralFragment;
 import com.haoutil.xposed.haoblocker.fragment.RuleFragment;
 import com.haoutil.xposed.haoblocker.fragment.SMSFragment;
 
+import butterknife.InjectView;
+import butterknife.OnItemClick;
+
 public class SettingsActivity extends BaseActivity {
-    private DrawerLayout mDrawerLayout;
-    private ListView mDrawerList;
+    @InjectView(R.id.drawer_layout)
+    DrawerLayout mDrawerLayout;
+    @InjectView(R.id.left_drawer)
+    ListView mDrawerList;
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
@@ -32,17 +38,8 @@ public class SettingsActivity extends BaseActivity {
 
         mTitle = mDrawerTitle = getTitle();
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
         mMenuTitles = getResources().getStringArray(R.array.array_menus);
         mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mMenuTitles));
-        mDrawerList.setOnItemClickListener(new ListView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                selectItem(position);
-            }
-        });
 
         ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, (Toolbar) findViewById(R.id.toolbar), R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -77,6 +74,11 @@ public class SettingsActivity extends BaseActivity {
         return R.layout.activity_settings;
     }
 
+    @OnItemClick(R.id.left_drawer)
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        selectItem(position);
+    }
+
     @Override
     public void setTitle(CharSequence title) {
         mTitle = title;
@@ -107,5 +109,13 @@ public class SettingsActivity extends BaseActivity {
 
         mDrawerList.setItemChecked(position, true);
         mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null && bundle.getInt("position", -1) != -1) {
+            selectItem(bundle.getInt("position"));
+        }
     }
 }

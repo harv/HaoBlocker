@@ -2,17 +2,16 @@ package com.haoutil.xposed.haoblocker;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.XModuleResources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 
-import com.haoutil.xposed.haoblocker.activity.SettingsActivity;
 import com.haoutil.xposed.haoblocker.hook.CallHook;
 import com.haoutil.xposed.haoblocker.hook.SMSHook;
 import com.haoutil.xposed.haoblocker.util.DbManager;
@@ -78,7 +77,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
                         Context mContext = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
                         dbManager = new DbManager(mContext);
                         notiManager = NotificationManagerCompat.from(mContext);
-                        notiBuilder = new NotificationCompat.Builder(mContext).setContentTitle("HaoBlocker");
+                        notiBuilder = new NotificationCompat.Builder(mContext).setContentTitle("HaoBlocker").setTicker("HaoBlocker");
                         mContext.registerReceiver(new BroadcastReceiver() {
                             @Override
                             public void onReceive(Context context, Intent intent) {
@@ -105,14 +104,17 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             return;
         }
 
-        Intent viewIntent = new Intent(context, SettingsActivity.class);
-        intent.putExtra("position", intent.getExtras().getBoolean("blockNewSMS", false) ? 2 : 3);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, viewIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        Intent viewIntent = new Intent(Intent.ACTION_MAIN);
+        viewIntent.setComponent(new ComponentName(MODULE_NAME, MODULE_NAME + ".activity.SettingsActivity"));
+        viewIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        viewIntent.putExtra("position", intent == null || intent.getExtras().getBoolean("blockNewSMS", false) ? 2 : 3);
+        viewIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, viewIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         notiBuilder.setSmallIcon(smallNotificationIcon)
                 .setLargeIcon(largeNotificationIcon)
-                .setContentText(notificationContentText.replace("%SMS%", String.valueOf(unreadSMSCount))
-                        .replace("%CALL%", String.valueOf(unreadCallCount)))
+                .setContentText(String.format(notificationContentText, unreadSMSCount, unreadCallCount))
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
 

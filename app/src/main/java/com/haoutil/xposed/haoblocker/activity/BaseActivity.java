@@ -6,24 +6,31 @@ import android.support.v7.widget.Toolbar;
 
 import com.haoutil.xposed.haoblocker.R;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+
 public abstract class BaseActivity extends ActionBarActivity {
 
-    private Toolbar toolbar;
+    @InjectView(R.id.toolbar)
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(getLayoutResource());
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        ButterKnife.inject(this);
+
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         }
     }
 
-    protected abstract int getLayoutResource();
-
-    protected void setActionBarIcon(int iconRes) {
-        toolbar.setNavigationIcon(iconRes);
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ButterKnife.reset(this);
     }
+
+    protected abstract int getLayoutResource();
 }

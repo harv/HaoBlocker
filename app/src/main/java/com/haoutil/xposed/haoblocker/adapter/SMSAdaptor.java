@@ -1,6 +1,5 @@
 package com.haoutil.xposed.haoblocker.adapter;
 
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +8,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.haoutil.xposed.haoblocker.R;
+import com.haoutil.xposed.haoblocker.event.SMSUpdateEvent;
 import com.haoutil.xposed.haoblocker.model.SMS;
 
 import java.text.SimpleDateFormat;
@@ -16,19 +16,29 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class SMSAdaptor extends BaseAdapter implements View.OnClickListener {
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
+
+public class SMSAdaptor extends BaseAdapter {
     private LayoutInflater inflater;
-    private Handler handler;
     private List<SMS> list;
+
+    private SMSUpdateEvent[] events;
 
     private List<SMS> checkedSMSes = new ArrayList<SMS>();
 
     private SimpleDateFormat simpleDateFormat;
 
-    public SMSAdaptor(LayoutInflater inflater, Handler handler, List<SMS> list) {
+    public SMSAdaptor(LayoutInflater inflater, List<SMS> list) {
         this.inflater = inflater;
-        this.handler = handler;
         this.list = list;
+
+        this.events = new SMSUpdateEvent[4];
+        for (int i = 0; i < this.events.length; i++) {
+            this.events[i] = new SMSUpdateEvent(i);
+        }
 
         simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
     }
@@ -62,16 +72,12 @@ public class SMSAdaptor extends BaseAdapter implements View.OnClickListener {
         }
         ItemViewHolder holder = (ItemViewHolder) view.getTag();
         if (holder == null) {
-            holder = new ItemViewHolder();
-            holder.cb_item_check = (CheckBox) view.findViewById(R.id.cb_item_check);
-            holder.tv_item_sender = (TextView) view.findViewById(R.id.tv_item_sender);
-            holder.tv_item_date = (TextView) view.findViewById(R.id.tv_item_date);
+            holder = new ItemViewHolder(view);
         }
 
         SMS item = list.get(position);
         if (item != null) {
             holder.cb_item_check.setChecked(item.isChecked());
-            holder.cb_item_check.setOnClickListener(this);
             holder.cb_item_check.setTag(item);
             holder.tv_item_sender.setText(item.getSender());
             holder.tv_item_date.setText(simpleDateFormat.format(new Date(item.getCreated())));
@@ -101,8 +107,8 @@ public class SMSAdaptor extends BaseAdapter implements View.OnClickListener {
         list.removeAll(checkedSMSes);
         checkedSMSes.clear();
 
-        handler.sendEmptyMessage(0);
-        handler.sendEmptyMessage(2);
+        EventBus.getDefault().post(events[0]);
+        EventBus.getDefault().post(events[2]);
     }
 
     public void checkAll(boolean checked) {
@@ -119,47 +125,55 @@ public class SMSAdaptor extends BaseAdapter implements View.OnClickListener {
             }
         }
         if (checked) {
-            handler.sendEmptyMessage(1);
+            EventBus.getDefault().post(events[1]);
         } else {
-            handler.sendEmptyMessage(0);
+            EventBus.getDefault().post(events[0]);
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        int totalSize = getCount();
-        int beforeSize = checkedSMSes.size();
+    class ItemViewHolder {
+        @InjectView(R.id.cb_item_check)
+        CheckBox cb_item_check;
+        @InjectView(R.id.tv_item_sender)
+        TextView tv_item_sender;
+        @InjectView(R.id.tv_item_date)
+        TextView tv_item_date;
 
-        SMS item = (SMS) v.getTag();
-        boolean b = ((CheckBox) v).isChecked();
-        if (b) {
-            if (!checkedSMSes.contains(item)) {
-                checkedSMSes.add(item);
+        public ItemViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+
+        @OnClick(R.id.cb_item_check)
+        public void onClick(View v) {
+            int totalSize = getCount();
+            int beforeSize = checkedSMSes.size();
+
+            SMS item = (SMS) v.getTag();
+            boolean b = ((CheckBox) v).isChecked();
+            item.setChecked(b);
+            if (b) {
+                if (!checkedSMSes.contains(item)) {
+                    checkedSMSes.add(item);
+                }
+            } else {
+                if (checkedSMSes.contains(item)) {
+                    checkedSMSes.remove(item);
+                }
             }
-        } else {
-            if (checkedSMSes.contains(item)) {
-                checkedSMSes.remove(item);
+            int afterSize = checkedSMSes.size();
+
+            if (beforeSize == 1 && afterSize == 0) {    // 1 --> 0
+                EventBus.getDefault().post(events[0]);
+            }
+            if (beforeSize == 0 && afterSize == 1) {    // 0 --> 1
+                EventBus.getDefault().post(events[1]);
+            }
+            if (beforeSize == totalSize && afterSize == totalSize - 1) {    // MAX --> MAX - 1
+                EventBus.getDefault().post(events[2]);
+            }
+            if (beforeSize == totalSize - 1 && afterSize == totalSize) {    // MAX - 1 --> MAX
+                EventBus.getDefault().post(events[3]);
             }
         }
-        int afterSize = checkedSMSes.size();
-
-        if (beforeSize == 1 && afterSize == 0) {    // 1 --> 0
-            handler.sendEmptyMessage(0);
-        }
-        if (beforeSize == 0 && afterSize == 1) {    // 0 --> 1
-            handler.sendEmptyMessage(1);
-        }
-        if (beforeSize == totalSize && afterSize == totalSize - 1) {    // MAX --> MAX - 1
-            handler.sendEmptyMessage(2);
-        }
-        if (beforeSize == totalSize - 1 && afterSize == totalSize) { // MAX - 1 --> MAX
-            handler.sendEmptyMessage(3);
-        }
-    }
-
-    private class ItemViewHolder {
-        private CheckBox cb_item_check;
-        private TextView tv_item_sender;
-        private TextView tv_item_date;
     }
 }

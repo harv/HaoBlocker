@@ -1,6 +1,5 @@
 package com.haoutil.xposed.haoblocker.adapter;
 
-import android.os.Handler;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,22 +9,33 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.haoutil.xposed.haoblocker.R;
+import com.haoutil.xposed.haoblocker.event.RuleUpdateEvent;
 import com.haoutil.xposed.haoblocker.model.Rule;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RuleAdapter extends BaseAdapter implements View.OnClickListener {
+import butterknife.ButterKnife;
+import butterknife.InjectView;
+import butterknife.OnClick;
+import de.greenrobot.event.EventBus;
+
+public class RuleAdapter extends BaseAdapter {
     private LayoutInflater inflater;
-    private Handler handler;
     private List<Rule> list;
 
-    private List<Rule> checkedRules = new ArrayList<Rule>();
+    private RuleUpdateEvent[] events;
 
-    public RuleAdapter(LayoutInflater inflater, Handler handler, List<Rule> list) {
+    private List<Rule> checkedRules = new ArrayList<>();
+
+    public RuleAdapter(LayoutInflater inflater, List<Rule> list) {
         this.inflater = inflater;
-        this.handler = handler;
         this.list = list;
+
+        this.events = new RuleUpdateEvent[4];
+        for (int i = 0; i < this.events.length; i++) {
+            this.events[i] = new RuleUpdateEvent(i);
+        }
     }
 
     @Override
@@ -58,16 +68,12 @@ public class RuleAdapter extends BaseAdapter implements View.OnClickListener {
 
         ItemViewHolder holder = (ItemViewHolder) view.getTag();
         if (holder == null) {
-            holder = new ItemViewHolder();
-            holder.cb_item_check = (CheckBox) view.findViewById(R.id.cb_item_check);
-            holder.tv_item_rule = (TextView) view.findViewById(R.id.tv_item_rule);
-            holder.tv_item_block = (TextView) view.findViewById(R.id.tv_item_block);
+            holder = new ItemViewHolder(view);
         }
 
         Rule item = list.get(position);
         if (item != null) {
             holder.cb_item_check.setChecked(item.isChecked());
-            holder.cb_item_check.setOnClickListener(this);
             holder.cb_item_check.setTag(item);
             holder.tv_item_rule.setText(item.getContent());
             String blockItems = "";
@@ -104,8 +110,8 @@ public class RuleAdapter extends BaseAdapter implements View.OnClickListener {
         list.removeAll(checkedRules);
         checkedRules.clear();
 
-        handler.sendEmptyMessage(0);
-        handler.sendEmptyMessage(2);
+        EventBus.getDefault().post(events[0]);
+        EventBus.getDefault().post(events[2]);
     }
 
     public void checkAll(boolean checked) {
@@ -122,9 +128,9 @@ public class RuleAdapter extends BaseAdapter implements View.OnClickListener {
             }
         }
         if (checked) {
-            handler.sendEmptyMessage(1);
+            EventBus.getDefault().post(events[1]);
         } else {
-            handler.sendEmptyMessage(0);
+            EventBus.getDefault().post(events[0]);
         }
     }
 
@@ -132,41 +138,50 @@ public class RuleAdapter extends BaseAdapter implements View.OnClickListener {
         return checkedRules;
     }
 
-    @Override
-    public void onClick(View v) {
-        int totalSize = getCount();
-        int beforeSize = checkedRules.size();
 
-        Rule item = (Rule) v.getTag();
-        boolean b = ((CheckBox) v).isChecked();
-        if (b) {
-            if (!checkedRules.contains(item)) {
-                checkedRules.add(item);
+    class ItemViewHolder {
+        @InjectView(R.id.cb_item_check)
+        CheckBox cb_item_check;
+        @InjectView(R.id.tv_item_rule)
+        TextView tv_item_rule;
+        @InjectView(R.id.tv_item_block)
+        TextView tv_item_block;
+
+        public ItemViewHolder(View view) {
+            ButterKnife.inject(this, view);
+        }
+
+        @OnClick(R.id.cb_item_check)
+        public void onClick(View v) {
+            int totalSize = getCount();
+            int beforeSize = checkedRules.size();
+
+            Rule item = (Rule) v.getTag();
+            boolean b = ((CheckBox) v).isChecked();
+            item.setChecked(b);
+            if (b) {
+                if (!checkedRules.contains(item)) {
+                    checkedRules.add(item);
+                }
+            } else {
+                if (checkedRules.contains(item)) {
+                    checkedRules.remove(item);
+                }
             }
-        } else {
-            if (checkedRules.contains(item)) {
-                checkedRules.remove(item);
+            int afterSize = checkedRules.size();
+
+            if (beforeSize == 1 && afterSize == 0) {    // 1 --> 0
+                EventBus.getDefault().post(events[0]);
+            }
+            if (beforeSize == 0 && afterSize == 1) {    // 0 --> 1
+                EventBus.getDefault().post(events[1]);
+            }
+            if (beforeSize == totalSize && afterSize == totalSize - 1) {    // MAX --> MAX - 1
+                EventBus.getDefault().post(events[2]);
+            }
+            if (beforeSize == totalSize - 1 && afterSize == totalSize) {    // MAX - 1 --> MAX
+                EventBus.getDefault().post(events[3]);
             }
         }
-        int afterSize = checkedRules.size();
-
-        if (beforeSize == 1 && afterSize == 0) {    // 1 --> 0
-            handler.sendEmptyMessage(0);
-        }
-        if (beforeSize == 0 && afterSize == 1) {    // 0 --> 1
-            handler.sendEmptyMessage(1);
-        }
-        if (beforeSize == totalSize && afterSize == totalSize - 1) {    // MAX --> MAX - 1
-            handler.sendEmptyMessage(2);
-        }
-        if (beforeSize == totalSize - 1 && afterSize == totalSize) { // MAX - 1 --> MAX
-            handler.sendEmptyMessage(3);
-        }
-    }
-
-    private class ItemViewHolder {
-        private CheckBox cb_item_check;
-        private TextView tv_item_rule;
-        private TextView tv_item_block;
     }
 }
