@@ -96,7 +96,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
                                 mHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        XposedMod.this.saveHisoryAndNotify(context, intent);
+                                        XposedMod.this.saveHistoryAndNotify(context, intent);
                                     }
                                 });
                             }
@@ -114,7 +114,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         notificationContentText = resParam.res.getString(resParam.res.addResource(modRes, R.string.notification_content_text));
     }
 
-    private void saveHisoryAndNotify(Context context, Intent intent) {
+    private void saveHistoryAndNotify(Context context, Intent intent) {
         if (intent != null && intent.getExtras() != null) {
             Bundle bundle = intent.getExtras();
             int type = bundle.getInt("type");

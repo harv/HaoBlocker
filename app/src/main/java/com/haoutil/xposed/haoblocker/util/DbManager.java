@@ -190,7 +190,7 @@ public class DbManager {
                         }
                         break;
                     case Rule.TYPE_KEYWORD:
-                        if (exception.getContent().contains(content)) {
+                        if (content.contains(exception.getContent())) {
                             return false;
                         }
                         break;
@@ -212,7 +212,7 @@ public class DbManager {
                         }
                         break;
                     case Rule.TYPE_KEYWORD:
-                        if (rule.getContent().contains(content)) {
+                        if (content.contains(rule.getContent())) {
                             return true;
                         }
                         break;
