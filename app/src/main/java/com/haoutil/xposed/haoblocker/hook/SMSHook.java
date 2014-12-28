@@ -3,14 +3,11 @@ package com.haoutil.xposed.haoblocker.hook;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
 import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
 import com.haoutil.xposed.haoblocker.XposedMod;
-import com.haoutil.xposed.haoblocker.model.SMS;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 import com.haoutil.xposed.haoblocker.util.Logger;
 import com.haoutil.xposed.haoblocker.util.SettingsHelper;
@@ -93,14 +90,6 @@ public class SMSHook implements BaseHook {
                             if (received) {
                                 Logger.log("New SMS: " + sender + "," + content);
                                 if (dbManager.blockSMS(sender, content)) {
-                                    SMS savedSMS = new SMS();
-                                    savedSMS.setSender(sender);
-                                    savedSMS.setContent(content);
-                                    savedSMS.setCreated(sms.getTimestampMillis());
-                                    savedSMS.setRead(SMS.SMS_UNREADED);
-
-                                    dbManager.saveSMS(savedSMS);
-
                                     try {
                                         XposedHelpers.callMethod(param.thisObject, "acknowledgeLastIncomingGsmSms", true, 0, null);
                                     } catch (Throwable t) {
@@ -110,10 +99,11 @@ public class SMSHook implements BaseHook {
                                     param.setResult(null);
 
                                     Intent intent = new Intent(XposedMod.FILTER_NOTIFY_BLOCKED);
-                                    intent.putExtra("blockNewSMS", true);
+                                    intent.putExtra("type", DbManager.TYPE_SMS);
+                                    intent.putExtra("sender", sender);
+                                    intent.putExtra("content", content);
+                                    intent.putExtra("created", sms.getTimestampMillis());
                                     mContext.sendBroadcast(intent);
-
-                                    Logger.log("Block SMS: " + sender + "," + savedSMS.getContent() + "," + savedSMS.getCreated());
                                 }
                             }
                         } catch (Throwable t) {

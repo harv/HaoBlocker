@@ -4,12 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.haoutil.xposed.haoblocker.XposedMod;
-import com.haoutil.xposed.haoblocker.model.Call;
 import com.haoutil.xposed.haoblocker.util.DbManager;
 import com.haoutil.xposed.haoblocker.util.Logger;
 import com.haoutil.xposed.haoblocker.util.SettingsHelper;
-
-import java.util.Date;
 
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XposedBridge;
@@ -58,22 +55,13 @@ public class CallHook implements BaseHook {
                     Logger.log("Incoming call: " + caller);
 
                     if (dbManager.blockCall(caller)) {
-                        Call savedCall = new Call();
-                        savedCall.setCaller(caller);
-                        savedCall.setCreated(new Date().getTime());
-                        savedCall.setRead(Call.CALL_UNREADED);
-
-                        dbManager.saveCall(savedCall);
-
                         XposedHelpers.callStaticMethod(XposedHelpers.findClass("com.android.phone.PhoneUtils", loadPackageParam.classLoader), "hangupRingingCall", call);
 
                         param.setResult(null);
 
                         Intent intent = new Intent(XposedMod.FILTER_NOTIFY_BLOCKED);
-                        intent.putExtra("blockNewCall", true);
+                        intent.putExtra("type", DbManager.TYPE_CALL);
                         mContext.sendBroadcast(intent);
-
-                        Logger.log("Block call: " + caller + "," + savedCall.getCreated());
                     }
                 } catch (Throwable t) {
                     Logger.log("Block Call error.");
