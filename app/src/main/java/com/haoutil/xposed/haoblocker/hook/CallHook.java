@@ -61,6 +61,7 @@ public class CallHook implements BaseHook {
 
                         Intent intent = new Intent(XposedMod.FILTER_NOTIFY_BLOCKED);
                         intent.putExtra("type", DbManager.TYPE_CALL);
+                        intent.putExtra("caller", caller);
                         mContext.sendBroadcast(intent);
                     }
                 } catch (Throwable t) {
