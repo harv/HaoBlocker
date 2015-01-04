@@ -3,6 +3,7 @@ package com.haoutil.xposed.haoblocker.fragment;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -21,6 +22,8 @@ import com.haoutil.xposed.haoblocker.adapter.RuleAdapter;
 import com.haoutil.xposed.haoblocker.event.RuleUpdateEvent;
 import com.haoutil.xposed.haoblocker.model.Rule;
 import com.haoutil.xposed.haoblocker.util.DbManager;
+
+import java.util.List;
 
 import butterknife.InjectView;
 import butterknife.OnClick;
@@ -93,8 +96,7 @@ public class RuleFragment extends BaseFragment {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = getView();
 
-        adapter = new RuleAdapter(getActivity().getLayoutInflater(), dbManager.getRules(DbManager.TYPE_ALL));
-        lv_rules.setAdapter(adapter);
+        new LoadRuleAdapterTask().execute();
 
         return view;
     }
@@ -175,6 +177,19 @@ public class RuleFragment extends BaseFragment {
             case 3:
                 cb_check_all.setChecked(true);
                 break;
+        }
+    }
+
+    private class LoadRuleAdapterTask extends AsyncTask<Void, Void, List<Rule>> {
+        @Override
+        protected List<Rule> doInBackground(Void... params) {
+            return dbManager.getRules(DbManager.TYPE_ALL);
+        }
+
+        @Override
+        protected void onPostExecute(List<Rule> list) {
+            adapter = new RuleAdapter(getActivity().getLayoutInflater(), list);
+            lv_rules.setAdapter(adapter);
         }
     }
 }

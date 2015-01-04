@@ -21,7 +21,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 
-public class SMSAdaptor extends BaseAdapter {
+public class SMSAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private List<SMS> list;
 
@@ -31,7 +31,7 @@ public class SMSAdaptor extends BaseAdapter {
 
     private SimpleDateFormat simpleDateFormat;
 
-    public SMSAdaptor(LayoutInflater inflater, List<SMS> list) {
+    public SMSAdapter(LayoutInflater inflater, List<SMS> list) {
         this.inflater = inflater;
         this.list = list;
 

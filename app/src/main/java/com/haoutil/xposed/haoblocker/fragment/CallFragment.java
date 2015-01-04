@@ -1,6 +1,7 @@
 package com.haoutil.xposed.haoblocker.fragment;
 
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -15,7 +16,7 @@ import android.widget.CheckBox;
 import android.widget.ListView;
 
 import com.haoutil.xposed.haoblocker.R;
-import com.haoutil.xposed.haoblocker.adapter.CallAdaptor;
+import com.haoutil.xposed.haoblocker.adapter.CallAdapter;
 import com.haoutil.xposed.haoblocker.event.CallUpdateEvent;
 import com.haoutil.xposed.haoblocker.model.Call;
 import com.haoutil.xposed.haoblocker.util.DbManager;
@@ -30,7 +31,7 @@ import de.greenrobot.event.EventBus;
 public class CallFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private DbManager dbManager;
 
-    private CallAdaptor adapter;
+    private CallAdapter adapter;
 
     @InjectView(R.id.cb_check_all)
     CheckBox cb_check_all;
@@ -91,8 +92,7 @@ public class CallFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         srl_rules.setOnRefreshListener(this);
         setColorSchemeResources(srl_rules);
 
-        adapter = new CallAdaptor(getActivity().getLayoutInflater(), dbManager.getCalls(-1));
-        lv_rules.setAdapter(adapter);
+        new LoadCallAdapterTask().execute();
 
         return view;
     }
@@ -175,6 +175,19 @@ public class CallFragment extends BaseFragment implements SwipeRefreshLayout.OnR
             case 3:
                 cb_check_all.setChecked(true);
                 break;
+        }
+    }
+
+    private class LoadCallAdapterTask extends AsyncTask<Void, Void, List<Call>> {
+        @Override
+        protected List<Call> doInBackground(Void... params) {
+            return dbManager.getCalls(-1);
+        }
+
+        @Override
+        protected void onPostExecute(List<Call> list) {
+            adapter = new CallAdapter(getActivity().getLayoutInflater(), list);
+            lv_rules.setAdapter(adapter);
         }
     }
 }

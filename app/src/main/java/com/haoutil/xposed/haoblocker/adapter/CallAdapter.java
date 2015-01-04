@@ -21,7 +21,7 @@ import butterknife.InjectView;
 import butterknife.OnClick;
 import de.greenrobot.event.EventBus;
 
-public class CallAdaptor extends BaseAdapter {
+public class CallAdapter extends BaseAdapter {
     private LayoutInflater inflater;
     private List<Call> list;
 
@@ -31,7 +31,7 @@ public class CallAdaptor extends BaseAdapter {
 
     private SimpleDateFormat simpleDateFormat;
 
-    public CallAdaptor(LayoutInflater inflater, List<Call> list) {
+    public CallAdapter(LayoutInflater inflater, List<Call> list) {
         this.inflater = inflater;
         this.list = list;
 

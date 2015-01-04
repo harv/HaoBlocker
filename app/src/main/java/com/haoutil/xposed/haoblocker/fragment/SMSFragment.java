@@ -2,6 +2,7 @@ package com.haoutil.xposed.haoblocker.fragment;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -17,7 +18,7 @@ import android.widget.ListView;
 
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.activity.SMSActivity;
-import com.haoutil.xposed.haoblocker.adapter.SMSAdaptor;
+import com.haoutil.xposed.haoblocker.adapter.SMSAdapter;
 import com.haoutil.xposed.haoblocker.event.SMSUpdateEvent;
 import com.haoutil.xposed.haoblocker.model.SMS;
 import com.haoutil.xposed.haoblocker.util.DbManager;
@@ -32,7 +33,7 @@ import de.greenrobot.event.EventBus;
 public class SMSFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
     private DbManager dbManager;
 
-    private SMSAdaptor adapter;
+    private SMSAdapter adapter;
 
     @InjectView(R.id.cb_check_all)
     CheckBox cb_check_all;
@@ -92,8 +93,7 @@ public class SMSFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
         srl_rules.setOnRefreshListener(this);
         setColorSchemeResources(srl_rules);
 
-        adapter = new SMSAdaptor(getActivity().getLayoutInflater(), dbManager.getSMSes(-1));
-        lv_rules.setAdapter(adapter);
+        new LoadSMSAdapterTask().execute();
 
         return view;
     }
@@ -182,6 +182,19 @@ public class SMSFragment extends BaseFragment implements SwipeRefreshLayout.OnRe
             case 3:
                 cb_check_all.setChecked(true);
                 break;
+        }
+    }
+
+    private class LoadSMSAdapterTask extends AsyncTask<Void, Void, List<SMS>> {
+        @Override
+        protected List<SMS> doInBackground(Void... params) {
+            return dbManager.getSMSes(-1);
+        }
+
+        @Override
+        protected void onPostExecute(List<SMS> list) {
+            adapter = new SMSAdapter(getActivity().getLayoutInflater(), list);
+            lv_rules.setAdapter(adapter);
         }
     }
 }
