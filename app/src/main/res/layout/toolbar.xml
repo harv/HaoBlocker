@@ -5,4 +5,5 @@
     android:layout_height="wrap_content"
     android:minHeight="?attr/actionBarSize"
     android:background="?attr/colorPrimary"
-    app:theme="@style/ToolbarTheme" />
+    app:theme="@style/ToolbarTheme"
+    app:popupTheme="@style/PopupTheme" />

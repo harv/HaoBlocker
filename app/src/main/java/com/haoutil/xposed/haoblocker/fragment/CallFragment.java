@@ -33,6 +33,8 @@ public class CallFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
     private CallAdapter adapter;
 
+    private LayoutInflater inflater;
+
     @InjectView(R.id.cb_check_all)
     CheckBox cb_check_all;
     @InjectView(R.id.srl_rules)
@@ -88,6 +90,8 @@ public class CallFragment extends BaseFragment implements SwipeRefreshLayout.OnR
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = getView();
+
+        this.inflater = inflater;
 
         srl_rules.setOnRefreshListener(this);
         setColorSchemeResources(srl_rules);
@@ -159,20 +163,20 @@ public class CallFragment extends BaseFragment implements SwipeRefreshLayout.OnR
         }
     }
 
-    public void onEvent(CallUpdateEvent event) {
-        switch (event.getWhat()) {
-            case 0:
+    public void onEventMainThread(CallUpdateEvent event) {
+        switch (event.getEvent()) {
+            case CallUpdateEvent.EVENT_HIDE_DISCARD:
                 showDiscardAction = false;
                 getActivity().invalidateOptionsMenu();
                 break;
-            case 1:
+            case CallUpdateEvent.EVENT_SHOW_DISCARD:
                 showDiscardAction = true;
                 getActivity().invalidateOptionsMenu();
                 break;
-            case 2:
+            case CallUpdateEvent.EVENT_CHECK_NONE:
                 cb_check_all.setChecked(false);
                 break;
-            case 3:
+            case CallUpdateEvent.EVENT_CHECK_ALL:
                 cb_check_all.setChecked(true);
                 break;
         }
@@ -186,7 +190,7 @@ public class CallFragment extends BaseFragment implements SwipeRefreshLayout.OnR
 
         @Override
         protected void onPostExecute(List<Call> list) {
-            adapter = new CallAdapter(getActivity().getLayoutInflater(), list);
+            adapter = new CallAdapter(inflater, list);
             lv_rules.setAdapter(adapter);
         }
     }

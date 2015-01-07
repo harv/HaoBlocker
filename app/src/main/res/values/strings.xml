@@ -10,6 +10,8 @@
     <string name="action_new">New</string>
     <string name="action_discard">Delete</string>
     <string name="action_accept">Accept</string>
+    <string name="action_import_call">Import From Call History</string>
+    <string name="action_import_message">Import From Message History</string>
 
     <string name="general_about_title">@string/app_name</string>
     <string name="general_about_summary">Xposed SMS/MMS/Call Blocker.\nCopyright © 2014 - haoutil.com</string>
@@ -31,6 +33,10 @@
     <string name="rule_tip_empty_rule">Please provide a rule.</string>
     <string name="rule_tip_empty_block">Please select which item you want to block.</string>
     <string name="rule_tip_rule_added">Rule added/modified.</string>
+    <string name="rule_import_title">Import</string>
+    <string name="rule_import_loading">Loading&#8230;</string>
+    <string name="rule_import_ok">OK</string>
+    <string name="rule_import_cancel">Cancel</string>
 
     <string name="sms_sender">Sender</string>
     <string name="sms_date">Received At</string>

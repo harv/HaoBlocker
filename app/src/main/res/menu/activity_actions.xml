@@ -19,4 +19,12 @@
         android:title="@string/action_discard"
         app:showAsAction="ifRoom"
         android:visible="false" />
+    <item
+        android:id="@+id/action_import_call"
+        android:title="@string/action_import_call"
+        android:visible="false" />
+    <item
+        android:id="@+id/action_import_message"
+        android:title="@string/action_import_message"
+        android:visible="false" />
 </menu>

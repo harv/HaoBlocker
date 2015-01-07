@@ -14,4 +14,13 @@
         <item name="android:textColorPrimary">@color/textColorPrimary</item>
         <item name="android:textColorSecondary">@color/textColorPrimary</item>
     </style>
+
+    <style name="PopupTheme" parent="Widget.AppCompat.Light.ListView.DropDown">
+        <item name="android:textColor">@color/colorPrimary</item>
+    </style>
+
+    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorControlNormal">@color/colorControlNormal</item>
+        <item name="colorControlActivated">@color/colorControlNormal</item>
+    </style>
 </resources>
