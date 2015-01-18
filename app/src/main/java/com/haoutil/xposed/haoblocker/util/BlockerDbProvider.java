@@ -186,7 +186,7 @@ public class BlockerDbProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_RULE + "(_id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT, type INTEGER, sms INTEGER, call INTEGER, created INTEGER)");
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_RULE + "(_id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT, type INTEGER, sms INTEGER, call INTEGER, exception INTEGER, created INTEGER)");
             db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_SMS + "(_id INTEGER PRIMARY KEY AUTOINCREMENT, sender TEXT, content TEXT, created INTEGER, read INTEGER)");
             db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_CALL + "(_id INTEGER PRIMARY KEY AUTOINCREMENT, caller TEXT, created INTEGER, read INTEGER)");
         }
