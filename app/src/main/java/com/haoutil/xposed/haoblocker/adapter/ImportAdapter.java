@@ -98,6 +98,7 @@ public class ImportAdapter extends BaseAdapter {
                     );
                     if (cursor != null && cursor.moveToFirst()) {
                         item.setName(cursor.getString(0));
+                        name = item.getName();
 
                         contacts.put(number, item.getName());
                     } else {
@@ -114,6 +115,12 @@ public class ImportAdapter extends BaseAdapter {
             }
             holder.tv_contact.setText(item.getNumber() + name);
             holder.tv_time.setText(simpleDateFormat.format(new Date(item.getTime())));
+            if (!TextUtils.isEmpty(item.getContent())) {
+                holder.tv_content.setVisibility(View.VISIBLE);
+                holder.tv_content.setText(item.getContent());
+            } else {
+                holder.tv_content.setVisibility(View.GONE);
+            }
         }
 
         return view;
@@ -146,6 +153,8 @@ public class ImportAdapter extends BaseAdapter {
         TextView tv_contact;
         @InjectView(R.id.tv_time)
         TextView tv_time;
+        @InjectView(R.id.tv_content)
+        TextView tv_content;
 
         public ItemViewHolder(View view) {
             ButterKnife.inject(this, view);
