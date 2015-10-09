@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import butterknife.ButterKnife;
@@ -41,7 +42,7 @@ public class ImportAdapter extends BaseAdapter {
         this.selectedContacts = new ArrayList<>();
         this.contacts = new HashMap<>();
 
-        simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
+        simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
     }
 
     @Override
@@ -103,6 +104,9 @@ public class ImportAdapter extends BaseAdapter {
                         contacts.put(number, item.getName());
                     } else {
                         contacts.put(number, null);
+                    }
+                    if (cursor != null) {
+                        cursor.close();
                     }
                 }
                 item.setQueried(true);

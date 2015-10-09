@@ -62,6 +62,10 @@ public class DbManager {
             } while (cursor.moveToNext());
         }
 
+        if (cursor != null) {
+            cursor.close();
+        }
+
         return list;
     }
 
@@ -97,7 +101,7 @@ public class DbManager {
 
     public List<SMS> getSMSes(long id) {
         List<SMS> list = new ArrayList<>();
-        Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id", "sender", "content", "created", "read"}, "_id > ?", new String[] {String.valueOf(id)}, "created DESC");
+        Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id", "sender", "content", "created", "read"}, "_id > ?", new String[]{String.valueOf(id)}, "created DESC");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 SMS sms = new SMS();
@@ -110,6 +114,11 @@ public class DbManager {
                 list.add(sms);
             } while (cursor.moveToNext());
         }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
         return list;
     }
 
@@ -138,7 +147,7 @@ public class DbManager {
 
     public List<Call> getCalls(long id) {
         List<Call> list = new ArrayList<>();
-        Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id", "caller", "created", "read"}, "_id > ?", new String[] {String.valueOf(id)}, "created DESC");
+        Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id", "caller", "created", "read"}, "_id > ?", new String[]{String.valueOf(id)}, "created DESC");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Call call = new Call();
@@ -150,6 +159,11 @@ public class DbManager {
                 list.add(call);
             } while (cursor.moveToNext());
         }
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
         return list;
     }
 
@@ -261,11 +275,27 @@ public class DbManager {
     }
 
     public int getUnReadSMSCount() {
-        return resolver.query(URI_SMS_ALL, new String[]{"_id"}, "read=?", new String[]{"0"}, null).getCount();
+        int count = 0;
+
+        Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id"}, "read=?", new String[]{"0"}, null);
+        if (cursor != null) {
+            count = cursor.getCount();
+            cursor.close();
+        }
+
+        return count;
     }
 
     public int getUnReadCallCount() {
-        return resolver.query(URI_CALL_ALL, new String[]{"_id"}, "read=?", new String[]{"0"}, null).getCount();
+        int count = 0;
+
+        Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id"}, "read=?", new String[]{"0"}, null);
+        if (cursor != null) {
+            count = cursor.getCount();
+            cursor.close();
+        }
+
+        return count;
     }
 
     private boolean wildcardMatch(String wildcard, String str) {

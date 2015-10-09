@@ -22,7 +22,7 @@ public class SMSHook implements BaseHook {
 
     private Context mContext;
 
-    private SparseArray<String[]> smsArrays = new SparseArray<String[]>();
+    private SparseArray<String[]> smsArrays = new SparseArray<>();
 
     public SMSHook() {
         settingsHelper = new SettingsHelper();

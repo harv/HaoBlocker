@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -27,7 +28,7 @@ public class CallAdapter extends BaseAdapter {
 
     private CallUpdateEvent[] events;
 
-    private List<Call> checkedCalls = new ArrayList<Call>();
+    private List<Call> checkedCalls = new ArrayList<>();
 
     private SimpleDateFormat simpleDateFormat;
 
@@ -40,7 +41,7 @@ public class CallAdapter extends BaseAdapter {
             this.events[i] = new CallUpdateEvent(i);
         }
 
-        simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm");
+        simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
     }
 
     @Override

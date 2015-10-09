@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
 public class BlockerDbProvider extends ContentProvider {
     private static final String TABLE_RULE = "rule";
@@ -52,14 +53,16 @@ public class BlockerDbProvider extends ContentProvider {
     @Override
     public boolean onCreate() {
         Context context = getContext();
-        resolver = context.getContentResolver();
+        if (context != null) {
+            resolver = context.getContentResolver();
+        }
         dbHelper = new DbHelper(context);
 
         return true;
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         switch (matcher.match(uri)) {
             case RULE_ALL:
                 return RULE_TYPE;
@@ -79,7 +82,7 @@ public class BlockerDbProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         switch (matcher.match(uri)) {
@@ -98,7 +101,7 @@ public class BlockerDbProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         long rowId;
@@ -126,7 +129,7 @@ public class BlockerDbProvider extends ContentProvider {
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         int count;
@@ -153,7 +156,7 @@ public class BlockerDbProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
 
         int count;
