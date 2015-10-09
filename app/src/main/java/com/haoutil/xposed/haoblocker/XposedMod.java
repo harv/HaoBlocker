@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.XModuleResources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -42,7 +40,6 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     private NotificationCompat.Builder notiBuilder;
 
     private int smallNotificationIcon = -1;
-    private Bitmap largeNotificationIcon = null;
     private String notificationContentText;
 
     private DbManager dbManager;
@@ -50,21 +47,22 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
-        initNotificationBroadcastReceiver();
         new SMSHook().exec();
     }
 
     @Override
-    public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
         if (loadPackageParam.packageName.equals("com.android.phone")) {
             new CallHook(loadPackageParam).exec();
+        } else if (loadPackageParam.packageName.equals("android")) {
+            initNotificationBroadcastReceiver(loadPackageParam);
         }
     }
 
     @Override
     public void handleInitPackageResources(XC_InitPackageResources.InitPackageResourcesParam resParam) throws Throwable {
         if (resParam.packageName.equals("android")) {
-            if (smallNotificationIcon != -1 && largeNotificationIcon != null) {
+            if (smallNotificationIcon != -1) {
                 return;
             }
 
@@ -72,8 +70,8 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         }
     }
 
-    private void initNotificationBroadcastReceiver() {
-        XposedHelpers.findAndHookMethod("com.android.server.am.ActivityManagerService", null, "systemReady", Runnable.class, new XC_MethodHook() {
+    private void initNotificationBroadcastReceiver(XC_LoadPackage.LoadPackageParam loadPackageParam) {
+        XposedHelpers.findAndHookMethod("com.android.server.am.ActivityManagerService", loadPackageParam.classLoader, "systemReady", Runnable.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
                 final Runnable origCallback = (Runnable) param.args[0];
@@ -82,7 +80,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
                     public void run() {
                         if (origCallback != null) origCallback.run();
 
-                        Context mContext = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
+                        final Context mContext = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
                         dbManager = new DbManager(mContext);
                         notiManager = NotificationManagerCompat.from(mContext);
                         notiBuilder = new NotificationCompat.Builder(mContext).setContentTitle("HaoBlocker").setTicker("HaoBlocker").setAutoCancel(true);
@@ -96,7 +94,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
                                 mHandler.post(new Runnable() {
                                     @Override
                                     public void run() {
-                                        XposedMod.this.saveHistoryAndNotify(context, intent);
+                                        XposedMod.this.saveHistoryAndNotify(mContext, intent);
                                     }
                                 });
                             }
@@ -110,7 +108,6 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     private void getNotificationIcon(XC_InitPackageResources.InitPackageResourcesParam resParam) {
         XModuleResources modRes = XModuleResources.createInstance(MODULE_PATH, resParam.res);
         smallNotificationIcon = resParam.res.addResource(modRes, R.drawable.ic_launcher);
-        largeNotificationIcon = ((BitmapDrawable) resParam.res.getDrawable(smallNotificationIcon)).getBitmap();
         notificationContentText = resParam.res.getString(resParam.res.addResource(modRes, R.string.notification_content_text));
     }
 
@@ -147,6 +144,10 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     }
 
     private void showNotification(Context context, int type) {
+        if (smallNotificationIcon == -1 || notificationContentText == null) {
+            return;
+        }
+
         if (type != DbManager.TYPE_SMS && type != DbManager.TYPE_CALL) {
             return;
         }
@@ -166,7 +167,6 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         notiBuilder.setSmallIcon(smallNotificationIcon)
-                .setLargeIcon(largeNotificationIcon)
                 .setContentText(String.format(notificationContentText, unreadSMSCount, unreadCallCount))
                 .setContentIntent(pendingIntent);
 
