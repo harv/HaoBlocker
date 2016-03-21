@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="AppTheme" parent="AppTheme.Base">
-        <item name="colorControlNormal">@color/colorControlNormal</item>
-        <item name="colorControlActivated">@color/colorControlNormal</item>
-    </style>
+    <style name="AppTheme" parent="AppTheme.Base" />
 
-    <style name="ToolbarTheme" parent="AppTheme.Base" />
-
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+    <style name="AppTheme.Base" parent="Theme.AppCompat.Light">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="android:textColorPrimary">@color/textColorPrimary</item>
-        <item name="android:textColorSecondary">@color/textColorPrimary</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:textColorPrimary">@color/textColor</item>
+        <item name="android:textColorSecondary">@color/textColorSecondary</item>
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="buttonStyle">@style/buttonStyle</item>
     </style>
 
-    <style name="PopupTheme" parent="Widget.AppCompat.Light.ListView.DropDown">
-        <item name="android:textColor">@color/colorPrimary</item>
-    </style>
-
-    <style name="DialogTheme" parent="Theme.AppCompat.Light.Dialog">
-        <item name="colorControlNormal">@color/colorControlNormal</item>
-        <item name="colorControlActivated">@color/colorControlNormal</item>
+    <style name="buttonStyle" parent="Base.Widget.AppCompat.Button">
+        <item name="android:background">@drawable/background_button</item>
     </style>
 </resources>

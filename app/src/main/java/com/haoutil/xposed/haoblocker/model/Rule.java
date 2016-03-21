@@ -7,6 +7,10 @@ public class Rule implements Serializable {
     public static final int TYPE_WILDCARD = 1;
     public static final int TYPE_KEYWORD = 2;
 
+    public static final int BLOCK_BOTH = 0;
+    public static final int BLOCK_SMS = 1;
+    public static final int BLOCK_CALL = 2;
+
     private long id;
     private String content;
     private int type;
@@ -14,7 +18,6 @@ public class Rule implements Serializable {
     private int call;
     private int exception;
     private long created;
-    private boolean checked;
 
     public long getId() {
         return id;
@@ -70,13 +73,5 @@ public class Rule implements Serializable {
 
     public void setCreated(long created) {
         this.created = created;
-    }
-
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
     }
 }

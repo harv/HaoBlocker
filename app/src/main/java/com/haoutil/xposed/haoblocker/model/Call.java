@@ -8,7 +8,6 @@ public class Call {
     private String caller;
     private long created;
     private int read;
-    private boolean checked;
 
     public long getId() {
         return id;
@@ -40,13 +39,5 @@ public class Call {
 
     public void setRead(int read) {
         this.read = read;
-    }
-
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
     }
 }

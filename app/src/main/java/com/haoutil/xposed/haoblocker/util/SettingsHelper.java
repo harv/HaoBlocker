@@ -47,6 +47,15 @@ public class SettingsHelper {
         setBoolean("pref_call_enable", value);
     }
 
+    public boolean isShowBlockNotification() {
+        reload();
+        return getBoolean("pref_show_block_notification", true);
+    }
+
+    public void setShowBlockNotification(boolean value) {
+        setBoolean("pref_show_block_notification", value);
+    }
+
     private void reload() {
         if (mXPreferences != null) {
             mXPreferences.reload();

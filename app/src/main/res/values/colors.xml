@@ -1,15 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#ff2196f3</color>
-    <color name="colorPrimaryDark">#ff2196f3</color>
-    <color name="textColorPrimary">#ddffffff</color>
-    <color name="textColorPrimaryDark">#dd000000</color>
-    <color name="textColorSecondary">#88ffffff</color>
-    <color name="textColorSecondaryDark">#89000000</color>
-    <color name="textColorDividers">#1e000000</color>
-    <color name="textColorHint">#64ffffff</color>
-    <color name="colorControlNormal">#42000000</color>
-    <color name="drawerBackground">#ddffffff</color>
-    <color name="textColorRed">#fff44336</color>
-    <color name="textColorGreen">#ff4caf50</color>
+    <color name="colorPrimary">#4caf50</color>
+    <color name="colorPrimaryDark">#2e7d32</color>
+    <color name="colorAccent">#ff9800</color>
+    <color name="textColor">#dd000000</color>
+    <color name="textColorSecondary">#89000000</color>
+    <color name="colorBackgroundNormal">#ffffff</color>
+    <color name="colorBackgroundPressed">#eceff1</color>
 </resources>

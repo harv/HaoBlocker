@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="array_menus">
+    <string-array name="tabTitles">
         <item>General</item>
-        <item>Rule Settings</item>
-        <item>SMS Block History</item>
-        <item>Call Block History</item>
+        <item>Rule</item>
+        <item>SMS</item>
+        <item>Call</item>
+    </string-array>
+    <string-array name="ruleTypes">
+        <item>phone number</item>
+        <item>wildcard number</item>
+        <item>keyword for sms</item>
+    </string-array>
+    <string-array name="blockTypes">
+        <item>both</item>
+        <item>sms</item>
+        <item>call</item>
     </string-array>
 </resources>

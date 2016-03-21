@@ -1,57 +1,34 @@
 <resources>
     <string name="app_name">HaoBlocker</string>
-    <string name="app_description">Xposed SMS/MMS/Call Blocker.</string>
-    <string name="rule_name_add">Add Rule</string>
-    <string name="rule_name_modify">Modify Rule</string>
+    <string name="app_description">Xposed SMS/Call Blocker.</string>
 
-    <string name="drawer_open">Open left drawer</string>
-    <string name="drawer_close">Close left drawer</string>
-
-    <string name="action_new">New</string>
-    <string name="action_discard">Delete</string>
-    <string name="action_accept">Accept</string>
-    <string name="action_import_call">Import From Call History</string>
-    <string name="action_import_message">Import From Message History</string>
-
-    <string name="general_about_title">@string/app_name</string>
-    <string name="general_about_summary">Xposed SMS/MMS/Call Blocker.\nCopyright © 2014 - haoutil.com</string>
+    <string name="general_about_title">HaoBlocker %1$s</string>
+    <string name="general_about_summary">Xposed SMS/Call Blocker.\nCopyright © 2014&#8211;2016 haoutil.com</string>
     <string name="general_enable">Enable</string>
-    <string name="general_sms_enable">Block SMS/MMS</string>
+    <string name="general_sms_enable">Block SMS</string>
     <string name="general_call_enable">Block Call</string>
+    <string name="general_show_notification">Show Notification</string>
 
-    <string name="rule_content">Rule</string>
-    <string name="rule_block_items">Block</string>
+    <string name="rule_label">Rule</string>
+    <string name="rule_label_type">Type</string>
+    <string name="rule_label_block">Block</string>
+    <string name="rule_label_except">Except</string>
+    <string name="rule_accept">Accept</string>
+    <string name="rule_not_match_type">Keyword rule can only block sms</string>
+    <string name="rule_tip_empty_rule">Please provide a rule</string>
+    <string name="rule_tip_rule_added">one rule added/updated</string>
+    <string name="rule_tip_rule_deleted">one rule deleted</string>
 
-    <string name="rule_label">Rule:</string>
-    <string name="rule_label_string">Constant</string>
-    <string name="rule_label_wildcard">Wildcard</string>
-    <string name="rule_label_keyword">Keyword</string>
-    <string name="rule_label_block">Block:</string>
-    <string name="rule_label_block_sms">SMS/MMS</string>
-    <string name="rule_label_block_call">Call</string>
-    <string name="rule_label_exceptionsrule">Exceptions Rule</string>
-    <string name="rule_tip_empty_rule">Please provide a rule.</string>
-    <string name="rule_tip_empty_block">Please select which item you want to block.</string>
-    <string name="rule_tip_rule_added">Rule added/modified.</string>
-    <string name="rule_import_title">Import</string>
-    <string name="rule_import_loading">Loading&#8230;</string>
-    <string name="rule_import_ok">OK</string>
-    <string name="rule_import_cancel">Cancel</string>
+    <string name="rule_tip_sms_deleted">one sms deleted</string>
 
-    <string name="sms_sender">Sender</string>
-    <string name="sms_date">Received At</string>
-
-    <string name="sms_label_sender">Sender</string>
-    <string name="sms_label_content">Content</string>
-    <string name="sms_label_date">At</string>
-
-    <string name="call_caller">Caller</string>
-    <string name="call_date">Call At</string>
-
-    <string name="notification_content_text" formatted="false"> %s message(s), %s call(s) blocked.</string>
+    <string name="rule_tip_call_deleted">one call deleted</string>
 
     <string name="discard_dialog_title">Confirm</string>
-    <string name="discard_dialog_message">Delete selected items?</string>
+    <string name="discard_dialog_message">Delete selected item?</string>
     <string name="discard_dialog_button_ok">OK</string>
     <string name="discard_dialog_button_cancel">Cancel</string>
+
+    <string name="snackbar_undo">UNDO</string>
+
+    <string name="notification_content_text" formatted="false"> %s message(s), %s call(s) blocked.</string>
 </resources>

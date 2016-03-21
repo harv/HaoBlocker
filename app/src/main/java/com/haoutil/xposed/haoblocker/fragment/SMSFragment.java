@@ -1,204 +1,93 @@
 package com.haoutil.xposed.haoblocker.fragment;
 
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.CheckBox;
-import android.widget.ListView;
 
 import com.haoutil.xposed.haoblocker.R;
-import com.haoutil.xposed.haoblocker.activity.SMSActivity;
+import com.haoutil.xposed.haoblocker.activity.SettingsActivity;
+import com.haoutil.xposed.haoblocker.adapter.BaseRecycleAdapter;
 import com.haoutil.xposed.haoblocker.adapter.SMSAdapter;
-import com.haoutil.xposed.haoblocker.event.SMSUpdateEvent;
 import com.haoutil.xposed.haoblocker.model.SMS;
-import com.haoutil.xposed.haoblocker.util.DbManager;
+import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
 import java.util.List;
 
-import butterknife.InjectView;
-import butterknife.OnClick;
-import butterknife.OnItemClick;
-import de.greenrobot.event.EventBus;
+public class SMSFragment extends BaseFragment implements BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener {
+    private SettingsActivity activity;
+    private BlockerManager blockerManager;
 
-public class SMSFragment extends BaseFragment implements SwipeRefreshLayout.OnRefreshListener {
-    private DbManager dbManager;
-
+    private RecyclerView rv_sms;
     private SMSAdapter adapter;
 
-    private LayoutInflater inflater;
-
-    @InjectView(R.id.cb_check_all)
-    CheckBox cb_check_all;
-    @InjectView(R.id.srl_rules)
-    SwipeRefreshLayout srl_rules;
-    @InjectView(R.id.lv_rules)
-    ListView lv_rules;
-
-    private boolean showDiscardAction = false;
-
-    private MenuItem action_discard;
+    private int positionDeleted = -1;
+    private SMS smsDeleted = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-
-        dbManager = new DbManager(getActivity());
-
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.activity_actions, menu);
-
-        action_discard = menu.findItem(R.id.action_discard);
-        action_discard.setVisible(showDiscardAction);
-
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_discard:
-                this.confirm(new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dbManager.deleteSMS(adapter.getCheckedSMSes());
-
-                        adapter.clearChecked();
-                        adapter.notifyDataSetChanged();
-                    }
-                }, null);
-                break;
-        }
-
-        return super.onOptionsItemSelected(item);
+        activity = (SettingsActivity) getActivity();
+        blockerManager = new BlockerManager(activity);
+        blockerManager.readAllSMS();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View view = getView();
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        if (view != null) {
+            rv_sms = (RecyclerView) view.findViewById(R.id.rv_sms);
+            rv_sms.setLayoutManager(new LinearLayoutManager(activity));
 
-        this.inflater = inflater;
-
-        srl_rules.setOnRefreshListener(this);
-        setColorSchemeResources(srl_rules);
-
-        new LoadSMSAdapterTask().execute();
-
+            List<SMS> smses = blockerManager.getSMSes(-1);
+            adapter = new SMSAdapter(activity, smses, SMSFragment.this);
+            rv_sms.setAdapter(adapter);
+        }
         return view;
+    }
+
+    @Override
+    public void onClick(int position) {
+    }
+
+    @Override
+    public void onLongClick(int position) {
+        positionDeleted = position;
+        confirm(this, this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (-1 != positionDeleted && null != smsDeleted) {
+            long newId = blockerManager.restoreSMS(smsDeleted);
+            smsDeleted.setId(newId);
+            adapter.add(positionDeleted, smsDeleted);
+
+            positionDeleted = -1;
+            smsDeleted = null;
+        }
+    }
+
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        switch (which) {
+            case DialogInterface.BUTTON_POSITIVE:
+                smsDeleted = adapter.getItem(positionDeleted);
+                blockerManager.deleteSMS(smsDeleted);
+                adapter.remove(positionDeleted);
+                activity.showTip(R.string.rule_tip_sms_deleted, SMSFragment.this);
+                break;
+            case DialogInterface.BUTTON_NEGATIVE:
+                positionDeleted = -1;
+                break;
+        }
     }
 
     @Override
     protected int getLayoutResource() {
         return R.layout.fragment_sms;
-    }
-
-    @OnClick(R.id.cb_check_all)
-    public void onClick(View view) {
-        switch (view.getId()) {
-            // setOnCheckedChangeListener is conflict with item's checkbox's
-            case R.id.cb_check_all:
-                boolean b = ((CheckBox) view).isChecked();
-
-                adapter.checkAll(b);
-                adapter.notifyDataSetChanged();
-                break;
-        }
-    }
-
-    @OnItemClick(R.id.lv_rules)
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        SMS sms = (SMS) adapter.getItem(position);
-
-        if (sms.getRead() == SMS.SMS_UNREADED) {
-            sms.setRead(SMS.SMS_READED);
-            dbManager.setRead(sms);
-            adapter.notifyDataSetChanged();
-        }
-
-        Intent intent = new Intent(getActivity(), SMSActivity.class);
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("sms", sms);
-        intent.putExtras(bundle);
-
-        startActivity(intent);
-    }
-
-    @Override
-    public void onRefresh() {
-        srl_rules.setEnabled(false);
-        new Handler().postDelayed(new Runnable() {
-            public void run() {
-                List<SMS> list = dbManager.getSMSes(adapter.getCount() > 0 ? ((SMS) adapter.getItem(0)).getId() : -1);
-                if (list != null && list.size() > 0) {
-                    for (int i = list.size() - 1; i >= 0; i--) {
-                        adapter.addItem(list.get(i));
-                    }
-                    adapter.notifyDataSetChanged();
-                }
-
-                srl_rules.setRefreshing(false);
-                srl_rules.setEnabled(true);
-            }
-        }, 1500);
-    }
-
-    @Override
-    public void onResetActionBarButtons(boolean isMenuOpen) {
-        if (action_discard == null) {
-            return;
-        }
-
-        if (isMenuOpen) {
-            action_discard.setVisible(false);
-        } else {
-            action_discard.setVisible(showDiscardAction);
-        }
-    }
-
-    public void onEventMainThread(SMSUpdateEvent event) {
-        switch (event.getEvent()) {
-            case SMSUpdateEvent.EVENT_HIDE_DISCARD:
-                showDiscardAction = false;
-                getActivity().invalidateOptionsMenu();
-                break;
-            case SMSUpdateEvent.EVENT_SHOW_DISCARD:
-                showDiscardAction = true;
-                getActivity().invalidateOptionsMenu();
-                break;
-            case SMSUpdateEvent.EVENT_CHECK_NONE:
-                cb_check_all.setChecked(false);
-                break;
-            case SMSUpdateEvent.EVENT_CHECK_ALL:
-                cb_check_all.setChecked(true);
-                break;
-        }
-    }
-
-    private class LoadSMSAdapterTask extends AsyncTask<Void, Void, List<SMS>> {
-        @Override
-        protected List<SMS> doInBackground(Void... params) {
-            return dbManager.getSMSes(-1);
-        }
-
-        @Override
-        protected void onPostExecute(List<SMS> list) {
-            adapter = new SMSAdapter(inflater, list);
-            lv_rules.setAdapter(adapter);
-        }
     }
 }

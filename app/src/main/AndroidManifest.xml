@@ -18,7 +18,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".activity.RuleActivity" />
-        <activity android:name=".activity.SMSActivity" />
 
         <activity-alias
             android:name=".activity.ShowInAppDrawer"
@@ -34,8 +33,8 @@
         </activity-alias>
 
         <provider
-            android:name="com.haoutil.xposed.haoblocker.util.BlockerDbProvider"
-            android:authorities="com.haoutil.xposed.haoblocker.provider.BlockProvider"
+            android:name=".util.BlockerProvider"
+            android:authorities="${applicationId}.provider.BlockProvider"
             android:exported="true"
             android:multiprocess="true" />
 

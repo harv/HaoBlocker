@@ -12,13 +12,16 @@ import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.TaskStackBuilder;
 
+import com.haoutil.xposed.haoblocker.activity.SettingsActivity;
 import com.haoutil.xposed.haoblocker.hook.CallHook;
 import com.haoutil.xposed.haoblocker.hook.SMSHook;
 import com.haoutil.xposed.haoblocker.model.Call;
 import com.haoutil.xposed.haoblocker.model.SMS;
-import com.haoutil.xposed.haoblocker.util.DbManager;
+import com.haoutil.xposed.haoblocker.util.BlockerManager;
 import com.haoutil.xposed.haoblocker.util.Logger;
+import com.haoutil.xposed.haoblocker.util.SettingsHelper;
 
 import java.util.Date;
 
@@ -31,8 +34,8 @@ import de.robv.android.xposed.callbacks.XC_InitPackageResources;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage, IXposedHookInitPackageResources {
-    public static final String MODULE_NAME = "com.haoutil.xposed.haoblocker";
-    public static final String FILTER_NOTIFY_BLOCKED = "com.haoutil.xposed.haoblocker_NOTIFY_BLOCKED";
+    public static final String MODULE_NAME = BuildConfig.APPLICATION_ID;
+    public static final String FILTER_NOTIFY_BLOCKED = BuildConfig.APPLICATION_ID + "_NOTIFY_BLOCKED";
 
     private String MODULE_PATH;
 
@@ -42,18 +45,20 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
     private int smallNotificationIcon = -1;
     private String notificationContentText;
 
-    private DbManager dbManager;
+    private SettingsHelper settingsHelper;
+    private BlockerManager blockerManager;
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
         MODULE_PATH = startupParam.modulePath;
-        new SMSHook().exec();
+        settingsHelper = new SettingsHelper();
+        new SMSHook().initZygote(startupParam);
     }
 
     @Override
     public void handleLoadPackage(XC_LoadPackage.LoadPackageParam loadPackageParam) throws Throwable {
         if (loadPackageParam.packageName.equals("com.android.phone")) {
-            new CallHook(loadPackageParam).exec();
+            new CallHook().handleLoadPackage(loadPackageParam);
         } else if (loadPackageParam.packageName.equals("android")) {
             initNotificationBroadcastReceiver(loadPackageParam);
         }
@@ -81,7 +86,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
                         if (origCallback != null) origCallback.run();
 
                         final Context mContext = (Context) XposedHelpers.getObjectField(param.thisObject, "mContext");
-                        dbManager = new DbManager(mContext);
+                        blockerManager = new BlockerManager(mContext);
                         notiManager = NotificationManagerCompat.from(mContext);
                         notiBuilder = new NotificationCompat.Builder(mContext).setContentTitle("HaoBlocker").setTicker("HaoBlocker").setAutoCancel(true);
 
@@ -107,7 +112,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
 
     private void getNotificationIcon(XC_InitPackageResources.InitPackageResourcesParam resParam) {
         XModuleResources modRes = XModuleResources.createInstance(MODULE_PATH, resParam.res);
-        smallNotificationIcon = resParam.res.addResource(modRes, R.drawable.ic_launcher);
+        smallNotificationIcon = resParam.res.addResource(modRes, R.drawable.ic_notification);
         notificationContentText = resParam.res.getString(resParam.res.addResource(modRes, R.string.notification_content_text));
     }
 
@@ -116,30 +121,32 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             Bundle bundle = intent.getExtras();
             int type = bundle.getInt("type");
             switch (type) {
-                case DbManager.TYPE_SMS:
+                case BlockerManager.TYPE_SMS:
                     SMS savedSMS = new SMS();
                     savedSMS.setSender(bundle.getString("sender"));
                     savedSMS.setContent(bundle.getString("content"));
                     savedSMS.setCreated(bundle.getLong("created"));
                     savedSMS.setRead(SMS.SMS_UNREADED);
 
-                    dbManager.saveSMS(savedSMS);
+                    blockerManager.saveSMS(savedSMS);
 
                     Logger.log("Block SMS: " + savedSMS.getSender() + "," + savedSMS.getContent() + "," + savedSMS.getCreated());
                     break;
-                case DbManager.TYPE_CALL:
+                case BlockerManager.TYPE_CALL:
                     Call savedCall = new Call();
                     savedCall.setCaller(bundle.getString("caller"));
                     savedCall.setCreated(new Date().getTime());
                     savedCall.setRead(Call.CALL_UNREADED);
 
-                    dbManager.saveCall(savedCall);
+                    blockerManager.saveCall(savedCall);
 
                     Logger.log("Block call: " + savedCall.getCaller() + "," + savedCall.getCreated());
                     break;
             }
 
-            showNotification(context, type);
+            if (settingsHelper.isShowBlockNotification()) {
+                showNotification(context, type);
+            }
         }
     }
 
@@ -148,23 +155,27 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
             return;
         }
 
-        if (type != DbManager.TYPE_SMS && type != DbManager.TYPE_CALL) {
+        if (type != BlockerManager.TYPE_SMS && type != BlockerManager.TYPE_CALL) {
             return;
         }
 
-        int unreadSMSCount = dbManager.getUnReadSMSCount();
-        int unreadCallCount = dbManager.getUnReadCallCount();
+        int unreadSMSCount = blockerManager.getUnReadSMSCount();
+        int unreadCallCount = blockerManager.getUnReadCallCount();
         if (unreadSMSCount == 0 && unreadCallCount == 0) {
             return;
         }
 
-        Intent intent = new Intent(Intent.ACTION_MAIN);
-        intent.setComponent(new ComponentName(MODULE_NAME, MODULE_NAME + ".activity.SettingsActivity"));
-        intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        intent.putExtra("position", type == DbManager.TYPE_SMS ? 2 : 3);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        ComponentName componentName = new ComponentName(MODULE_NAME, SettingsActivity.class.getName());
 
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.setComponent(componentName);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.putExtra("position", type == BlockerManager.TYPE_SMS ? 2 : 3);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(componentName);
+        stackBuilder.addNextIntent(intent);
+        PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         notiBuilder.setSmallIcon(smallNotificationIcon)
                 .setContentText(String.format(notificationContentText, unreadSMSCount, unreadCallCount))

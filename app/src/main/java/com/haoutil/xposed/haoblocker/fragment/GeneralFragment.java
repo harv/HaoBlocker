@@ -12,29 +12,12 @@ import android.widget.TextView;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.util.SettingsHelper;
 
-import java.util.List;
-
-import butterknife.ButterKnife;
-import butterknife.InjectView;
-import butterknife.InjectViews;
-import butterknife.OnCheckedChanged;
-
-public class GeneralFragment extends BaseFragment {
+public class GeneralFragment extends BaseFragment implements CompoundButton.OnCheckedChangeListener {
     private SettingsHelper settingsHelper;
 
-    @InjectView(R.id.tv_about)
-    TextView tv_about;
-    @InjectView(R.id.sw_enable)
-    Switch sw_enable;
-    @InjectViews({R.id.sw_sms_enable, R.id.sw_call_enable})
-    List<Switch> switches;
-
-    static final ButterKnife.Setter<View, Boolean> ENABLED = new ButterKnife.Setter<View, Boolean>() {
-        @Override
-        public void set(View view, Boolean value, int index) {
-            view.setEnabled(value);
-        }
-    };
+    private Switch sw_sms_enable;
+    private Switch sw_call_enable;
+    private Switch sw_show_notification;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,24 +28,37 @@ public class GeneralFragment extends BaseFragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View view = getView();
-
+        String versionName;
         try {
-            String versionName = getActivity().getApplicationContext().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName;
-            tv_about.setText(tv_about.getText() + " v" + versionName);
+            versionName = "v" + getActivity().getApplicationContext().getPackageManager().getPackageInfo(getActivity().getPackageName(), 0).versionName;
         } catch (PackageManager.NameNotFoundException e) {
+            versionName = "";
         }
 
-        sw_enable.setChecked(settingsHelper.isEnable());
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        if (view != null) {
+            TextView tv_about = (TextView) view.findViewById(R.id.tv_about);
+            tv_about.setText(String.format(getResources().getString(R.string.general_about_title), versionName));
 
-        Switch sw_sms_enable = switches.get(0);
-        sw_sms_enable.setEnabled(sw_enable.isChecked());
-        sw_sms_enable.setChecked(settingsHelper.isEnableSMS());
+            Switch sw_enable = (Switch) view.findViewById(R.id.sw_enable);
+            sw_enable.setChecked(settingsHelper.isEnable());
+            sw_enable.setOnCheckedChangeListener(this);
 
-        Switch sw_call_enable = switches.get(1);
-        sw_call_enable.setEnabled(sw_enable.isChecked());
-        sw_call_enable.setChecked(settingsHelper.isEnableCall());
+            sw_sms_enable = (Switch) view.findViewById(R.id.sw_sms_enable);
+            sw_sms_enable.setEnabled(sw_enable.isChecked());
+            sw_sms_enable.setChecked(settingsHelper.isEnableSMS());
+            sw_sms_enable.setOnCheckedChangeListener(this);
+
+            sw_call_enable = (Switch) view.findViewById(R.id.sw_call_enable);
+            sw_call_enable.setEnabled(sw_enable.isChecked());
+            sw_call_enable.setChecked(settingsHelper.isEnableCall());
+            sw_call_enable.setOnCheckedChangeListener(this);
+
+            sw_show_notification = (Switch) view.findViewById(R.id.sw_show_notification);
+            sw_show_notification.setEnabled(sw_enable.isChecked());
+            sw_show_notification.setChecked(settingsHelper.isShowBlockNotification());
+            sw_show_notification.setOnCheckedChangeListener(this);
+        }
 
         return view;
     }
@@ -72,13 +68,14 @@ public class GeneralFragment extends BaseFragment {
         return R.layout.fragment_general;
     }
 
-    @OnCheckedChanged({R.id.sw_enable, R.id.sw_sms_enable, R.id.sw_call_enable})
+    @Override
     public void onCheckedChanged(CompoundButton v, boolean b) {
         switch (v.getId()) {
             case R.id.sw_enable:
-                ButterKnife.apply(switches, ENABLED, b);
-
                 settingsHelper.setEnable(b);
+                sw_sms_enable.setEnabled(b);
+                sw_call_enable.setEnabled(b);
+                sw_show_notification.setEnabled(b);
                 break;
             case R.id.sw_sms_enable:
                 settingsHelper.setEnableSMS(b);
@@ -86,11 +83,9 @@ public class GeneralFragment extends BaseFragment {
             case R.id.sw_call_enable:
                 settingsHelper.setEnableCall(b);
                 break;
+            case R.id.sw_show_notification:
+                settingsHelper.setShowBlockNotification(b);
+                break;
         }
-    }
-
-    @Override
-    public void onResetActionBarButtons(boolean isMenuOpen) {
-
     }
 }

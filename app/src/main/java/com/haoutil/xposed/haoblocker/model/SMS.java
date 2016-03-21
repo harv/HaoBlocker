@@ -11,7 +11,6 @@ public class SMS implements Serializable {
     private String content;
     private long created;
     private int read;
-    private boolean checked;
 
     public long getId() {
         return id;
@@ -51,13 +50,5 @@ public class SMS implements Serializable {
 
     public void setRead(int read) {
         this.read = read;
-    }
-
-    public boolean isChecked() {
-        return checked;
-    }
-
-    public void setChecked(boolean checked) {
-        this.checked = checked;
     }
 }

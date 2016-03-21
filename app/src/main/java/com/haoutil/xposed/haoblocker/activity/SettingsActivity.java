@@ -1,121 +1,59 @@
 package com.haoutil.xposed.haoblocker.activity;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.widget.Toolbar;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 
 import com.haoutil.xposed.haoblocker.R;
-import com.haoutil.xposed.haoblocker.fragment.BaseFragment;
-import com.haoutil.xposed.haoblocker.fragment.CallFragment;
-import com.haoutil.xposed.haoblocker.fragment.GeneralFragment;
-import com.haoutil.xposed.haoblocker.fragment.RuleFragment;
-import com.haoutil.xposed.haoblocker.fragment.SMSFragment;
-
-import butterknife.InjectView;
-import butterknife.OnItemClick;
+import com.haoutil.xposed.haoblocker.adapter.PageFragmentAdapter;
 
 public class SettingsActivity extends BaseActivity {
-    @InjectView(R.id.drawer_layout)
-    DrawerLayout mDrawerLayout;
-    @InjectView(R.id.left_drawer)
-    ListView mDrawerList;
-
-    private CharSequence mDrawerTitle;
-    private CharSequence mTitle;
-    private String[] mMenuTitles;
-
-    private BaseFragment mFragment;
+    private CoordinatorLayout cl_container;
+    private FloatingActionButton fab_add;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mTitle = mDrawerTitle = getTitle();
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.setAdapter(new PageFragmentAdapter(getFragmentManager(), SettingsActivity.this));
 
-        mMenuTitles = getResources().getStringArray(R.array.array_menus);
-        mDrawerList.setAdapter(new ArrayAdapter<>(this, R.layout.drawer_list_item, mMenuTitles));
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
 
-        ActionBarDrawerToggle mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, (Toolbar) findViewById(R.id.toolbar), R.string.drawer_open, R.string.drawer_close) {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                getSupportActionBar().setTitle(mDrawerTitle);
-                if (mFragment != null) {
-                    mFragment.onResetActionBarButtons(true);
-                }
-            }
+        cl_container = (CoordinatorLayout) findViewById(R.id.cl_container);
+        fab_add = (FloatingActionButton) findViewById(R.id.fab_add);
 
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                getSupportActionBar().setTitle(mTitle);
-                if (mFragment != null) {
-                    mFragment.onResetActionBarButtons(false);
-                }
-            }
-        };
-        mDrawerToggle.syncState();
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null && bundle.getInt("position", -1) != -1) {
-            selectItem(bundle.getInt("position"));
-        } else if (savedInstanceState == null) {
-            selectItem(0);
+        int position = getIntent().getIntExtra("position", -1);
+        if (position > -1) {
+            viewPager.setCurrentItem(position);
         }
     }
 
     @Override
-    protected int getLayoutResource() {
+    public int getLayoutResource() {
         return R.layout.activity_settings;
     }
 
-    @OnItemClick(R.id.left_drawer)
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        selectItem(position);
+    public void showTip(int resId, View.OnClickListener onClickListener) {
+        Snackbar snackbar = Snackbar.make(cl_container, resId, Snackbar.LENGTH_SHORT);
+        if (onClickListener != null) {
+            snackbar.setAction(R.string.snackbar_undo, onClickListener);
+        }
+        snackbar.show();
     }
 
-    @Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getSupportActionBar().setTitle(mTitle);
+    public void setOnAddListener(final View.OnClickListener onClickListener) {
+        fab_add.setOnClickListener(onClickListener);
+        fab_add.show();
     }
 
-    private void selectItem(int position) {
-        switch (position) {
-            case 0:
-                mFragment = new GeneralFragment();
-                break;
-            case 1:
-                mFragment = new RuleFragment();
-                break;
-            case 2:
-                mFragment = new SMSFragment();
-                break;
-            case 3:
-                mFragment = new CallFragment();
-                break;
-        }
-
-        if (mFragment != null) {
-            getFragmentManager().beginTransaction().replace(R.id.content_frame, mFragment).commit();
-        }
-
-        setTitle(mMenuTitles[position]);
-
-        mDrawerList.setItemChecked(position, true);
-        mDrawerLayout.closeDrawer(mDrawerList);
-    }
-
-    @Override
-    protected void onNewIntent(Intent intent) {
-        Bundle bundle = getIntent().getExtras();
-        if (bundle != null && bundle.getInt("position", -1) != -1) {
-            selectItem(bundle.getInt("position"));
-        }
+    public void clearOnAddListener() {
+        fab_add.setOnClickListener(null);
+        fab_add.hide();
     }
 }

@@ -2,10 +2,12 @@ package com.haoutil.xposed.haoblocker.util;
 
 import android.util.Log;
 
+import com.haoutil.xposed.haoblocker.BuildConfig;
+
 import de.robv.android.xposed.XposedBridge;
 
 public class Logger {
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = BuildConfig.DEBUG;
 
     public static void log(String msg) {
         if (DEBUG) {

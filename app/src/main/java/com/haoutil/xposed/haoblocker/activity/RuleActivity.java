@@ -2,39 +2,31 @@ package com.haoutil.xposed.haoblocker.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.text.TextUtils;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.Rule;
-import com.haoutil.xposed.haoblocker.util.DbManager;
+import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
-import butterknife.InjectView;
-import butterknife.OnCheckedChanged;
+public class RuleActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
+    private BlockerManager blockerManager;
 
-public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedChangeListener {
-    private DbManager dbManager;
-
-    private int ruleType = Rule.TYPE_STRING;
-
-    @InjectView(R.id.tv_id)
-    TextView tv_id;
-    @InjectView(R.id.et_rule)
-    EditText et_rule;
-    @InjectView(R.id.cb_sms)
-    CheckBox cb_sms;
-    @InjectView(R.id.cb_call)
-    CheckBox cb_call;
-    @InjectView(R.id.cb_exception)
-    CheckBox cb_exception;
+    private LinearLayout ll_container;
+    private TextView tv_id;
+    private EditText et_rule;
+    private Spinner sp_type;
+    private CheckBox cb_except;
+    private Spinner sp_block;
 
     private int position = -1;
 
@@ -42,95 +34,73 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        dbManager = new DbManager(this);
+        enableBackable();
 
-        RadioGroup rg_group = (RadioGroup) findViewById(R.id.rg_group);
-        rg_group.setOnCheckedChangeListener(this);
+        blockerManager = new BlockerManager(this);
+
+        ll_container = (LinearLayout) findViewById(R.id.ll_container);
+        tv_id = (TextView) findViewById(R.id.tv_id);
+        et_rule = (EditText) findViewById(R.id.et_rule);
+        sp_type = (Spinner) findViewById(R.id.sp_type);
+        sp_type.setOnItemSelectedListener(this);
+        cb_except = (CheckBox) findViewById(R.id.cb_except);
+        cb_except.setOnCheckedChangeListener(this);
+        sp_block = (Spinner) findViewById(R.id.sp_block);
+        sp_block.setOnItemSelectedListener(this);
+        Button btn_accept = (Button) findViewById(R.id.btn_accept);
+        btn_accept.setOnClickListener(this);
 
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
         String operation = bundle.getString("operation");
-        if (operation.equalsIgnoreCase("add")) {
-        } else if (operation.equalsIgnoreCase("modify")) {
+        if ("add".equalsIgnoreCase(operation)) {
+        } else if ("modify".equalsIgnoreCase(operation)) {
             position = bundle.getInt("position");
 
             Rule rule = (Rule) bundle.get("rule");
-            tv_id.setText(String.valueOf(rule.getId()));
-            et_rule.setText(rule.getContent());
-            cb_sms.setChecked(rule.getSms() == 1);
-            cb_call.setChecked(rule.getCall() == 1);
-            cb_exception.setChecked(rule.getException() == 1);
-            switch (rule.getType()) {
-                case Rule.TYPE_STRING:
-                    ((RadioButton) findViewById(R.id.rb_string)).setChecked(true);
-                    ruleType = Rule.TYPE_STRING;
-                    break;
-                case Rule.TYPE_WILDCARD:
-                    ((RadioButton) findViewById(R.id.rb_wildcard)).setChecked(true);
-                    ruleType = Rule.TYPE_WILDCARD;
-                    break;
-                case Rule.TYPE_KEYWORD:
-                    ((RadioButton) findViewById(R.id.rb_keyword)).setChecked(true);
-                    ruleType = Rule.TYPE_KEYWORD;
-                    break;
+            if (rule != null) {
+                tv_id.setText(String.valueOf(rule.getId()));
+                et_rule.setText(rule.getContent());
+                sp_type.setSelection(rule.getType());
+                cb_except.setChecked(rule.getException() == 1);
+                sp_block.setEnabled(rule.getException() != 1);
+                // sms call block(@see com.haoutil.xposed.haoblocker.model.Rule)
+                //  1    1  0(both)
+                //  1    0  1(sms)
+                //  0    1  2(call)
+                sp_block.setSelection(rule.getSms() == 1 ? rule.getCall() == 1 ? 0 : 1 : 2);
             }
         }
     }
 
     @Override
-    public void onCheckedChanged(RadioGroup group, int checkedId) {
-        switch (checkedId) {
-            case R.id.rb_string:
-                ruleType = Rule.TYPE_STRING;
-                cb_call.setEnabled(true);
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        switch (parent.getId()) {
+            case R.id.sp_type:
+                if (position == Rule.TYPE_KEYWORD) {
+                    sp_block.setSelection(Rule.BLOCK_SMS);   // only sms can block
+                }
                 break;
-            case R.id.rb_wildcard:
-                ruleType = Rule.TYPE_WILDCARD;
-                cb_call.setEnabled(true);
+            case R.id.sp_block:
+                if (position != Rule.BLOCK_SMS && sp_type.getSelectedItemPosition() == Rule.TYPE_KEYWORD) {
+                    sp_block.setSelection(Rule.BLOCK_SMS);
+                    Snackbar.make(ll_container, R.string.rule_not_match_type, Snackbar.LENGTH_LONG).show();
+                }
                 break;
-            case R.id.rb_keyword:
-                ruleType = Rule.TYPE_KEYWORD;
-                cb_call.setEnabled(false);
-        }
-    }
-
-    @OnCheckedChanged(R.id.cb_exception)
-    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-        if (b) {
-            cb_sms.setEnabled(false);
-            cb_call.setEnabled(false);
-        } else {
-            cb_sms.setEnabled(true);
-            cb_call.setEnabled(true);
         }
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.activity_rule;
+    public void onNothingSelected(AdapterView<?> parent) {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_actions, menu);
-
-        menu.findItem(R.id.action_accept).setVisible(true);
-
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            case R.id.action_accept:
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_accept:
                 if (TextUtils.isEmpty(et_rule.getText())) {
                     et_rule.requestFocus();
-                    Toast.makeText(this, getResources().getString(R.string.rule_tip_empty_rule), Toast.LENGTH_SHORT).show();
-                } else if (!(cb_exception.isChecked() || cb_sms.isChecked() || cb_call.isChecked())) {
-                    Toast.makeText(this, getResources().getString(R.string.rule_tip_empty_block), Toast.LENGTH_SHORT).show();
+                    Snackbar.make(ll_container, R.string.rule_tip_empty_rule, Snackbar.LENGTH_LONG).show();
                 } else {
                     Rule rule = new Rule();
                     boolean isModify = !TextUtils.isEmpty(tv_id.getText());
@@ -138,15 +108,15 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
                         rule.setId(Long.valueOf(tv_id.getText().toString().trim()));
                     }
                     rule.setContent(et_rule.getText().toString().trim());
-                    rule.setType(ruleType);
-                    rule.setSms(cb_sms.isEnabled() && cb_sms.isChecked() ? 1 : 0);
-                    rule.setCall((cb_call.isEnabled() && cb_call.isChecked()) ? 1 : 0);
-                    rule.setException(cb_exception.isChecked() ? 1 : 0);
+                    rule.setType(sp_type.getSelectedItemPosition());
+                    rule.setSms(sp_block.isEnabled() && sp_block.getSelectedItemPosition() != Rule.BLOCK_CALL ? 1 : 0);
+                    rule.setCall(sp_block.isEnabled() && sp_block.getSelectedItemPosition() != Rule.BLOCK_SMS ? 1 : 0);
+                    rule.setException(cb_except.isChecked() ? 1 : 0);
 
                     if (isModify) {
-                        dbManager.updateRule(rule);
+                        blockerManager.updateRule(rule);
                     } else {
-                        long id = dbManager.saveRule(rule);
+                        long id = blockerManager.saveRule(rule);
                         rule.setId(id);
                     }
 
@@ -159,9 +129,21 @@ public class RuleActivity extends BaseActivity implements RadioGroup.OnCheckedCh
 
                     finish();
                 }
-                return true;
+                break;
         }
+    }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        switch (compoundButton.getId()) {
+            case R.id.cb_except:
+                sp_block.setEnabled(!b);
+                break;
+        }
+    }
+
+    @Override
+    protected int getLayoutResource() {
+        return R.layout.activity_rule;
     }
 }

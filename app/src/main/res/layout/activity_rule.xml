@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -8,112 +9,135 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar" />
 
-    <TextView
-        android:id="@+id/tv_id"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="20dp"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_id"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:visibility="gone" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
 
             <TextView
-                android:layout_width="48dp"
+                android:id="@+id/tv_rule"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:layout_centerVertical="true"
+                android:minWidth="48dp"
                 android:text="@string/rule_label"
-                android:textColor="@color/colorPrimary" />
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/et_rule"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@+id/tv_rule"
+                android:layout_toRightOf="@+id/tv_rule"
                 android:inputType="text"
-                android:textColor="@color/textColorSecondaryDark" />
-        </LinearLayout>
+                android:textSize="16sp" />
+        </RelativeLayout>
 
-        <RadioGroup
-            android:id="@+id/rg_group"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:checkedButton="@+id/rb_string">
-
-            <RadioButton
-                android:id="@+id/rb_string"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/rule_label_string"
-                android:textColor="@color/textColorSecondaryDark"
-                android:checked="false" />
-
-            <RadioButton
-                android:id="@+id/rb_wildcard"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/rule_label_wildcard"
-                android:textColor="@color/textColorSecondaryDark" />
-
-            <RadioButton
-                android:id="@+id/rb_keyword"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/rule_label_keyword"
-                android:textColor="@color/textColorSecondaryDark" />
-        </RadioGroup>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
+            android:layout_height="48dp">
 
             <TextView
-                android:layout_width="48dp"
+                android:id="@+id/tv_type"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="16sp"
+                android:layout_centerVertical="true"
+                android:minWidth="48dp"
+                android:text="@string/rule_label_type"
+                android:textSize="16sp" />
+
+            <Spinner
+                android:id="@+id/sp_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@+id/tv_type"
+                android:layout_toRightOf="@+id/tv_type"
+                android:entries="@array/ruleTypes"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                android:id="@+id/tv_except"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:minWidth="48dp"
+                android:text="@string/rule_label_except"
+                android:textSize="16sp" />
+
+            <CheckBox
+                android:id="@+id/cb_except"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@+id/tv_except"
+                android:layout_toRightOf="@+id/tv_except" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                android:id="@+id/tv_block"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:minWidth="48dp"
                 android:text="@string/rule_label_block"
-                android:textColor="@color/colorPrimary" />
+                android:textSize="16sp" />
 
-            <CheckBox
-                android:id="@+id/cb_sms"
-                android:checked="true"
-                android:layout_width="0dp"
+            <Spinner
+                android:id="@+id/sp_block"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/rule_label_block_sms"
-                android:textColor="@color/textColorSecondaryDark" />
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@+id/tv_block"
+                android:layout_toRightOf="@+id/tv_block"
+                android:entries="@array/blockTypes"
+                android:textSize="16sp" />
+        </RelativeLayout>
 
-            <CheckBox
-                android:id="@+id/cb_call"
-                android:checked="true"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/rule_label_block_call"
-                android:textColor="@color/textColorSecondaryDark" />
-        </LinearLayout>
-
-
-        <CheckBox
-            android:id="@+id/cb_exception"
-            android:layout_marginTop="16dp"
-            android:layout_width="wrap_content"
+        <Button
+            android:id="@+id/btn_accept"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/rule_label_exceptionsrule"
-            android:textColor="@color/textColorSecondaryDark" />
+            android:layout_marginTop="8dp"
+            android:text="@string/rule_accept"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 </LinearLayout>
