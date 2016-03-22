@@ -132,6 +132,34 @@
                 android:textSize="16sp" />
         </RelativeLayout>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+
+            <TextView
+                android:id="@+id/tv_remark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:minWidth="48dp"
+                android:text="@string/rule_remark"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/et_remark"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_toEndOf="@+id/tv_remark"
+                android:layout_toRightOf="@+id/tv_remark"
+                android:inputType="text"
+                android:textSize="16sp" />
+        </RelativeLayout>
+
         <Button
             android:id="@+id/btn_accept"
             android:layout_width="match_parent"

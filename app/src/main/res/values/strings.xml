@@ -13,6 +13,7 @@
     <string name="rule_label_type">Type</string>
     <string name="rule_label_block">Block</string>
     <string name="rule_label_except">Except</string>
+    <string name="rule_remark">Remark</string>
     <string name="rule_accept">Accept</string>
     <string name="rule_not_match_type">Keyword rule can only block sms</string>
     <string name="rule_tip_empty_rule">Please provide a rule</string>

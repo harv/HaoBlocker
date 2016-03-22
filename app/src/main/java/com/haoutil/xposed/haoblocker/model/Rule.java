@@ -18,6 +18,7 @@ public class Rule implements Serializable {
     private int call;
     private int exception;
     private long created;
+    private String remark;
 
     public long getId() {
         return id;
@@ -73,5 +74,13 @@ public class Rule implements Serializable {
 
     public void setCreated(long created) {
         this.created = created;
+    }
+
+    public String getRemark() {
+        return remark;
+    }
+
+    public void setRemark(String remark) {
+        this.remark = remark;
     }
 }

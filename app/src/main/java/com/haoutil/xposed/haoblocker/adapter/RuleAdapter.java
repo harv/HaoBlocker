@@ -36,6 +36,8 @@ public class RuleAdapter extends BaseRecycleAdapter<Rule> {
             }
             TextView tv_rule = holder.getView(R.id.tv_rule);
             tv_rule.setText(rule.getContent());
+            TextView tv_remark = holder.getView(R.id.tv_remark);
+            tv_remark.setText(rule.getRemark());
         }
     }
 }

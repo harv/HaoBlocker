@@ -27,6 +27,7 @@ public class RuleActivity extends BaseActivity implements CompoundButton.OnCheck
     private Spinner sp_type;
     private CheckBox cb_except;
     private Spinner sp_block;
+    private EditText et_remark;
 
     private int position = -1;
 
@@ -47,6 +48,7 @@ public class RuleActivity extends BaseActivity implements CompoundButton.OnCheck
         cb_except.setOnCheckedChangeListener(this);
         sp_block = (Spinner) findViewById(R.id.sp_block);
         sp_block.setOnItemSelectedListener(this);
+        et_remark = (EditText) findViewById(R.id.et_remark);
         Button btn_accept = (Button) findViewById(R.id.btn_accept);
         btn_accept.setOnClickListener(this);
 
@@ -69,6 +71,7 @@ public class RuleActivity extends BaseActivity implements CompoundButton.OnCheck
                 //  1    0  1(sms)
                 //  0    1  2(call)
                 sp_block.setSelection(rule.getSms() == 1 ? rule.getCall() == 1 ? 0 : 1 : 2);
+                et_remark.setText(rule.getRemark());
             }
         }
     }
@@ -112,6 +115,7 @@ public class RuleActivity extends BaseActivity implements CompoundButton.OnCheck
                     rule.setSms(sp_block.isEnabled() && sp_block.getSelectedItemPosition() != Rule.BLOCK_CALL ? 1 : 0);
                     rule.setCall(sp_block.isEnabled() && sp_block.getSelectedItemPosition() != Rule.BLOCK_SMS ? 1 : 0);
                     rule.setException(cb_except.isChecked() ? 1 : 0);
+                    rule.setRemark(et_remark.getText().toString().trim());
 
                     if (isModify) {
                         blockerManager.updateRule(rule);

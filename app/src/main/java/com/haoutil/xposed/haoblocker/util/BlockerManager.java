@@ -51,13 +51,13 @@ public class BlockerManager {
 
         Cursor cursor = null;
         if (type == TYPE_ALL) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, null, null, "created DESC");
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, null, null, "created DESC");
         } else if (type == TYPE_SMS) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "sms = ?", new String[]{"1"}, "created DESC");
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, "sms = ?", new String[]{"1"}, "created DESC");
         } else if (type == TYPE_CALL) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "call = ?", new String[]{"1"}, "created DESC");
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, "call = ?", new String[]{"1"}, "created DESC");
         } else if (type == TYPE_EXCEPT) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created"}, "exception = ?", new String[]{"1"}, "created DESC");
+            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, "exception = ?", new String[]{"1"}, "created DESC");
         }
 
         if (cursor != null && cursor.moveToFirst()) {
@@ -70,6 +70,7 @@ public class BlockerManager {
                 rule.setCall(cursor.getInt(4));
                 rule.setException(cursor.getInt(5));
                 rule.setCreated(cursor.getLong(6));
+                rule.setRemark(cursor.getString(7));
 
                 list.add(rule);
             } while (cursor.moveToNext());
@@ -90,6 +91,7 @@ public class BlockerManager {
         values.put("call", rule.getCall());
         values.put("exception", rule.getException());
         values.put("created", new Date().getTime());
+        values.put("remark", rule.getRemark());
 
         return ContentUris.parseId(resolver.insert(URI_RULE_ALL, values));
     }
@@ -102,6 +104,7 @@ public class BlockerManager {
         values.put("call", rule.getCall());
         values.put("exception", rule.getException());
         values.put("created", rule.getCreated());
+        values.put("remark", rule.getRemark());
 
         return ContentUris.parseId(resolver.insert(URI_RULE_ALL, values));
     }
@@ -114,6 +117,7 @@ public class BlockerManager {
         values.put("call", rule.getCall());
         values.put("exception", rule.getException());
         values.put("created", new Date().getTime());
+        values.put("remark", rule.getRemark());
 
         resolver.update(ContentUris.withAppendedId(URI_RULE_ALL, rule.getId()), values, null, null);
     }

@@ -189,7 +189,7 @@ public class BlockerProvider extends ContentProvider {
 
     class DbHelper extends SQLiteOpenHelper {
         private static final String DATABASE_NAME = "blocker.db";
-        private static final int DATABASE_VERSION = 2;
+        private static final int DATABASE_VERSION = 3;
 
         public DbHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -197,17 +197,22 @@ public class BlockerProvider extends ContentProvider {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_RULE + "(_id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT, type INTEGER, sms INTEGER, call INTEGER, exception INTEGER, created INTEGER)");
+            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_RULE + "(_id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT, type INTEGER, sms INTEGER, call INTEGER, exception INTEGER, created INTEGER, remark TEXT)");
             db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_SMS + "(_id INTEGER PRIMARY KEY AUTOINCREMENT, sender TEXT, content TEXT, created INTEGER, read INTEGER)");
             db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_CALL + "(_id INTEGER PRIMARY KEY AUTOINCREMENT, caller TEXT, created INTEGER, read INTEGER)");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_RULE + "_temp(_id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT, type INTEGER, sms INTEGER, call INTEGER, exception INTEGER, created INTEGER)");
-            db.execSQL("INSERT INTO " + TABLE_RULE + "_temp(_id,content,type,sms,call,exception,created) SELECT _id,content,type,sms,call,0,created FROM " + TABLE_RULE);
-            db.execSQL("DROP TABLE " + TABLE_RULE);
-            db.execSQL("ALTER TABLE " + TABLE_RULE + "_temp RENAME TO " + TABLE_RULE);
+            switch (oldVersion) {
+                case 1:
+                    db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_RULE + "_temp(_id INTEGER PRIMARY KEY AUTOINCREMENT, content TEXT, type INTEGER, sms INTEGER, call INTEGER, exception INTEGER, created INTEGER)");
+                    db.execSQL("INSERT INTO " + TABLE_RULE + "_temp(_id,content,type,sms,call,exception,created) SELECT _id,content,type,sms,call,0,created FROM " + TABLE_RULE);
+                    db.execSQL("DROP TABLE " + TABLE_RULE);
+                    db.execSQL("ALTER TABLE " + TABLE_RULE + "_temp RENAME TO " + TABLE_RULE);
+                case 2:
+                    db.execSQL("ALTER TABLE " + TABLE_RULE + " ADD COLUMN remark TEXT");
+            }
         }
     }
 }
