@@ -32,4 +32,10 @@
     <string name="snackbar_undo">UNDO</string>
 
     <string name="notification_content_text" formatted="false"> %s message(s), %s call(s) blocked.</string>
+
+    <string name="menu_filter">filter</string>
+    <string name="menu_filter_all">all</string>
+    <string name="menu_filter_call">call rule</string>
+    <string name="menu_filter_sms">sms rule</string>
+    <string name="menu_filter_except">except rule</string>
 </resources>

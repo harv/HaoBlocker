@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -20,7 +21,7 @@ import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
 import java.util.List;
 
-public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener {
+public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener, SettingsActivity.OnMenuItemClickListener {
     private SettingsActivity activity;
     private BlockerManager blockerManager;
 
@@ -109,6 +110,25 @@ public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnI
         }
     }
 
+    // click on menu item
+    @Override
+    public void onFilter(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.filter_all:
+                adapter.replaceAll(blockerManager.getRules(BlockerManager.TYPE_ALL));
+                break;
+            case R.id.filter_call:
+                adapter.replaceAll(blockerManager.getRules(BlockerManager.TYPE_CALL));
+                break;
+            case R.id.filter_sms:
+                adapter.replaceAll(blockerManager.getRules(BlockerManager.TYPE_SMS));
+                break;
+            case R.id.filter_except:
+                adapter.replaceAll(blockerManager.getRules(BlockerManager.TYPE_EXCEPT));
+                break;
+        }
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
@@ -130,11 +150,8 @@ public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnI
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (activity != null) {
-            if (isVisibleToUser) {
-                activity.setOnAddListener(this);
-            } else {
-                activity.clearOnAddListener();
-            }
+            activity.setOnAddListener(isVisibleToUser ? this : null);
+            activity.setOnFilterListener(isVisibleToUser ? this : null);
         }
     }
 

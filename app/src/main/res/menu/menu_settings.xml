@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/filter"
+        android:icon="@drawable/ic_filter"
+        android:title="@string/menu_filter"
+        android:visible="false"
+        app:showAsAction="ifRoom">
+        <menu>
+            <item
+                android:id="@+id/filter_all"
+                android:title="@string/menu_filter_all" />
+            <item
+                android:id="@+id/filter_call"
+                android:title="@string/menu_filter_call" />
+            <item
+                android:id="@+id/filter_sms"
+                android:title="@string/menu_filter_sms" />
+            <item
+                android:id="@+id/filter_except"
+                android:title="@string/menu_filter_except" />
+        </menu>
+    </item>
+</menu>
