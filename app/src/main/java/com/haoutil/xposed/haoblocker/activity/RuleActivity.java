@@ -12,22 +12,25 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.Rule;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
+import java.util.Date;
+
 public class RuleActivity extends BaseActivity implements CompoundButton.OnCheckedChangeListener, View.OnClickListener, AdapterView.OnItemSelectedListener {
     private BlockerManager blockerManager;
 
     private LinearLayout ll_container;
-    private TextView tv_id;
     private EditText et_rule;
     private Spinner sp_type;
     private CheckBox cb_except;
     private Spinner sp_block;
     private EditText et_remark;
+
+    private long id = -1;
+    private long created;
 
     private int position = -1;
 
@@ -40,7 +43,6 @@ public class RuleActivity extends BaseActivity implements CompoundButton.OnCheck
         blockerManager = new BlockerManager(this);
 
         ll_container = (LinearLayout) findViewById(R.id.ll_container);
-        tv_id = (TextView) findViewById(R.id.tv_id);
         et_rule = (EditText) findViewById(R.id.et_rule);
         sp_type = (Spinner) findViewById(R.id.sp_type);
         sp_type.setOnItemSelectedListener(this);
@@ -61,7 +63,6 @@ public class RuleActivity extends BaseActivity implements CompoundButton.OnCheck
 
             Rule rule = (Rule) bundle.get("rule");
             if (rule != null) {
-                tv_id.setText(String.valueOf(rule.getId()));
                 et_rule.setText(rule.getContent());
                 sp_type.setSelection(rule.getType());
                 cb_except.setChecked(rule.getException() == 1);
@@ -72,6 +73,8 @@ public class RuleActivity extends BaseActivity implements CompoundButton.OnCheck
                 //  0    1  2(call)
                 sp_block.setSelection(rule.getSms() == 1 ? rule.getCall() == 1 ? 0 : 1 : 2);
                 et_remark.setText(rule.getRemark());
+                id = rule.getId();
+                created = rule.getCreated();
             }
         }
     }
@@ -106,9 +109,12 @@ public class RuleActivity extends BaseActivity implements CompoundButton.OnCheck
                     Snackbar.make(ll_container, R.string.rule_tip_empty_rule, Snackbar.LENGTH_LONG).show();
                 } else {
                     Rule rule = new Rule();
-                    boolean isModify = !TextUtils.isEmpty(tv_id.getText());
+                    boolean isModify = id != -1;
                     if (isModify) {
-                        rule.setId(Long.valueOf(tv_id.getText().toString().trim()));
+                        rule.setId(id);
+                        rule.setCreated(created);
+                    } else {
+                        rule.setCreated(new Date().getTime());
                     }
                     rule.setContent(et_rule.getText().toString().trim());
                     rule.setType(sp_type.getSelectedItemPosition());

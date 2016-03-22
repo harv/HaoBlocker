@@ -90,23 +90,14 @@ public class BlockerManager {
         values.put("sms", rule.getSms());
         values.put("call", rule.getCall());
         values.put("exception", rule.getException());
-        values.put("created", new Date().getTime());
+        values.put("created", rule.getCreated());
         values.put("remark", rule.getRemark());
 
         return ContentUris.parseId(resolver.insert(URI_RULE_ALL, values));
     }
 
     public long restoreRule(Rule rule) {
-        ContentValues values = new ContentValues();
-        values.put("content", rule.getContent());
-        values.put("type", rule.getType());
-        values.put("sms", rule.getSms());
-        values.put("call", rule.getCall());
-        values.put("exception", rule.getException());
-        values.put("created", rule.getCreated());
-        values.put("remark", rule.getRemark());
-
-        return ContentUris.parseId(resolver.insert(URI_RULE_ALL, values));
+        return saveRule(rule);
     }
 
     public void updateRule(Rule rule) {
@@ -116,7 +107,7 @@ public class BlockerManager {
         values.put("sms", rule.getSms());
         values.put("call", rule.getCall());
         values.put("exception", rule.getException());
-        values.put("created", new Date().getTime());
+        values.put("created", rule.getCreated());
         values.put("remark", rule.getRemark());
 
         resolver.update(ContentUris.withAppendedId(URI_RULE_ALL, rule.getId()), values, null, null);
