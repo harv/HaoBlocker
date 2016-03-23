@@ -42,4 +42,11 @@
     <string name="menu_export_rule_tip">rule exported</string>
     <string name="menu_export_sms_tip">sms history exported</string>
     <string name="menu_export_call_tip">call history exported</string>
+    <string name="menu_import">import</string>
+    <string name="menu_import_rule_miss_tip">Please put blocker_rule.csv at root of sdcard</string>
+    <string name="menu_import_rule_tip">rule imported</string>
+    <string name="menu_import_sms_miss_tip">Please put blocker_sms.csv at root of sdcard</string>
+    <string name="menu_import_sms_tip">sms history imported</string>
+    <string name="menu_import_call_miss_tip">Please put blocker_call.csv at root of sdcard</string>
+    <string name="menu_import_call_tip">call history imported</string>
 </resources>

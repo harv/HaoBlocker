@@ -23,6 +23,10 @@
         </menu>
     </item>
     <item
+        android:id="@+id/import0"
+        android:title="@string/menu_import"
+        android:visible="false" />
+    <item
         android:id="@+id/export"
         android:title="@string/menu_export"
         android:visible="false" />

@@ -18,6 +18,7 @@ public class SettingsActivity extends BaseActivity {
     public static final int SHOW_NONE = 0;
     public static final int SHOW_FILTER = 1;
     public static final int SHOW_EXPORT = 2;
+    public static final int SHOW_IMPORT = 4;
 
     private Handler handler;
 
@@ -25,6 +26,7 @@ public class SettingsActivity extends BaseActivity {
     private FloatingActionButton fab_add;
     private MenuItem menu_filter;
     private MenuItem menu_export;
+    private MenuItem menu_import;
 
     private OnMenuItemClickListener onFilterListener;
 
@@ -52,6 +54,7 @@ public class SettingsActivity extends BaseActivity {
         getMenuInflater().inflate(R.menu.menu_settings, menu);
         menu_filter = menu.findItem(R.id.filter);
         menu_export = menu.findItem(R.id.export);
+        menu_import = menu.findItem(R.id.import0);
         return true;
     }
 
@@ -69,6 +72,11 @@ public class SettingsActivity extends BaseActivity {
             case R.id.export:
                 if (onFilterListener != null) {
                     onFilterListener.onExport(item);
+                }
+                break;
+            case R.id.import0:
+                if (onFilterListener != null) {
+                    onFilterListener.onImport(item);
                 }
                 break;
         }
@@ -114,11 +122,14 @@ public class SettingsActivity extends BaseActivity {
         onFilterListener = onMenuItemClickListener;
         menu_filter.setVisible((show & SHOW_FILTER) == SHOW_FILTER);
         menu_export.setVisible((show & SHOW_EXPORT) == SHOW_EXPORT);
+        menu_import.setVisible((show & SHOW_IMPORT) == SHOW_IMPORT);
     }
 
     public interface OnMenuItemClickListener {
         void onFilter(MenuItem item);
 
         void onExport(MenuItem item);
+
+        void onImport(MenuItem item);
     }
 }

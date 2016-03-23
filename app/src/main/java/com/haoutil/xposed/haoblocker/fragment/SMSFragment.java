@@ -17,8 +17,10 @@ import com.haoutil.xposed.haoblocker.adapter.SMSAdapter;
 import com.haoutil.xposed.haoblocker.model.SMS;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
@@ -130,12 +132,53 @@ public class SMSFragment extends BaseFragment implements BaseRecycleAdapter.OnIt
     }
 
     @Override
+    public void onImport(MenuItem item) {
+        new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File file = new File(Environment.getExternalStorageDirectory(), "blocker_sms.csv");
+                    if (!file.exists() || !file.isFile()) {
+                        activity.showTipInThread(R.string.menu_import_sms_miss_tip);
+                        return;
+                    }
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        String[] columns = line.split(",");
+                        String sender = columns[1];
+                        String content = columns[2];
+                        content = content.substring(1, content.length() - 1).replaceAll("\"\"", "\"");
+                        long created = Long.valueOf(columns[3]);
+                        int read = Integer.valueOf(columns[4]);
+
+                        SMS sms = new SMS();
+                        sms.setSender(sender);
+                        sms.setContent(content);
+                        sms.setCreated(created);
+                        sms.setRead(read);
+
+                        long id = blockerManager.saveSMS(sms);
+                        sms.setId(id);
+                        adapter.add(0, sms);
+                    }
+                    br.close();
+
+                    activity.showTipInThread(R.string.menu_import_sms_tip);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.run();
+    }
+
+    @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if (activity != null) {
             activity.setOnMenuItemClickListener(
                     isVisibleToUser ? this : null,
-                    isVisibleToUser ? SettingsActivity.SHOW_EXPORT : SettingsActivity.SHOW_NONE
+                    isVisibleToUser ? SettingsActivity.SHOW_EXPORT | SettingsActivity.SHOW_IMPORT : SettingsActivity.SHOW_NONE
             );
         }
     }
