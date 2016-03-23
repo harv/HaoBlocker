@@ -38,4 +38,8 @@
     <string name="menu_filter_call">call rule</string>
     <string name="menu_filter_sms">sms rule</string>
     <string name="menu_filter_except">except rule</string>
+    <string name="menu_export">export</string>
+    <string name="menu_export_rule_tip">rule exported</string>
+    <string name="menu_export_sms_tip">sms history exported</string>
+    <string name="menu_export_call_tip">call history exported</string>
 </resources>

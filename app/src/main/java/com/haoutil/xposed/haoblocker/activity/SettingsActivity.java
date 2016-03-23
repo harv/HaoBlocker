@@ -1,6 +1,7 @@
 package com.haoutil.xposed.haoblocker.activity;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,9 +15,16 @@ import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.adapter.PageFragmentAdapter;
 
 public class SettingsActivity extends BaseActivity {
+    public static final int SHOW_NONE = 0;
+    public static final int SHOW_FILTER = 1;
+    public static final int SHOW_EXPORT = 2;
+
+    private Handler handler;
+
     private CoordinatorLayout cl_container;
     private FloatingActionButton fab_add;
     private MenuItem menu_filter;
+    private MenuItem menu_export;
 
     private OnMenuItemClickListener onFilterListener;
 
@@ -43,6 +51,7 @@ public class SettingsActivity extends BaseActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_settings, menu);
         menu_filter = menu.findItem(R.id.filter);
+        menu_export = menu.findItem(R.id.export);
         return true;
     }
 
@@ -55,6 +64,11 @@ public class SettingsActivity extends BaseActivity {
             case R.id.filter_except:
                 if (onFilterListener != null) {
                     onFilterListener.onFilter(item);
+                }
+                break;
+            case R.id.export:
+                if (onFilterListener != null) {
+                    onFilterListener.onExport(item);
                 }
                 break;
         }
@@ -74,6 +88,18 @@ public class SettingsActivity extends BaseActivity {
         snackbar.show();
     }
 
+    public void showTipInThread(final int resId) {
+        if (handler == null) {
+            handler = new Handler();
+        }
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Snackbar.make(cl_container, resId, Snackbar.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     public void setOnAddListener(View.OnClickListener onClickListener) {
         if (onClickListener != null) {
             fab_add.setOnClickListener(onClickListener);
@@ -84,17 +110,15 @@ public class SettingsActivity extends BaseActivity {
         }
     }
 
-    public void setOnFilterListener(OnMenuItemClickListener onMenuItemClickListener) {
-        if (onMenuItemClickListener != null) {
-            menu_filter.setVisible(true);
-            onFilterListener = onMenuItemClickListener;
-        } else {
-            menu_filter.setVisible(false);
-            onFilterListener = null;
-        }
+    public void setOnMenuItemClickListener(OnMenuItemClickListener onMenuItemClickListener, int show) {
+        onFilterListener = onMenuItemClickListener;
+        menu_filter.setVisible((show & SHOW_FILTER) == SHOW_FILTER);
+        menu_export.setVisible((show & SHOW_EXPORT) == SHOW_EXPORT);
     }
 
     public interface OnMenuItemClickListener {
         void onFilter(MenuItem item);
+
+        void onExport(MenuItem item);
     }
 }

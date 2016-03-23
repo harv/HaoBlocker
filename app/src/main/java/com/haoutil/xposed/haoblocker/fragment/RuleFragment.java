@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -19,6 +20,10 @@ import com.haoutil.xposed.haoblocker.adapter.RuleAdapter;
 import com.haoutil.xposed.haoblocker.model.Rule;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener, SettingsActivity.OnMenuItemClickListener {
@@ -130,6 +135,42 @@ public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnI
     }
 
     @Override
+    public void onExport(MenuItem item) {
+        new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File file = new File(Environment.getExternalStorageDirectory(), "blocker_rule.csv");
+                    OutputStream os = new FileOutputStream(file);
+
+                    List<Rule> rules = blockerManager.getRules(BlockerManager.TYPE_ALL);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = rules.size(); i > 0; i--) {
+                        Rule rule = rules.get(i - 1);
+                        sb.append(rule.getId());
+                        sb.append(",").append("\"").append(rule.getContent().replaceAll("\"", "\"\"")).append("\"");
+                        sb.append(",").append(rule.getType());
+                        sb.append(",").append(rule.getSms());
+                        sb.append(",").append(rule.getCall());
+                        sb.append(",").append(rule.getException());
+                        sb.append(",").append(rule.getCreated());
+                        sb.append(",").append("\"").append(rule.getRemark().replaceAll("\"", "\"\"")).append("\"");
+                        sb.append("\n");
+                    }
+                    byte[] bs = sb.toString().getBytes();
+                    os.write(bs, 0, bs.length);
+                    os.flush();
+                    os.close();
+
+                    activity.showTipInThread(R.string.menu_export_rule_tip);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.run();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             Bundle bundle = data.getExtras();
@@ -151,7 +192,10 @@ public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnI
         super.setUserVisibleHint(isVisibleToUser);
         if (activity != null) {
             activity.setOnAddListener(isVisibleToUser ? this : null);
-            activity.setOnFilterListener(isVisibleToUser ? this : null);
+            activity.setOnMenuItemClickListener(
+                    isVisibleToUser ? this : null,
+                    isVisibleToUser ? SettingsActivity.SHOW_FILTER | SettingsActivity.SHOW_EXPORT : SettingsActivity.SHOW_NONE
+            );
         }
     }
 

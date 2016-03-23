@@ -2,9 +2,11 @@ package com.haoutil.xposed.haoblocker.fragment;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -15,9 +17,13 @@ import com.haoutil.xposed.haoblocker.adapter.SMSAdapter;
 import com.haoutil.xposed.haoblocker.model.SMS;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
-public class SMSFragment extends BaseFragment implements BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener {
+public class SMSFragment extends BaseFragment implements BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener, SettingsActivity.OnMenuItemClickListener {
     private SettingsActivity activity;
     private BlockerManager blockerManager;
 
@@ -83,6 +89,54 @@ public class SMSFragment extends BaseFragment implements BaseRecycleAdapter.OnIt
             case DialogInterface.BUTTON_NEGATIVE:
                 positionDeleted = -1;
                 break;
+        }
+    }
+
+    @Override
+    public void onFilter(MenuItem item) {
+    }
+
+    @Override
+    public void onExport(MenuItem item) {
+        new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File file = new File(Environment.getExternalStorageDirectory(), "blocker_sms.csv");
+                    OutputStream os = new FileOutputStream(file);
+
+                    List<SMS> smses = blockerManager.getSMSes(-1);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = smses.size(); i > 0; i--) {
+                        SMS sms = smses.get(i - 1);
+                        sb.append(sms.getId());
+                        sb.append(",").append(sms.getSender());
+                        sb.append(",").append("\"").append(sms.getContent().replaceAll("\"", "\"\"")).append("\"");
+                        sb.append(",").append(sms.getCreated());
+                        sb.append(",").append(sms.getRead());
+                        sb.append("\n");
+                    }
+                    byte[] bs = sb.toString().getBytes();
+                    os.write(bs, 0, bs.length);
+                    os.flush();
+                    os.close();
+
+                    activity.showTipInThread(R.string.menu_export_sms_tip);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.run();
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if (activity != null) {
+            activity.setOnMenuItemClickListener(
+                    isVisibleToUser ? this : null,
+                    isVisibleToUser ? SettingsActivity.SHOW_EXPORT : SettingsActivity.SHOW_NONE
+            );
         }
     }
 
