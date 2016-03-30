@@ -1,4 +1,4 @@
-package com.haoutil.xposed.haoblocker.activity;
+package com.haoutil.xposed.haoblocker.ui.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -12,7 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.haoutil.xposed.haoblocker.R;
-import com.haoutil.xposed.haoblocker.adapter.PageFragmentAdapter;
+import com.haoutil.xposed.haoblocker.ui.adapter.PageFragmentAdapter;
 
 public class SettingsActivity extends BaseActivity {
     public static final int SHOW_NONE = 0;

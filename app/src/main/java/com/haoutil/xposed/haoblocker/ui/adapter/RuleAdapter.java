@@ -1,12 +1,11 @@
-package com.haoutil.xposed.haoblocker.adapter;
+package com.haoutil.xposed.haoblocker.ui.adapter;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.haoutil.xposed.haoblocker.R;
-import com.haoutil.xposed.haoblocker.model.Rule;
+import com.haoutil.xposed.haoblocker.model.entity.Rule;
 
 import java.util.List;
 

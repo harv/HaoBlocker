@@ -1,4 +1,4 @@
-package com.haoutil.xposed.haoblocker.model;
+package com.haoutil.xposed.haoblocker.model.entity;
 
 import java.io.Serializable;
 

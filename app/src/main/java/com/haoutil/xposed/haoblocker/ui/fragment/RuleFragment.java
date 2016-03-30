@@ -1,4 +1,4 @@
-package com.haoutil.xposed.haoblocker.fragment;
+package com.haoutil.xposed.haoblocker.ui.fragment;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -13,11 +13,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.haoutil.xposed.haoblocker.R;
-import com.haoutil.xposed.haoblocker.activity.RuleActivity;
-import com.haoutil.xposed.haoblocker.activity.SettingsActivity;
-import com.haoutil.xposed.haoblocker.adapter.BaseRecycleAdapter;
-import com.haoutil.xposed.haoblocker.adapter.RuleAdapter;
-import com.haoutil.xposed.haoblocker.model.Rule;
+import com.haoutil.xposed.haoblocker.ui.activity.RuleActivity;
+import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
+import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
+import com.haoutil.xposed.haoblocker.ui.adapter.RuleAdapter;
+import com.haoutil.xposed.haoblocker.model.entity.Rule;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
 import java.io.BufferedReader;

@@ -1,4 +1,4 @@
-package com.haoutil.xposed.haoblocker.fragment;
+package com.haoutil.xposed.haoblocker.ui.fragment;
 
 import android.app.AlertDialog;
 import android.app.Fragment;

@@ -1,4 +1,4 @@
-package com.haoutil.xposed.haoblocker.activity;
+package com.haoutil.xposed.haoblocker.ui.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 
 import com.haoutil.xposed.haoblocker.R;
-import com.haoutil.xposed.haoblocker.model.Rule;
+import com.haoutil.xposed.haoblocker.model.entity.Rule;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
 import java.util.Date;
@@ -67,7 +67,7 @@ public class RuleActivity extends BaseActivity implements CompoundButton.OnCheck
                 sp_type.setSelection(rule.getType());
                 cb_except.setChecked(rule.getException() == 1);
                 sp_block.setEnabled(rule.getException() != 1);
-                // sms call block(@see com.haoutil.xposed.haoblocker.model.Rule)
+                // sms call block(@see com.haoutil.xposed.haoblocker.model.entity.Rule)
                 //  1    1  0(both)
                 //  1    0  1(sms)
                 //  0    1  2(call)

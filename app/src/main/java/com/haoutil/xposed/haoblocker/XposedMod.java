@@ -14,11 +14,11 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
 
-import com.haoutil.xposed.haoblocker.activity.SettingsActivity;
+import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
 import com.haoutil.xposed.haoblocker.hook.CallHook;
 import com.haoutil.xposed.haoblocker.hook.SMSHook;
-import com.haoutil.xposed.haoblocker.model.Call;
-import com.haoutil.xposed.haoblocker.model.SMS;
+import com.haoutil.xposed.haoblocker.model.entity.Call;
+import com.haoutil.xposed.haoblocker.model.entity.SMS;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 import com.haoutil.xposed.haoblocker.util.Logger;
 import com.haoutil.xposed.haoblocker.util.SettingsHelper;

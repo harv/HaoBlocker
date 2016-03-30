@@ -1,4 +1,4 @@
-package com.haoutil.xposed.haoblocker.activity;
+package com.haoutil.xposed.haoblocker.ui.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;

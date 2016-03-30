@@ -8,12 +8,11 @@ import android.database.Cursor;
 import android.net.Uri;
 
 import com.haoutil.xposed.haoblocker.BuildConfig;
-import com.haoutil.xposed.haoblocker.model.Call;
-import com.haoutil.xposed.haoblocker.model.Rule;
-import com.haoutil.xposed.haoblocker.model.SMS;
+import com.haoutil.xposed.haoblocker.model.entity.Call;
+import com.haoutil.xposed.haoblocker.model.entity.Rule;
+import com.haoutil.xposed.haoblocker.model.entity.SMS;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class BlockerManager {

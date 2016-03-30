@@ -1,4 +1,4 @@
-package com.haoutil.xposed.haoblocker.model;
+package com.haoutil.xposed.haoblocker.model.entity;
 
 public class Call {
     public static final int CALL_UNREADED = 0;
