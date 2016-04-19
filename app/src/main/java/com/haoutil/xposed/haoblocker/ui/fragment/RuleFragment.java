@@ -8,6 +8,7 @@ import android.os.Environment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener, SettingsActivity.OnMenuItemClickListener {
+public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener, SettingsActivity.OnAddListener, SettingsActivity.OnMenuItemClickListener {
     private SettingsActivity activity;
     private BlockerManager blockerManager;
 
@@ -43,6 +44,8 @@ public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnI
         super.onCreate(savedInstanceState);
         activity = (SettingsActivity) getActivity();
         blockerManager = new BlockerManager(activity);
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -57,6 +60,15 @@ public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnI
             rv_rule.setAdapter(adapter);
         }
         return view;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.filter).setVisible(true);
+        menu.findItem(R.id.export).setVisible(true);
+        menu.findItem(R.id.import0).setVisible(true);
+        activity.setOnMenuItemClickListener(this);
     }
 
     // click on list item
@@ -79,25 +91,15 @@ public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnI
         confirm(this, this);
     }
 
-    // click on Snackbar button
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.fab_add:
-                Intent intent = new Intent(getActivity(), RuleActivity.class);
-                intent.putExtra("operation", "add");
-                startActivityForResult(intent, 0);
-                break;
-            default:
-                if (-1 != positionDeleted && null != ruleDeleted) {
-                    long newId = blockerManager.restoreRule(ruleDeleted);
-                    ruleDeleted.setId(newId);
-                    adapter.add(positionDeleted, ruleDeleted);
+        if (-1 != positionDeleted && null != ruleDeleted) {
+            long newId = blockerManager.restoreRule(ruleDeleted);
+            ruleDeleted.setId(newId);
+            adapter.add(positionDeleted, ruleDeleted);
 
-                    positionDeleted = -1;
-                    ruleDeleted = null;
-                }
-                break;
+            positionDeleted = -1;
+            ruleDeleted = null;
         }
     }
 
@@ -115,6 +117,14 @@ public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnI
                 positionDeleted = -1;
                 break;
         }
+    }
+
+    // click on Snackbar button
+    @Override
+    public void onAdd() {
+        Intent intent = new Intent(getActivity(), RuleActivity.class);
+        intent.putExtra("operation", "add");
+        startActivityForResult(intent, 0);
     }
 
     // click on menu item
@@ -242,10 +252,6 @@ public class RuleFragment extends BaseFragment implements BaseRecycleAdapter.OnI
         super.setUserVisibleHint(isVisibleToUser);
         if (activity != null) {
             activity.setOnAddListener(isVisibleToUser ? this : null);
-            activity.setOnMenuItemClickListener(
-                    isVisibleToUser ? this : null,
-                    isVisibleToUser ? SettingsActivity.SHOW_FILTER | SettingsActivity.SHOW_EXPORT | SettingsActivity.SHOW_IMPORT : SettingsActivity.SHOW_NONE
-            );
         }
     }
 

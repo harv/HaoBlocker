@@ -14,21 +14,14 @@ import android.view.View;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.ui.adapter.PageFragmentAdapter;
 
-public class SettingsActivity extends BaseActivity {
-    public static final int SHOW_NONE = 0;
-    public static final int SHOW_FILTER = 1;
-    public static final int SHOW_EXPORT = 2;
-    public static final int SHOW_IMPORT = 4;
-
+public class SettingsActivity extends BaseActivity implements View.OnClickListener {
     private Handler handler;
 
     private CoordinatorLayout cl_container;
     private FloatingActionButton fab_add;
-    private MenuItem menu_filter;
-    private MenuItem menu_export;
-    private MenuItem menu_import;
 
-    private OnMenuItemClickListener onFilterListener;
+    private OnAddListener onAddListener;
+    private OnMenuItemClickListener onMenuItemClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +35,7 @@ public class SettingsActivity extends BaseActivity {
 
         cl_container = (CoordinatorLayout) findViewById(R.id.cl_container);
         fab_add = (FloatingActionButton) findViewById(R.id.fab_add);
+        fab_add.setOnClickListener(this);
 
         int position = getIntent().getIntExtra("position", -1);
         if (position > -1) {
@@ -52,9 +46,6 @@ public class SettingsActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_settings, menu);
-        menu_filter = menu.findItem(R.id.filter);
-        menu_export = menu.findItem(R.id.export);
-        menu_import = menu.findItem(R.id.import0);
         return true;
     }
 
@@ -65,22 +56,33 @@ public class SettingsActivity extends BaseActivity {
             case R.id.filter_call:
             case R.id.filter_sms:
             case R.id.filter_except:
-                if (onFilterListener != null) {
-                    onFilterListener.onFilter(item);
+                if (onMenuItemClickListener != null) {
+                    onMenuItemClickListener.onFilter(item);
                 }
                 break;
             case R.id.export:
-                if (onFilterListener != null) {
-                    onFilterListener.onExport(item);
+                if (onMenuItemClickListener != null) {
+                    onMenuItemClickListener.onExport(item);
                 }
                 break;
             case R.id.import0:
-                if (onFilterListener != null) {
-                    onFilterListener.onImport(item);
+                if (onMenuItemClickListener != null) {
+                    onMenuItemClickListener.onImport(item);
                 }
                 break;
         }
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab_add:
+                if (onAddListener != null) {
+                    onAddListener.onAdd();
+                }
+                break;
+        }
     }
 
     @Override
@@ -108,21 +110,22 @@ public class SettingsActivity extends BaseActivity {
         });
     }
 
-    public void setOnAddListener(View.OnClickListener onClickListener) {
-        if (onClickListener != null) {
-            fab_add.setOnClickListener(onClickListener);
+    public void setOnAddListener(OnAddListener onAddListener) {
+        if (onAddListener != null) {
+            this.onAddListener = onAddListener;
             fab_add.show();
         } else {
-            fab_add.setOnClickListener(null);
+            this.onAddListener = null;
             fab_add.hide();
         }
     }
 
-    public void setOnMenuItemClickListener(OnMenuItemClickListener onMenuItemClickListener, int show) {
-        onFilterListener = onMenuItemClickListener;
-        menu_filter.setVisible((show & SHOW_FILTER) == SHOW_FILTER);
-        menu_export.setVisible((show & SHOW_EXPORT) == SHOW_EXPORT);
-        menu_import.setVisible((show & SHOW_IMPORT) == SHOW_IMPORT);
+    public void setOnMenuItemClickListener(OnMenuItemClickListener onMenuItemClickListener) {
+        this.onMenuItemClickListener = onMenuItemClickListener;
+    }
+
+    public interface OnAddListener {
+        void onAdd();
     }
 
     public interface OnMenuItemClickListener {

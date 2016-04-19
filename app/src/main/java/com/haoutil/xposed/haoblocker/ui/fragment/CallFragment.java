@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -41,6 +42,8 @@ public class CallFragment extends BaseFragment implements BaseRecycleAdapter.OnI
         activity = (SettingsActivity) getActivity();
         blockerManager = new BlockerManager(activity);
         blockerManager.readAllCall();
+
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -55,6 +58,14 @@ public class CallFragment extends BaseFragment implements BaseRecycleAdapter.OnI
             rv_call.setAdapter(adapter);
         }
         return view;
+    }
+
+    @Override
+    public void onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.export).setVisible(true);
+        menu.findItem(R.id.import0).setVisible(true);
+        activity.setOnMenuItemClickListener(this);
     }
 
     @Override
@@ -167,17 +178,6 @@ public class CallFragment extends BaseFragment implements BaseRecycleAdapter.OnI
                 }
             }
         }.run();
-    }
-
-    @Override
-    public void setUserVisibleHint(boolean isVisibleToUser) {
-        super.setUserVisibleHint(isVisibleToUser);
-        if (activity != null) {
-            activity.setOnMenuItemClickListener(
-                    isVisibleToUser ? this : null,
-                    isVisibleToUser ? SettingsActivity.SHOW_EXPORT | SettingsActivity.SHOW_IMPORT : SettingsActivity.SHOW_NONE
-            );
-        }
     }
 
     @Override
