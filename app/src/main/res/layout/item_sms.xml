@@ -32,6 +32,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:textColor="@color/textColorSecondary"
         android:textSize="16sp"
         tools:text="2015-10-16 11:22" />
 
@@ -41,6 +42,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/tv_sender"
         android:layout_marginTop="8dp"
+        android:textColor="@color/textColorSecondary"
         android:textSize="16sp"
         tools:text="你好吗？\n我很好！你呢？\n我也是的！\n好的。byebye！\n再见！" />
 </RelativeLayout>

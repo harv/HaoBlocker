@@ -34,6 +34,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
+        android:textColor="@color/textColorSecondary"
         android:textSize="16sp"
         tools:text="2015-10-16 11:22" />
 </RelativeLayout>
