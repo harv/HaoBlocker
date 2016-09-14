@@ -83,12 +83,18 @@ public class BlockerManager {
     }
 
     public boolean hasRule(Rule rule) {
+        boolean rtn = false;
+
         Cursor cursor = resolver.query(URI_RULE_ALL, new String[]{"_id"}, "content = ? AND type = ? AND sms = ? AND call = ? AND exception = ?", new String[]{rule.getContent(), String.valueOf(rule.getType()), String.valueOf(rule.getSms()), String.valueOf(rule.getCall()), String.valueOf(rule.getException())}, "created DESC");
         if (cursor != null && cursor.getCount() > 0) {
-            cursor.close();
-            return true;
+            rtn = true;
         }
-        return false;
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return rtn;
     }
 
     public long saveRule(Rule rule) {
@@ -149,12 +155,18 @@ public class BlockerManager {
     }
 
     public boolean hasSMS(SMS sms) {
+        boolean rtn = false;
+
         Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id"}, "sender = ? AND content = ? AND created = ?", new String[]{sms.getSender(), sms.getContent(), String.valueOf(sms.getCreated())}, "created DESC");
         if (cursor != null && cursor.getCount() > 0) {
-            cursor.close();
-            return true;
+            rtn = true;
         }
-        return false;
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return rtn;
     }
 
     public long saveSMS(SMS sms) {
@@ -204,12 +216,18 @@ public class BlockerManager {
     }
 
     public boolean hasCall(Call call) {
+        boolean rtn = false;
+
         Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id"}, "caller = ? AND created = ?", new String[]{call.getCaller(), String.valueOf(call.getCreated())}, "created DESC");
         if (cursor != null && cursor.getCount() > 0) {
-            cursor.close();
-            return true;
+            rtn = true;
         }
-        return false;
+
+        if (cursor != null) {
+            cursor.close();
+        }
+
+        return rtn;
     }
 
     public long saveCall(Call call) {
