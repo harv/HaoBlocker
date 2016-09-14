@@ -8,9 +8,9 @@ import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.CallModel;
 import com.haoutil.xposed.haoblocker.model.CallModelImpl;
 import com.haoutil.xposed.haoblocker.model.entity.Call;
+import com.haoutil.xposed.haoblocker.ui.CallView;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 import com.haoutil.xposed.haoblocker.ui.adapter.CallAdapter;
-import com.haoutil.xposed.haoblocker.ui.CallView;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,7 +57,7 @@ public class CallPresenterImpl implements CallPresenter {
     @Override
     public void deleteCallConfirm(int position) {
         positionDeleted = position;
-        mCallView.confirm();
+        mCallView.showConfirm();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class CallPresenterImpl implements CallPresenter {
         callDeleted = adapter.getItem(positionDeleted);
         mCallModel.deleteCall(callDeleted);
         adapter.remove(positionDeleted);
-        mCallView.showTip(R.string.rule_tip_call_deleted);
+        mCallView.showTip(R.string.rule_tip_call_deleted, true);
     }
 
     @Override
@@ -87,71 +87,61 @@ public class CallPresenterImpl implements CallPresenter {
 
     @Override
     public void importCalls() {
-        new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File file = new File(Environment.getExternalStorageDirectory(), "blocker_call.csv");
-                    if (!file.exists() || !file.isFile()) {
-                        mCallView.showTipInThread(R.string.menu_import_call_miss_tip);
-                        return;
-                    }
-                    BufferedReader br = new BufferedReader(new FileReader(file));
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        String[] columns = line.split(",");
-                        String caller = columns[1];
-                        long created = Long.valueOf(columns[2]);
-                        int read = Integer.valueOf(columns[3]);
-
-                        Call call = new Call();
-                        call.setCaller(caller);
-                        call.setCreated(created);
-                        call.setRead(read);
-
-                        long id = mCallModel.saveCall(call);
-                        call.setId(id);
-                        adapter.add(0, call);
-                    }
-                    br.close();
-
-                    mCallView.showTipInThread(R.string.menu_import_call_tip);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), "blocker_call.csv");
+            if (!file.exists() || !file.isFile()) {
+                mCallView.showTip(R.string.menu_import_call_miss_tip, false);
+                return;
             }
-        }.run();
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] columns = line.split(",");
+                String caller = columns[1];
+                long created = Long.valueOf(columns[2]);
+                int read = Integer.valueOf(columns[3]);
+
+                Call call = new Call();
+                call.setCaller(caller);
+                call.setCreated(created);
+                call.setRead(read);
+
+                long id = mCallModel.saveCall(call);
+                call.setId(id);
+                adapter.add(0, call);
+            }
+            br.close();
+
+            mCallView.showTip(R.string.menu_import_call_tip, false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void exportCalls() {
-        new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File file = new File(Environment.getExternalStorageDirectory(), "blocker_call.csv");
-                    OutputStream os = new FileOutputStream(file);
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), "blocker_call.csv");
+            OutputStream os = new FileOutputStream(file);
 
-                    List<Call> calls = mCallModel.getCalls(-1);
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = calls.size(); i > 0; i--) {
-                        Call call = calls.get(i - 1);
-                        sb.append(call.getId());
-                        sb.append(",").append(call.getCaller());
-                        sb.append(",").append(call.getCreated());
-                        sb.append(",").append(call.getRead());
-                        sb.append("\n");
-                    }
-                    byte[] bs = sb.toString().getBytes();
-                    os.write(bs, 0, bs.length);
-                    os.flush();
-                    os.close();
-
-                    mCallView.showTipInThread(R.string.menu_export_call_tip);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            List<Call> calls = mCallModel.getCalls(-1);
+            StringBuilder sb = new StringBuilder();
+            for (int i = calls.size(); i > 0; i--) {
+                Call call = calls.get(i - 1);
+                sb.append(call.getId());
+                sb.append(",").append(call.getCaller());
+                sb.append(",").append(call.getCreated());
+                sb.append(",").append(call.getRead());
+                sb.append("\n");
             }
-        }.run();
+            byte[] bs = sb.toString().getBytes();
+            os.write(bs, 0, bs.length);
+            os.flush();
+            os.close();
+
+            mCallView.showTip(R.string.menu_export_call_tip, false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

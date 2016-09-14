@@ -1,7 +1,8 @@
 package com.haoutil.xposed.haoblocker.ui.activity;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,8 +16,6 @@ import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.ui.adapter.PageFragmentAdapter;
 
 public class SettingsActivity extends BaseActivity implements View.OnClickListener {
-    private Handler handler;
-
     private CoordinatorLayout cl_container;
     private FloatingActionButton fab_add;
 
@@ -90,33 +89,35 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         return R.layout.activity_settings;
     }
 
-    public void showTip(int resId, View.OnClickListener onClickListener) {
-        Snackbar snackbar = Snackbar.make(cl_container, resId, Snackbar.LENGTH_SHORT);
-        if (onClickListener != null) {
-            snackbar.setAction(R.string.snackbar_undo, onClickListener);
-        }
-        snackbar.show();
+    public void showConfirm(DialogInterface.OnClickListener onPositiveListener, DialogInterface.OnClickListener onNegativeListener) {
+        new AlertDialog.Builder(SettingsActivity.this)
+                .setTitle(getResources().getString(R.string.discard_dialog_title))
+                .setMessage(getResources().getString(R.string.discard_dialog_message))
+                .setPositiveButton(R.string.discard_dialog_button_ok, onPositiveListener)
+                .setNegativeButton(R.string.discard_dialog_button_cancel, onNegativeListener)
+                .create()
+                .show();
     }
 
-    public void showTipInThread(final int resId) {
-        if (handler == null) {
-            handler = new Handler();
-        }
-        handler.post(new Runnable() {
+    public void showTip(final int resId, final View.OnClickListener onClickListener) {
+        runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Snackbar.make(cl_container, resId, Snackbar.LENGTH_SHORT).show();
+                Snackbar snackbar = Snackbar.make(cl_container, resId, Snackbar.LENGTH_SHORT);
+                if (onClickListener != null) {
+                    snackbar.setAction(R.string.snackbar_undo, onClickListener);
+                }
+                snackbar.show();
             }
         });
     }
 
     public void setOnAddListener(OnAddListener onAddListener) {
-        if (onAddListener != null) {
-            this.onAddListener = onAddListener;
-            fab_add.show();
-        } else {
-            this.onAddListener = null;
+        this.onAddListener = onAddListener;
+        if (this.onAddListener == null) {
             fab_add.hide();
+        } else {
+            fab_add.show();
         }
     }
 

@@ -7,8 +7,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import com.haoutil.xposed.haoblocker.R;
+import com.haoutil.xposed.haoblocker.ui.BaseView;
 
-public abstract class BaseActivity extends AppCompatActivity {
+public abstract class BaseActivity extends AppCompatActivity implements BaseView {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,6 +38,4 @@ public abstract class BaseActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
-
-    protected abstract int getLayoutResource();
 }

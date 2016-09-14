@@ -106,19 +106,19 @@ public abstract class BaseRecycleAdapter<T> extends RecyclerView.Adapter<BaseRec
 
         @Override
         public void onClick(View v) {
-            onItemClick.onClick(getLayoutPosition());
+            onItemClick.onItemClick(getLayoutPosition());
         }
 
         @Override
         public boolean onLongClick(View v) {
-            onItemClick.onLongClick(getLayoutPosition());
+            onItemClick.onItemLongClick(getLayoutPosition());
             return true;
         }
     }
 
     public interface OnItemClick {
-        void onClick(int position);
+        void onItemClick(int position);
 
-        void onLongClick(int position);
+        void onItemLongClick(int position);
     }
 }

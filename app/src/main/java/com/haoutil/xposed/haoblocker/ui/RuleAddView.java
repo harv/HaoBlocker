@@ -4,7 +4,7 @@ import android.content.Context;
 
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
 
-public interface RuleAddView {
+public interface RuleAddView extends BaseView {
     Context getAppContext();
 
     void initView(Rule rule);

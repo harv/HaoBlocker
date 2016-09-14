@@ -7,7 +7,7 @@ import android.view.Menu;
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 
-public interface RuleView {
+public interface RuleView extends BaseView, PromptView {
     Context getApplicationContext();
 
     void setRuleAdapter(RecyclerView.Adapter adapter);
@@ -21,10 +21,4 @@ public interface RuleView {
     void modifyRule(int position, Rule rule);
 
     void toggleAddButton(boolean visible);
-
-    void showTip(int resId);
-
-    void showTipInThread(int resId);
-
-    void confirm();
 }

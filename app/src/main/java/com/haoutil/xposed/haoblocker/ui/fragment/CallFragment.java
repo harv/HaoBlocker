@@ -1,7 +1,6 @@
 package com.haoutil.xposed.haoblocker.ui.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +17,7 @@ import com.haoutil.xposed.haoblocker.ui.CallView;
 import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 
-public class CallFragment extends BaseFragment implements CallView, BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener, SettingsActivity.OnMenuItemClickListener {
+public class CallFragment extends PromptFragment implements CallView, BaseRecycleAdapter.OnItemClick, SettingsActivity.OnMenuItemClickListener {
     private CallPresenter mCallPresenter;
     private RecyclerView rv_call;
 
@@ -48,29 +47,32 @@ public class CallFragment extends BaseFragment implements CallView, BaseRecycleA
     }
 
     @Override
-    public void onClick(int position) {
+    public int getLayoutResource() {
+        return R.layout.fragment_call;
     }
 
     @Override
-    public void onLongClick(int position) {
-        mCallPresenter.deleteCallConfirm(position);
+    public void onConfirmOK() {
+        mCallPresenter.deleteCall();
     }
 
     @Override
-    public void onClick(View v) {
+    public void onConfirmCancel() {
+        mCallPresenter.deleteCallCancel();
+    }
+
+    @Override
+    public void onActionClick(View action) {
         mCallPresenter.restoreCall();
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
-        switch (which) {
-            case DialogInterface.BUTTON_POSITIVE:
-                mCallPresenter.deleteCall();
-                break;
-            case DialogInterface.BUTTON_NEGATIVE:
-                mCallPresenter.deleteCallCancel();
-                break;
-        }
+    public void onItemClick(int position) {
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
+        mCallPresenter.deleteCallConfirm(position);
     }
 
     @Override
@@ -85,11 +87,6 @@ public class CallFragment extends BaseFragment implements CallView, BaseRecycleA
     @Override
     public void onImport(MenuItem item) {
         mCallPresenter.importCalls();
-    }
-
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.fragment_call;
     }
 
     @Override
@@ -112,20 +109,5 @@ public class CallFragment extends BaseFragment implements CallView, BaseRecycleA
     @Override
     public BaseRecycleAdapter.OnItemClick getOnItemClick() {
         return this;
-    }
-
-    @Override
-    public void showTip(int resId) {
-        ((SettingsActivity) getActivity()).showTip(resId, CallFragment.this);
-    }
-
-    @Override
-    public void showTipInThread(int resId) {
-        ((SettingsActivity) getActivity()).showTipInThread(resId);
-    }
-
-    @Override
-    public void confirm() {
-        confirm(this, this);
     }
 }

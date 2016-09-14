@@ -105,7 +105,7 @@ public class RuleActivity extends BaseActivity implements RuleAddView, CompoundB
     }
 
     @Override
-    protected int getLayoutResource() {
+    public int getLayoutResource() {
         return R.layout.activity_rule;
     }
 

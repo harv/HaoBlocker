@@ -2,7 +2,6 @@ package com.haoutil.xposed.haoblocker.ui.fragment;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,7 +22,7 @@ import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
-public class RuleFragment extends BaseFragment implements RuleView, BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener, SettingsActivity.OnAddListener, SettingsActivity.OnMenuItemClickListener {
+public class RuleFragment extends PromptFragment implements RuleView, BaseRecycleAdapter.OnItemClick, SettingsActivity.OnAddListener, SettingsActivity.OnMenuItemClickListener {
     private RulePresenter mRulePresenter;
     private RecyclerView rv_rule;
 
@@ -52,37 +51,40 @@ public class RuleFragment extends BaseFragment implements RuleView, BaseRecycleA
         mRulePresenter.setMenuItems(menu);
     }
 
+    @Override
+    public int getLayoutResource() {
+        return R.layout.fragment_rule;
+    }
+
+    @Override
+    public void onConfirmOK() {
+        mRulePresenter.deleteRule();
+    }
+
+    @Override
+    public void onConfirmCancel() {
+        mRulePresenter.deleteRuleCancel();
+    }
+
+    // click on action button of Snackbar
+    @Override
+    public void onActionClick(View action) {
+        mRulePresenter.restoreRule();
+    }
+
     // click on list item
     @Override
-    public void onClick(int position) {
+    public void onItemClick(int position) {
         mRulePresenter.modifyRule(position);
     }
 
     // long click on list item
     @Override
-    public void onLongClick(int position) {
+    public void onItemLongClick(int position) {
         mRulePresenter.deleteRuleConfirm(position);
     }
 
-    @Override
-    public void onClick(View v) {
-        mRulePresenter.restoreRule();
-    }
-
-    // click on dialog button
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
-        switch (which) {
-            case DialogInterface.BUTTON_POSITIVE:
-                mRulePresenter.deleteRule();
-                break;
-            case DialogInterface.BUTTON_NEGATIVE:
-                mRulePresenter.deleteRuleCancel();
-                break;
-        }
-    }
-
-    // click on Snackbar button
+    // click on FloatingActionButton
     @Override
     public void onAdd() {
         mRulePresenter.addRule();
@@ -137,11 +139,6 @@ public class RuleFragment extends BaseFragment implements RuleView, BaseRecycleA
     }
 
     @Override
-    protected int getLayoutResource() {
-        return R.layout.fragment_rule;
-    }
-
-    @Override
     public Context getApplicationContext() {
         return getActivity().getApplicationContext();
     }
@@ -185,20 +182,5 @@ public class RuleFragment extends BaseFragment implements RuleView, BaseRecycleA
     @Override
     public void toggleAddButton(boolean visible) {
         ((SettingsActivity) getActivity()).setOnAddListener(visible ? this : null);
-    }
-
-    @Override
-    public void showTip(int resId) {
-        ((SettingsActivity) getActivity()).showTip(resId, null);
-    }
-
-    @Override
-    public void showTipInThread(int resId) {
-        ((SettingsActivity) getActivity()).showTipInThread(resId);
-    }
-
-    @Override
-    public void confirm() {
-        confirm(this, this);
     }
 }

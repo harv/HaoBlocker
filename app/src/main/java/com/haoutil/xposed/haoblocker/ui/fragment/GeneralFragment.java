@@ -48,7 +48,7 @@ public class GeneralFragment extends BaseFragment implements GeneralView, Compou
     }
 
     @Override
-    protected int getLayoutResource() {
+    public int getLayoutResource() {
         return R.layout.fragment_general;
     }
 

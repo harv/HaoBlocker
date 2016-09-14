@@ -8,9 +8,9 @@ import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.RuleModel;
 import com.haoutil.xposed.haoblocker.model.RuleModelImpl;
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
+import com.haoutil.xposed.haoblocker.ui.RuleView;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 import com.haoutil.xposed.haoblocker.ui.adapter.RuleAdapter;
-import com.haoutil.xposed.haoblocker.ui.RuleView;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
 import java.io.BufferedReader;
@@ -68,7 +68,7 @@ public class RulePresenterImpl implements RulePresenter {
             adapter.replace(position, rule);
         }
 
-        mRuleView.showTip(R.string.rule_tip_rule_added);
+        mRuleView.showTip(R.string.rule_tip_rule_added, true);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class RulePresenterImpl implements RulePresenter {
     @Override
     public void deleteRuleConfirm(int position) {
         positionDeleted = position;
-        mRuleView.confirm();
+        mRuleView.showConfirm();
     }
 
     @Override
@@ -88,7 +88,7 @@ public class RulePresenterImpl implements RulePresenter {
         ruleDeleted = adapter.getItem(positionDeleted);
         mRuleModel.deleteRule(ruleDeleted);
         adapter.remove(positionDeleted);
-        mRuleView.showTip(R.string.rule_tip_rule_deleted);
+        mRuleView.showTip(R.string.rule_tip_rule_deleted, true);
     }
 
     @Override
@@ -110,86 +110,76 @@ public class RulePresenterImpl implements RulePresenter {
 
     @Override
     public void importRules() {
-        new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File file = new File(Environment.getExternalStorageDirectory(), "blocker_rule.csv");
-                    if (!file.exists() || !file.isFile()) {
-                        mRuleView.showTipInThread(R.string.menu_import_rule_miss_tip);
-                        return;
-                    }
-                    BufferedReader br = new BufferedReader(new FileReader(file));
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        String[] columns = line.split(",");
-                        String content = columns[1];
-                        content = content.substring(1, content.length() - 1).replaceAll("\"\"", "\"");
-                        int type = Integer.valueOf(columns[2]);
-                        int sms = Integer.valueOf(columns[3]);
-                        int call = Integer.valueOf(columns[4]);
-                        int except = Integer.valueOf(columns[5]);
-                        long created = Long.valueOf(columns[6]);
-                        String remark = columns[7];
-                        remark = remark.substring(1, remark.length() - 1).replaceAll("\"\"", "\"");
-
-                        Rule rule = new Rule();
-                        rule.setContent(content);
-                        rule.setType(type);
-                        rule.setSms(sms);
-                        rule.setCall(call);
-                        rule.setException(except);
-                        rule.setCreated(created);
-                        rule.setRemark(remark);
-
-                        long id = mRuleModel.saveRule(rule);
-                        rule.setId(id);
-                        adapter.add(0, rule);
-                    }
-                    br.close();
-
-                    mRuleView.showTipInThread(R.string.menu_import_rule_tip);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), "blocker_rule.csv");
+            if (!file.exists() || !file.isFile()) {
+                mRuleView.showTip(R.string.menu_import_rule_miss_tip, false);
+                return;
             }
-        }.run();
+            BufferedReader br = new BufferedReader(new FileReader(file));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] columns = line.split(",");
+                String content = columns[1];
+                content = content.substring(1, content.length() - 1).replaceAll("\"\"", "\"");
+                int type = Integer.valueOf(columns[2]);
+                int sms = Integer.valueOf(columns[3]);
+                int call = Integer.valueOf(columns[4]);
+                int except = Integer.valueOf(columns[5]);
+                long created = Long.valueOf(columns[6]);
+                String remark = columns[7];
+                remark = remark.substring(1, remark.length() - 1).replaceAll("\"\"", "\"");
+
+                Rule rule = new Rule();
+                rule.setContent(content);
+                rule.setType(type);
+                rule.setSms(sms);
+                rule.setCall(call);
+                rule.setException(except);
+                rule.setCreated(created);
+                rule.setRemark(remark);
+
+                long id = mRuleModel.saveRule(rule);
+                rule.setId(id);
+                adapter.add(0, rule);
+            }
+            br.close();
+
+            mRuleView.showTip(R.string.menu_import_rule_tip, false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void exportRules() {
-        new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    File file = new File(Environment.getExternalStorageDirectory(), "blocker_rule.csv");
-                    OutputStream os = new FileOutputStream(file);
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), "blocker_rule.csv");
+            OutputStream os = new FileOutputStream(file);
 
-                    List<Rule> rules = mRuleModel.getRules(BlockerManager.TYPE_ALL);
-                    StringBuilder sb = new StringBuilder();
-                    for (int i = rules.size(); i > 0; i--) {
-                        Rule rule = rules.get(i - 1);
-                        sb.append(rule.getId());
-                        sb.append(",").append("\"").append(rule.getContent().replaceAll("\"", "\"\"")).append("\"");
-                        sb.append(",").append(rule.getType());
-                        sb.append(",").append(rule.getSms());
-                        sb.append(",").append(rule.getCall());
-                        sb.append(",").append(rule.getException());
-                        sb.append(",").append(rule.getCreated());
-                        sb.append(",").append("\"").append(rule.getRemark().replaceAll("\"", "\"\"")).append("\"");
-                        sb.append("\n");
-                    }
-                    byte[] bs = sb.toString().getBytes();
-                    os.write(bs, 0, bs.length);
-                    os.flush();
-                    os.close();
-
-                    mRuleView.showTipInThread(R.string.menu_export_rule_tip);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            List<Rule> rules = mRuleModel.getRules(BlockerManager.TYPE_ALL);
+            StringBuilder sb = new StringBuilder();
+            for (int i = rules.size(); i > 0; i--) {
+                Rule rule = rules.get(i - 1);
+                sb.append(rule.getId());
+                sb.append(",").append("\"").append(rule.getContent().replaceAll("\"", "\"\"")).append("\"");
+                sb.append(",").append(rule.getType());
+                sb.append(",").append(rule.getSms());
+                sb.append(",").append(rule.getCall());
+                sb.append(",").append(rule.getException());
+                sb.append(",").append(rule.getCreated());
+                sb.append(",").append("\"").append(rule.getRemark().replaceAll("\"", "\"\"")).append("\"");
+                sb.append("\n");
             }
-        }.run();
+            byte[] bs = sb.toString().getBytes();
+            os.write(bs, 0, bs.length);
+            os.flush();
+            os.close();
+
+            mRuleView.showTip(R.string.menu_export_rule_tip, false);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

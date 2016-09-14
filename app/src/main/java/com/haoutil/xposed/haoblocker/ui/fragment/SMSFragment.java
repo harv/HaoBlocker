@@ -1,7 +1,6 @@
 package com.haoutil.xposed.haoblocker.ui.fragment;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +17,7 @@ import com.haoutil.xposed.haoblocker.ui.SMSView;
 import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 
-public class SMSFragment extends BaseFragment implements SMSView, BaseRecycleAdapter.OnItemClick, View.OnClickListener, DialogInterface.OnClickListener, SettingsActivity.OnMenuItemClickListener {
+public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleAdapter.OnItemClick, SettingsActivity.OnMenuItemClickListener {
     private SMSPresenter mSMSPresenter;
     private RecyclerView rv_sms;
 
@@ -48,29 +47,32 @@ public class SMSFragment extends BaseFragment implements SMSView, BaseRecycleAda
     }
 
     @Override
-    public void onClick(int position) {
+    public int getLayoutResource() {
+        return R.layout.fragment_sms;
     }
 
     @Override
-    public void onLongClick(int position) {
-        mSMSPresenter.deleteSMSConfirm(position);
+    public void onConfirmOK() {
+        mSMSPresenter.deleteSMS();
     }
 
     @Override
-    public void onClick(View v) {
+    public void onConfirmCancel() {
+        mSMSPresenter.deleteSMSCancel();
+    }
+
+    @Override
+    public void onActionClick(View action) {
         mSMSPresenter.restoreSMS();
     }
 
     @Override
-    public void onClick(DialogInterface dialog, int which) {
-        switch (which) {
-            case DialogInterface.BUTTON_POSITIVE:
-                mSMSPresenter.deleteSMS();
-                break;
-            case DialogInterface.BUTTON_NEGATIVE:
-                mSMSPresenter.deleteSMSCancel();
-                break;
-        }
+    public void onItemClick(int position) {
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
+        mSMSPresenter.deleteSMSConfirm(position);
     }
 
     @Override
@@ -85,11 +87,6 @@ public class SMSFragment extends BaseFragment implements SMSView, BaseRecycleAda
     @Override
     public void onImport(MenuItem item) {
         mSMSPresenter.importSMSes();
-    }
-
-    @Override
-    protected int getLayoutResource() {
-        return R.layout.fragment_sms;
     }
 
     @Override
@@ -112,20 +109,5 @@ public class SMSFragment extends BaseFragment implements SMSView, BaseRecycleAda
     @Override
     public BaseRecycleAdapter.OnItemClick getOnItemClick() {
         return this;
-    }
-
-    @Override
-    public void showTip(int resId) {
-        ((SettingsActivity) getActivity()).showTip(resId, SMSFragment.this);
-    }
-
-    @Override
-    public void showTipInThread(int resId) {
-        ((SettingsActivity) getActivity()).showTipInThread(resId);
-    }
-
-    @Override
-    public void confirm() {
-        confirm(this, this);
     }
 }

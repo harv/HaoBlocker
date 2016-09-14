@@ -6,7 +6,7 @@ import android.view.Menu;
 
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 
-public interface CallView {
+public interface CallView extends BaseView, PromptView {
     Context getApplicationContext();
 
     void setCallAdapter(RecyclerView.Adapter adapter);
@@ -14,10 +14,4 @@ public interface CallView {
     void setMenuItems(Menu menu);
 
     BaseRecycleAdapter.OnItemClick getOnItemClick();
-
-    void showTip(int resId);
-
-    void showTipInThread(int resId);
-
-    void confirm();
 }
