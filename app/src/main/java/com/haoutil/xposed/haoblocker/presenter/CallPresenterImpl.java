@@ -97,18 +97,22 @@ public class CallPresenterImpl implements CallPresenter {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] columns = line.split(",");
+                long id = Long.valueOf(columns[0]);
                 String caller = columns[1];
                 long created = Long.valueOf(columns[2]);
                 int read = Integer.valueOf(columns[3]);
 
                 Call call = new Call();
+                call.setId(id);
                 call.setCaller(caller);
                 call.setCreated(created);
                 call.setRead(read);
 
-                long id = mCallModel.saveCall(call);
-                call.setId(id);
-                adapter.add(0, call);
+                id = mCallModel.saveCall(call);
+                if (id != -1) {
+                    call.setId(id);
+                    adapter.add(0, call);
+                }
             }
             br.close();
 

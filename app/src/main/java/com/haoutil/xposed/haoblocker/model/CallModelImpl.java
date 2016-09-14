@@ -28,7 +28,7 @@ public class CallModelImpl implements CallModel {
 
     @Override
     public long saveCall(Call call) {
-        return mBlockerManager.saveCall(call);
+        return mBlockerManager.hasCall(call) ? -1 : mBlockerManager.saveCall(call);
     }
 
     @Override

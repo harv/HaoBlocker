@@ -22,7 +22,7 @@ public class RuleModelImpl implements RuleModel {
 
     @Override
     public long saveRule(Rule rule) {
-        return mBlockerManager.saveRule(rule);
+        return mBlockerManager.hasRule(rule) ? -1 : mBlockerManager.saveRule(rule);
     }
 
     @Override

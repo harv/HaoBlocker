@@ -97,6 +97,7 @@ public class SMSPresenterImpl implements SMSPresenter {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] columns = line.split(",");
+                long id = Long.valueOf(columns[0]);
                 String sender = columns[1];
                 String content = columns[2];
                 content = content.substring(1, content.length() - 1).replaceAll("\"\"", "\"");
@@ -104,14 +105,17 @@ public class SMSPresenterImpl implements SMSPresenter {
                 int read = Integer.valueOf(columns[4]);
 
                 SMS sms = new SMS();
+                sms.setId(id);
                 sms.setSender(sender);
                 sms.setContent(content);
                 sms.setCreated(created);
                 sms.setRead(read);
 
-                long id = mSMSModel.saveSMS(sms);
-                sms.setId(id);
-                adapter.add(0, sms);
+                id = mSMSModel.saveSMS(sms);
+                if (id != -1) {
+                    sms.setId(id);
+                    adapter.add(0, sms);
+                }
             }
             br.close();
 

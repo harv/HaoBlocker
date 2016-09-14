@@ -120,6 +120,7 @@ public class RulePresenterImpl implements RulePresenter {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] columns = line.split(",");
+                long id = Long.valueOf(columns[0]);
                 String content = columns[1];
                 content = content.substring(1, content.length() - 1).replaceAll("\"\"", "\"");
                 int type = Integer.valueOf(columns[2]);
@@ -131,6 +132,7 @@ public class RulePresenterImpl implements RulePresenter {
                 remark = remark.substring(1, remark.length() - 1).replaceAll("\"\"", "\"");
 
                 Rule rule = new Rule();
+                rule.setId(id);
                 rule.setContent(content);
                 rule.setType(type);
                 rule.setSms(sms);
@@ -139,9 +141,11 @@ public class RulePresenterImpl implements RulePresenter {
                 rule.setCreated(created);
                 rule.setRemark(remark);
 
-                long id = mRuleModel.saveRule(rule);
-                rule.setId(id);
-                adapter.add(0, rule);
+                id = mRuleModel.saveRule(rule);
+                if (id != -1) {
+                    rule.setId(id);
+                    adapter.add(0, rule);
+                }
             }
             br.close();
 

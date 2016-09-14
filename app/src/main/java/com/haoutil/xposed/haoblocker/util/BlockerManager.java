@@ -82,6 +82,15 @@ public class BlockerManager {
         return list;
     }
 
+    public boolean hasRule(Rule rule) {
+        Cursor cursor = resolver.query(URI_RULE_ALL, new String[]{"_id"}, "content = ? AND type = ? AND sms = ? AND call = ? AND exception = ?", new String[]{rule.getContent(), String.valueOf(rule.getType()), String.valueOf(rule.getSms()), String.valueOf(rule.getCall()), String.valueOf(rule.getException())}, "created DESC");
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close();
+            return true;
+        }
+        return false;
+    }
+
     public long saveRule(Rule rule) {
         ContentValues values = new ContentValues();
         values.put("content", rule.getContent());
@@ -139,6 +148,15 @@ public class BlockerManager {
         return list;
     }
 
+    public boolean hasSMS(SMS sms) {
+        Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id"}, "sender = ? AND content = ? AND created = ?", new String[]{sms.getSender(), sms.getContent(), String.valueOf(sms.getCreated())}, "created DESC");
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close();
+            return true;
+        }
+        return false;
+    }
+
     public long saveSMS(SMS sms) {
         ContentValues values = new ContentValues();
         values.put("sender", sms.getSender());
@@ -183,6 +201,15 @@ public class BlockerManager {
         }
 
         return list;
+    }
+
+    public boolean hasCall(Call call) {
+        Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id"}, "caller = ? AND created = ?", new String[]{call.getCaller(), String.valueOf(call.getCreated())}, "created DESC");
+        if (cursor != null && cursor.getCount() > 0) {
+            cursor.close();
+            return true;
+        }
+        return false;
     }
 
     public long saveCall(Call call) {

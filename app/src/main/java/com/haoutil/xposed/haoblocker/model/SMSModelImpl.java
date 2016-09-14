@@ -28,7 +28,7 @@ public class SMSModelImpl implements SMSModel {
 
     @Override
     public long saveSMS(SMS sms) {
-        return mBlockerManager.saveSMS(sms);
+        return mBlockerManager.hasSMS(sms) ? -1 : mBlockerManager.saveSMS(sms);
     }
 
     @Override
