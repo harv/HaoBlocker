@@ -1,6 +1,7 @@
 package com.haoutil.xposed.haoblocker.ui.adapter;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -11,6 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class BaseRecycleAdapter<T> extends RecyclerView.Adapter<BaseRecycleAdapter.ViewHolder> {
+    private Handler mHandler = new Handler();
+    private Thread mUiThread = Thread.currentThread();
+
     protected Context context;
     protected List<T> data;
     private OnItemClick onItemClick;
@@ -47,37 +51,50 @@ public abstract class BaseRecycleAdapter<T> extends RecyclerView.Adapter<BaseRec
     @SuppressWarnings("unused")
     public void add(int index, T elem) {
         data.add(index, elem);
-        notifyDataSetChanged();
+        notifyChanged();
     }
 
     @SuppressWarnings("unused")
     public void addAll(List<T> elem) {
         data.addAll(elem);
-        notifyDataSetChanged();
+        notifyChanged();
     }
 
     @SuppressWarnings("unused")
     public void remove(T elem) {
         data.remove(elem);
-        notifyDataSetChanged();
+        notifyChanged();
     }
 
     @SuppressWarnings("unused")
     public void remove(int index) {
         data.remove(index);
-        notifyDataSetChanged();
+        notifyChanged();
     }
 
     @SuppressWarnings("unused")
     public void replace(int index, T elem) {
         data.set(index, elem);
-        notifyDataSetChanged();
+        notifyChanged();
     }
 
     public void replaceAll(List<T> elem) {
         data.clear();
         data.addAll(elem);
-        notifyDataSetChanged();
+        notifyChanged();
+    }
+
+    public void notifyChanged() {
+        if (Thread.currentThread() != mUiThread) {
+            mHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    notifyDataSetChanged();
+                }
+            });
+        } else {
+            notifyDataSetChanged();
+        }
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {

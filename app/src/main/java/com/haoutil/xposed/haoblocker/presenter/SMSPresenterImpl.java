@@ -87,69 +87,79 @@ public class SMSPresenterImpl implements SMSPresenter {
 
     @Override
     public void importSMSes() {
-        try {
-            File file = new File(Environment.getExternalStorageDirectory(), "blocker_sms.csv");
-            if (!file.exists() || !file.isFile()) {
-                mSMSView.showTip(R.string.menu_import_sms_miss_tip, false);
-                return;
-            }
-            BufferedReader br = new BufferedReader(new FileReader(file));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] columns = line.split(",");
-                long id = Long.valueOf(columns[0]);
-                String sender = columns[1];
-                String content = columns[2];
-                content = content.substring(1, content.length() - 1).replaceAll("\"\"", "\"");
-                long created = Long.valueOf(columns[3]);
-                int read = Integer.valueOf(columns[4]);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File file = new File(Environment.getExternalStorageDirectory(), "blocker_sms.csv");
+                    if (!file.exists() || !file.isFile()) {
+                        mSMSView.showTip(R.string.menu_import_sms_miss_tip, false);
+                        return;
+                    }
+                    BufferedReader br = new BufferedReader(new FileReader(file));
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        String[] columns = line.split(",");
+                        long id = Long.valueOf(columns[0]);
+                        String sender = columns[1];
+                        String content = columns[2];
+                        content = content.substring(1, content.length() - 1).replaceAll("\"\"", "\"");
+                        long created = Long.valueOf(columns[3]);
+                        int read = Integer.valueOf(columns[4]);
 
-                SMS sms = new SMS();
-                sms.setId(id);
-                sms.setSender(sender);
-                sms.setContent(content);
-                sms.setCreated(created);
-                sms.setRead(read);
+                        final SMS sms = new SMS();
+                        sms.setId(id);
+                        sms.setSender(sender);
+                        sms.setContent(content);
+                        sms.setCreated(created);
+                        sms.setRead(read);
 
-                id = mSMSModel.saveSMS(sms);
-                if (id != -1) {
-                    sms.setId(id);
-                    adapter.add(0, sms);
+                        id = mSMSModel.saveSMS(sms);
+                        if (id != -1) {
+                            sms.setId(id);
+                            adapter.add(0, sms);
+                        }
+                    }
+                    br.close();
+
+                    mSMSView.showTip(R.string.menu_import_sms_tip, false);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-            br.close();
-
-            mSMSView.showTip(R.string.menu_import_sms_tip, false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }).start();
     }
 
     @Override
     public void exportSMSes() {
-        try {
-            File file = new File(Environment.getExternalStorageDirectory(), "blocker_sms.csv");
-            OutputStream os = new FileOutputStream(file);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    File file = new File(Environment.getExternalStorageDirectory(), "blocker_sms.csv");
+                    OutputStream os = new FileOutputStream(file);
 
-            List<SMS> smses = mSMSModel.getSMSes(-1);
-            StringBuilder sb = new StringBuilder();
-            for (int i = smses.size(); i > 0; i--) {
-                SMS sms = smses.get(i - 1);
-                sb.append(sms.getId());
-                sb.append(",").append(sms.getSender());
-                sb.append(",").append("\"").append(sms.getContent().replaceAll("\"", "\"\"")).append("\"");
-                sb.append(",").append(sms.getCreated());
-                sb.append(",").append(sms.getRead());
-                sb.append("\n");
+                    List<SMS> smses = mSMSModel.getSMSes(-1);
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = smses.size(); i > 0; i--) {
+                        SMS sms = smses.get(i - 1);
+                        sb.append(sms.getId());
+                        sb.append(",").append(sms.getSender());
+                        sb.append(",").append("\"").append(sms.getContent().replaceAll("\"", "\"\"")).append("\"");
+                        sb.append(",").append(sms.getCreated());
+                        sb.append(",").append(sms.getRead());
+                        sb.append("\n");
+                    }
+                    byte[] bs = sb.toString().getBytes();
+                    os.write(bs, 0, bs.length);
+                    os.flush();
+                    os.close();
+
+                    mSMSView.showTip(R.string.menu_export_sms_tip, false);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-            byte[] bs = sb.toString().getBytes();
-            os.write(bs, 0, bs.length);
-            os.flush();
-            os.close();
-
-            mSMSView.showTip(R.string.menu_export_sms_tip, false);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }).start();
     }
 }
