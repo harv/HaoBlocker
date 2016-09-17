@@ -2,8 +2,6 @@ package com.haoutil.xposed.haoblocker.presenter;
 
 import android.content.Context;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.view.Menu;
 
 import com.haoutil.xposed.haoblocker.R;
@@ -118,7 +116,7 @@ public class RulePresenterImpl implements RulePresenter {
                 try {
                     File file = new File(Environment.getExternalStorageDirectory(), "blocker_rule.csv");
                     if (!file.exists() || !file.isFile()) {
-                        mRuleView.showTip(R.string.menu_import_rule_miss_tip, false);
+                        mRuleView.showTip(R.string.menu_restore_rule_miss_tip, false);
                         return;
                     }
                     BufferedReader br = new BufferedReader(new FileReader(file));
@@ -154,7 +152,7 @@ public class RulePresenterImpl implements RulePresenter {
                     }
                     br.close();
 
-                    mRuleView.showTip(R.string.menu_import_rule_tip, false);
+                    mRuleView.showTip(R.string.menu_restore_rule_tip, false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -190,7 +188,7 @@ public class RulePresenterImpl implements RulePresenter {
                     os.flush();
                     os.close();
 
-                    mRuleView.showTip(R.string.menu_export_rule_tip, false);
+                    mRuleView.showTip(R.string.menu_backup_rule_tip, false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

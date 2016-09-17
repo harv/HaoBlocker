@@ -23,11 +23,11 @@
         </menu>
     </item>
     <item
-        android:id="@+id/import0"
-        android:title="@string/menu_import"
+        android:id="@+id/backup"
+        android:title="@string/menu_backup"
         android:visible="false" />
     <item
-        android:id="@+id/export"
-        android:title="@string/menu_export"
+        android:id="@+id/restore"
+        android:title="@string/menu_restore"
         android:visible="false" />
 </menu>

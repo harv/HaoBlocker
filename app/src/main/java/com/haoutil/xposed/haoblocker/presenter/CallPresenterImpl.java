@@ -93,7 +93,7 @@ public class CallPresenterImpl implements CallPresenter {
                 try {
                     File file = new File(Environment.getExternalStorageDirectory(), "blocker_call.csv");
                     if (!file.exists() || !file.isFile()) {
-                        mCallView.showTip(R.string.menu_import_call_miss_tip, false);
+                        mCallView.showTip(R.string.menu_restore_call_miss_tip, false);
                         return;
                     }
                     BufferedReader br = new BufferedReader(new FileReader(file));
@@ -119,7 +119,7 @@ public class CallPresenterImpl implements CallPresenter {
                     }
                     br.close();
 
-                    mCallView.showTip(R.string.menu_import_call_tip, false);
+                    mCallView.showTip(R.string.menu_restore_call_tip, false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -151,7 +151,7 @@ public class CallPresenterImpl implements CallPresenter {
                     os.flush();
                     os.close();
 
-                    mCallView.showTip(R.string.menu_export_call_tip, false);
+                    mCallView.showTip(R.string.menu_backup_call_tip, false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

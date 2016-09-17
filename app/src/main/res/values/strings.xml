@@ -19,9 +19,7 @@
     <string name="rule_tip_empty_rule">Please provide a rule</string>
     <string name="rule_tip_rule_added">one rule added/updated</string>
     <string name="rule_tip_rule_deleted">one rule deleted</string>
-
     <string name="rule_tip_sms_deleted">one sms deleted</string>
-
     <string name="rule_tip_call_deleted">one call deleted</string>
 
     <string name="discard_dialog_title">Confirm</string>
@@ -38,15 +36,15 @@
     <string name="menu_filter_call">call rule</string>
     <string name="menu_filter_sms">sms rule</string>
     <string name="menu_filter_except">except rule</string>
-    <string name="menu_export">export</string>
-    <string name="menu_export_rule_tip">rule exported</string>
-    <string name="menu_export_sms_tip">sms history exported</string>
-    <string name="menu_export_call_tip">call history exported</string>
-    <string name="menu_import">import</string>
-    <string name="menu_import_rule_miss_tip">Please put blocker_rule.csv at root of sdcard</string>
-    <string name="menu_import_rule_tip">rule imported</string>
-    <string name="menu_import_sms_miss_tip">Please put blocker_sms.csv at root of sdcard</string>
-    <string name="menu_import_sms_tip">sms history imported</string>
-    <string name="menu_import_call_miss_tip">Please put blocker_call.csv at root of sdcard</string>
-    <string name="menu_import_call_tip">call history imported</string>
+    <string name="menu_backup">backup</string>
+    <string name="menu_backup_rule_tip">backup rule succeed</string>
+    <string name="menu_backup_sms_tip">backup sms history succeed</string>
+    <string name="menu_backup_call_tip">backup call history succeed</string>
+    <string name="menu_restore">restore</string>
+    <string name="menu_restore_rule_miss_tip">blocker_rule.csv must be placed in the root directory of the SD card</string>
+    <string name="menu_restore_rule_tip">restore rule succeed</string>
+    <string name="menu_restore_sms_miss_tip">blocker_sms.csv must be placed in the root directory of the SD card</string>
+    <string name="menu_restore_sms_tip">restore sms history succeed</string>
+    <string name="menu_restore_call_miss_tip">blocker_call.csv must be placed in the root directory of the SD card</string>
+    <string name="menu_restore_call_tip">restore call history succeed</string>
 </resources>

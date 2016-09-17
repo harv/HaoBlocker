@@ -80,12 +80,12 @@ public class CallFragment extends PromptFragment implements CallView, BaseRecycl
     }
 
     @Override
-    public void onExport(MenuItem item) {
+    public void onBackup(MenuItem item) {
         mCallPresenter.exportCalls();
     }
 
     @Override
-    public void onImport(MenuItem item) {
+    public void onRestore(MenuItem item) {
         mCallPresenter.importCalls();
     }
 
@@ -101,8 +101,8 @@ public class CallFragment extends PromptFragment implements CallView, BaseRecycl
 
     @Override
     public void setMenuItems(Menu menu) {
-        menu.findItem(R.id.export).setVisible(true);
-        menu.findItem(R.id.import0).setVisible(true);
+        menu.findItem(R.id.backup).setVisible(true);
+        menu.findItem(R.id.restore).setVisible(true);
         ((SettingsActivity) getActivity()).setOnMenuItemClickListener(this);
     }
 

@@ -59,14 +59,14 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
                     onMenuItemClickListener.onFilter(item);
                 }
                 break;
-            case R.id.export:
+            case R.id.backup:
                 if (onMenuItemClickListener != null) {
-                    onMenuItemClickListener.onExport(item);
+                    onMenuItemClickListener.onBackup(item);
                 }
                 break;
-            case R.id.import0:
+            case R.id.restore:
                 if (onMenuItemClickListener != null) {
-                    onMenuItemClickListener.onImport(item);
+                    onMenuItemClickListener.onRestore(item);
                 }
                 break;
         }
@@ -132,8 +132,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     public interface OnMenuItemClickListener {
         void onFilter(MenuItem item);
 
-        void onExport(MenuItem item);
+        void onBackup(MenuItem item);
 
-        void onImport(MenuItem item);
+        void onRestore(MenuItem item);
     }
 }

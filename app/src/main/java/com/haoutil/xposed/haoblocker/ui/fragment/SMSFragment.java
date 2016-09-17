@@ -80,12 +80,12 @@ public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleA
     }
 
     @Override
-    public void onExport(MenuItem item) {
+    public void onBackup(MenuItem item) {
         mSMSPresenter.exportSMSes();
     }
 
     @Override
-    public void onImport(MenuItem item) {
+    public void onRestore(MenuItem item) {
         mSMSPresenter.importSMSes();
     }
 
@@ -101,8 +101,8 @@ public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleA
 
     @Override
     public void setMenuItems(Menu menu) {
-        menu.findItem(R.id.export).setVisible(true);
-        menu.findItem(R.id.import0).setVisible(true);
+        menu.findItem(R.id.backup).setVisible(true);
+        menu.findItem(R.id.restore).setVisible(true);
         ((SettingsActivity) getActivity()).setOnMenuItemClickListener(this);
     }
 

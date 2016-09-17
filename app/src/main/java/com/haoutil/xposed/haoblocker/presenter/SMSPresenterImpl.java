@@ -93,7 +93,7 @@ public class SMSPresenterImpl implements SMSPresenter {
                 try {
                     File file = new File(Environment.getExternalStorageDirectory(), "blocker_sms.csv");
                     if (!file.exists() || !file.isFile()) {
-                        mSMSView.showTip(R.string.menu_import_sms_miss_tip, false);
+                        mSMSView.showTip(R.string.menu_restore_sms_miss_tip, false);
                         return;
                     }
                     BufferedReader br = new BufferedReader(new FileReader(file));
@@ -122,7 +122,7 @@ public class SMSPresenterImpl implements SMSPresenter {
                     }
                     br.close();
 
-                    mSMSView.showTip(R.string.menu_import_sms_tip, false);
+                    mSMSView.showTip(R.string.menu_restore_sms_tip, false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -155,7 +155,7 @@ public class SMSPresenterImpl implements SMSPresenter {
                     os.flush();
                     os.close();
 
-                    mSMSView.showTip(R.string.menu_export_sms_tip, false);
+                    mSMSView.showTip(R.string.menu_backup_sms_tip, false);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
