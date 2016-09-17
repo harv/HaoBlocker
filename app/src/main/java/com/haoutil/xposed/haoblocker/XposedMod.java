@@ -60,7 +60,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         if (loadPackageParam.packageName.equals("com.android.phone")) {
             new CallHook().handleLoadPackage(loadPackageParam);
         } else if (loadPackageParam.packageName.equals("android")) {
-            initNotificationBroadcastReceiver(loadPackageParam);
+            initNotificationReceiver(loadPackageParam);
         }
     }
 
@@ -71,11 +71,11 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
                 return;
             }
 
-            getNotificationIcon(resParam);
+            initNotificationIcon(resParam);
         }
     }
 
-    private void initNotificationBroadcastReceiver(XC_LoadPackage.LoadPackageParam loadPackageParam) {
+    private void initNotificationReceiver(XC_LoadPackage.LoadPackageParam loadPackageParam) {
         XposedHelpers.findAndHookMethod("com.android.server.am.ActivityManagerService", loadPackageParam.classLoader, "systemReady", Runnable.class, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
@@ -110,7 +110,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         });
     }
 
-    private void getNotificationIcon(XC_InitPackageResources.InitPackageResourcesParam resParam) {
+    private void initNotificationIcon(XC_InitPackageResources.InitPackageResourcesParam resParam) {
         XModuleResources modRes = XModuleResources.createInstance(MODULE_PATH, resParam.res);
         smallNotificationIcon = resParam.res.addResource(modRes, R.drawable.ic_notification);
         notificationContentText = resParam.res.getString(resParam.res.addResource(modRes, R.string.notification_content_text));
@@ -178,6 +178,7 @@ public class XposedMod implements IXposedHookZygoteInit, IXposedHookLoadPackage,
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
         notiBuilder.setSmallIcon(smallNotificationIcon)
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setContentText(String.format(notificationContentText, unreadSMSCount, unreadCallCount))
                 .setContentIntent(pendingIntent);
 

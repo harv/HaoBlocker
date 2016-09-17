@@ -37,7 +37,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         fab_add.setOnClickListener(this);
 
         int position = getIntent().getIntExtra("position", -1);
-        if (position > -1) {
+        if (position > -1 && position < viewPager.getAdapter().getCount()) {
             viewPager.setCurrentItem(position);
         }
     }
