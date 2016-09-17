@@ -42,7 +42,7 @@ public class BlockerManager {
     private ContentResolver resolver;
 
     public BlockerManager(Context context) {
-        resolver = context.getContentResolver();
+        resolver = context.getApplicationContext().getContentResolver();
     }
 
     public List<Rule> getRules(int type) {

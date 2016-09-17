@@ -78,6 +78,7 @@ public abstract class BaseRecycleAdapter<T> extends RecyclerView.Adapter<BaseRec
         notifyChanged();
     }
 
+    @SuppressWarnings("unused")
     public void replaceAll(List<T> elem) {
         data.clear();
         data.addAll(elem);
