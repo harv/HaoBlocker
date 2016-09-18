@@ -19,8 +19,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     private CoordinatorLayout cl_container;
     private FloatingActionButton fab_add;
 
-    private OnAddListener onAddListener;
-    private OnMenuItemClickListener onMenuItemClickListener;
+    private OnAddListener mOnAddListener;
+    private OnMenuItemClickListener mOnMenuItemClickListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,18 +55,18 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
             case R.id.filter_call:
             case R.id.filter_sms:
             case R.id.filter_except:
-                if (onMenuItemClickListener != null) {
-                    onMenuItemClickListener.onFilter(item);
+                if (mOnMenuItemClickListener != null) {
+                    mOnMenuItemClickListener.onFilter(item);
                 }
                 break;
             case R.id.backup:
-                if (onMenuItemClickListener != null) {
-                    onMenuItemClickListener.onBackup(item);
+                if (mOnMenuItemClickListener != null) {
+                    mOnMenuItemClickListener.onBackup(item);
                 }
                 break;
             case R.id.restore:
-                if (onMenuItemClickListener != null) {
-                    onMenuItemClickListener.onRestore(item);
+                if (mOnMenuItemClickListener != null) {
+                    mOnMenuItemClickListener.onRestore(item);
                 }
                 break;
         }
@@ -77,8 +77,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.fab_add:
-                if (onAddListener != null) {
-                    onAddListener.onAdd();
+                if (mOnAddListener != null) {
+                    mOnAddListener.onAdd();
                 }
                 break;
         }
@@ -113,8 +113,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
     public void setOnAddListener(OnAddListener onAddListener) {
-        this.onAddListener = onAddListener;
-        if (this.onAddListener == null) {
+        this.mOnAddListener = onAddListener;
+        if (this.mOnAddListener == null) {
             fab_add.hide();
         } else {
             fab_add.show();
@@ -122,7 +122,7 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
     }
 
     public void setOnMenuItemClickListener(OnMenuItemClickListener onMenuItemClickListener) {
-        this.onMenuItemClickListener = onMenuItemClickListener;
+        this.mOnMenuItemClickListener = onMenuItemClickListener;
     }
 
     public interface OnAddListener {

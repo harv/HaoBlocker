@@ -14,15 +14,15 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class CallHook implements BaseHook {
-    private SettingsHelper settingsHelper;
-    private BlockerManager blockerManager;
+    private SettingsHelper mSettingsHelper;
+    private BlockerManager mBlockerManager;
 
-    private final boolean isLollipop = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
-    private final String className = isLollipop ? "com.android.services.telephony.PstnIncomingCallNotifier" : "com.android.phone.CallNotifier";
-    private final String methodName = isLollipop ? "handleNewRingingConnection" : "onNewRingingConnection";
+    private final boolean mIsLollipop = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
+    private final String mClassName = mIsLollipop ? "com.android.services.telephony.PstnIncomingCallNotifier" : "com.android.phone.CallNotifier";
+    private final String mMethodName = mIsLollipop ? "handleNewRingingConnection" : "onNewRingingConnection";
 
     public CallHook() {
-        settingsHelper = new SettingsHelper();
+        mSettingsHelper = new SettingsHelper();
     }
 
     @Override
@@ -31,24 +31,24 @@ public class CallHook implements BaseHook {
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
-//        Logger.log("Hook " + className + "...");
-        Class<?> clazz = XposedHelpers.findClass(className, loadPackageParam.classLoader);
+//        Logger.log("Hook " + mClassName + "...");
+        Class<?> clazz = XposedHelpers.findClass(mClassName, loadPackageParam.classLoader);
 
         XposedBridge.hookAllConstructors(clazz, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                 Context context = (Context) XposedHelpers.callMethod(
-                        isLollipop ? XposedHelpers.getObjectField(param.thisObject, "mPhoneBase") : param.args[1],
+                        mIsLollipop ? XposedHelpers.getObjectField(param.thisObject, "mPhoneBase") : param.args[1],
                         "getContext"
                 );
-                blockerManager = new BlockerManager(context);
+                mBlockerManager = new BlockerManager(context);
             }
         });
 
-        XposedBridge.hookAllMethods(clazz, methodName, new XC_MethodHook() {
+        XposedBridge.hookAllMethods(clazz, mMethodName, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
-                if (!settingsHelper.isEnable() || !settingsHelper.isEnableCall()) {
+                if (!mSettingsHelper.isEnable() || !mSettingsHelper.isEnableCall()) {
                     return;
                 }
 
@@ -59,7 +59,7 @@ public class CallHook implements BaseHook {
 
                     Logger.log("Incoming call: " + caller);
 
-                    if (blockerManager.blockCall(caller)) {
+                    if (mBlockerManager.blockCall(caller)) {
                         XposedHelpers.callStaticMethod(XposedHelpers.findClass("com.android.phone.PhoneUtils", loadPackageParam.classLoader), "hangupRingingCall", call);
 
                         param.setResult(null);

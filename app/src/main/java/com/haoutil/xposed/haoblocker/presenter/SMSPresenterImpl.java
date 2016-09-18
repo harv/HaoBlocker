@@ -24,10 +24,10 @@ public class SMSPresenterImpl implements SMSPresenter {
     private SMSModel mSMSModel;
     private SMSView mSMSView;
 
-    private SMSAdapter adapter;
+    private SMSAdapter mAdapter;
 
-    private int positionDeleted = -1;
-    private SMS smsDeleted = null;
+    private int mPositionDeleted = -1;
+    private SMS mSmsDeleted = null;
 
     public SMSPresenterImpl(SMSView mSMSView) {
         this.mSMSView = mSMSView;
@@ -45,8 +45,8 @@ public class SMSPresenterImpl implements SMSPresenter {
         Context context = mSMSView.getApplicationContext();
         List<SMS> smses = mSMSModel.getSMSes(-1);
         BaseRecycleAdapter.OnItemClick onItemClick = mSMSView.getOnItemClick();
-        adapter = new SMSAdapter(context, smses, onItemClick);
-        mSMSView.setSMSAdapter(adapter);
+        mAdapter = new SMSAdapter(context, smses, onItemClick);
+        mSMSView.setSMSAdapter(mAdapter);
     }
 
     @Override
@@ -56,32 +56,32 @@ public class SMSPresenterImpl implements SMSPresenter {
 
     @Override
     public void deleteSMSConfirm(int position) {
-        positionDeleted = position;
+        mPositionDeleted = position;
         mSMSView.showConfirm();
     }
 
     @Override
     public void deleteSMS() {
-        smsDeleted = adapter.getItem(positionDeleted);
-        mSMSModel.deleteSMS(smsDeleted);
-        adapter.remove(positionDeleted);
+        mSmsDeleted = mAdapter.getItem(mPositionDeleted);
+        mSMSModel.deleteSMS(mSmsDeleted);
+        mAdapter.remove(mPositionDeleted);
         mSMSView.showTip(R.string.rule_tip_sms_deleted, true);
     }
 
     @Override
     public void deleteSMSCancel() {
-        positionDeleted = -1;
+        mPositionDeleted = -1;
     }
 
     @Override
     public void restoreSMS() {
-        if (-1 != positionDeleted && null != smsDeleted) {
-            long newId = mSMSModel.restoreSMS(smsDeleted);
-            smsDeleted.setId(newId);
-            adapter.add(positionDeleted, smsDeleted);
+        if (-1 != mPositionDeleted && null != mSmsDeleted) {
+            long newId = mSMSModel.restoreSMS(mSmsDeleted);
+            mSmsDeleted.setId(newId);
+            mAdapter.add(mPositionDeleted, mSmsDeleted);
 
-            positionDeleted = -1;
-            smsDeleted = null;
+            mPositionDeleted = -1;
+            mSmsDeleted = null;
         }
     }
 
@@ -117,7 +117,7 @@ public class SMSPresenterImpl implements SMSPresenter {
                         id = mSMSModel.saveSMS(sms);
                         if (id != -1) {
                             sms.setId(id);
-                            adapter.add(0, sms);
+                            mAdapter.add(0, sms);
                         }
                     }
                     br.close();

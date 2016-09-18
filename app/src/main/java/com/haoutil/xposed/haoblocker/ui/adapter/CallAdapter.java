@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class CallAdapter extends BaseRecycleAdapter<Call> {
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
+    private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
 
     public CallAdapter(Context context, List<Call> data, OnItemClick onItemClick) {
         super(context, data, onItemClick);
@@ -30,7 +30,7 @@ public class CallAdapter extends BaseRecycleAdapter<Call> {
             TextView tv_caller = holder.getView(R.id.tv_caller);
             tv_caller.setText(call.getCaller());
             TextView tv_date = holder.getView(R.id.tv_date);
-            tv_date.setText(simpleDateFormat.format(new Date(call.getCreated())));
+            tv_date.setText(mSimpleDateFormat.format(new Date(call.getCreated())));
         }
     }
 }

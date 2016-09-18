@@ -14,10 +14,10 @@ public class RuleAddPresenterImpl implements RuleAddPresenter {
     private RuleAddView mRuleAddView;
     private RuleAddModel mRuleAddModel;
 
-    private long id = -1;
-    private long created;
+    private long mId = -1;
+    private long mCreated;
 
-    private int position = -1;
+    private int mPosition = -1;
 
     public RuleAddPresenterImpl(RuleAddView mRuleAddView) {
         this.mRuleAddView = mRuleAddView;
@@ -35,9 +35,9 @@ public class RuleAddPresenterImpl implements RuleAddPresenter {
         if ("add".equalsIgnoreCase(operation)) {
         } else if ("modify".equalsIgnoreCase(operation)) {
             if (rule != null) {
-                this.position = position;
-                id = rule.getId();
-                created = rule.getCreated();
+                this.mPosition = position;
+                mId = rule.getId();
+                mCreated = rule.getCreated();
                 mRuleAddView.initView(rule);
             }
         }
@@ -67,10 +67,10 @@ public class RuleAddPresenterImpl implements RuleAddPresenter {
     @Override
     public void saveRule(String content, int type, int sms, int call, int except, String remark) {
         Rule rule = new Rule();
-        boolean isModify = id != -1;
+        boolean isModify = mId != -1;
         if (isModify) {
-            rule.setId(id);
-            rule.setCreated(created);
+            rule.setId(mId);
+            rule.setCreated(mCreated);
         } else {
             rule.setCreated(new Date().getTime());
         }
@@ -88,7 +88,7 @@ public class RuleAddPresenterImpl implements RuleAddPresenter {
             rule.setId(newId);
         }
 
-        mRuleAddView.setReturnValue(rule, position);
+        mRuleAddView.setReturnValue(rule, mPosition);
     }
 
     @Override

@@ -24,10 +24,10 @@ public class CallPresenterImpl implements CallPresenter {
     private CallModel mCallModel;
     private CallView mCallView;
 
-    private CallAdapter adapter;
+    private CallAdapter mAdapter;
 
-    private int positionDeleted = -1;
-    private Call callDeleted = null;
+    private int mPositionDeleted = -1;
+    private Call mCallDeleted = null;
 
     public CallPresenterImpl(CallView mCallView) {
         this.mCallView = mCallView;
@@ -45,8 +45,8 @@ public class CallPresenterImpl implements CallPresenter {
         Context context = mCallView.getApplicationContext();
         List<Call> calls = mCallModel.getCalls(-1);
         BaseRecycleAdapter.OnItemClick onItemClick = mCallView.getOnItemClick();
-        adapter = new CallAdapter(context, calls, onItemClick);
-        mCallView.setCallAdapter(adapter);
+        mAdapter = new CallAdapter(context, calls, onItemClick);
+        mCallView.setCallAdapter(mAdapter);
     }
 
     @Override
@@ -56,32 +56,32 @@ public class CallPresenterImpl implements CallPresenter {
 
     @Override
     public void deleteCallConfirm(int position) {
-        positionDeleted = position;
+        mPositionDeleted = position;
         mCallView.showConfirm();
     }
 
     @Override
     public void deleteCall() {
-        callDeleted = adapter.getItem(positionDeleted);
-        mCallModel.deleteCall(callDeleted);
-        adapter.remove(positionDeleted);
+        mCallDeleted = mAdapter.getItem(mPositionDeleted);
+        mCallModel.deleteCall(mCallDeleted);
+        mAdapter.remove(mPositionDeleted);
         mCallView.showTip(R.string.rule_tip_call_deleted, true);
     }
 
     @Override
     public void deleteCallCancel() {
-        positionDeleted = -1;
+        mPositionDeleted = -1;
     }
 
     @Override
     public void restoreCall() {
-        if (-1 != positionDeleted && null != callDeleted) {
-            long newId = mCallModel.restoreCall(callDeleted);
-            callDeleted.setId(newId);
-            adapter.add(positionDeleted, callDeleted);
+        if (-1 != mPositionDeleted && null != mCallDeleted) {
+            long newId = mCallModel.restoreCall(mCallDeleted);
+            mCallDeleted.setId(newId);
+            mAdapter.add(mPositionDeleted, mCallDeleted);
 
-            positionDeleted = -1;
-            callDeleted = null;
+            mPositionDeleted = -1;
+            mCallDeleted = null;
         }
     }
 
@@ -114,7 +114,7 @@ public class CallPresenterImpl implements CallPresenter {
                         id = mCallModel.saveCall(call);
                         if (id != -1) {
                             call.setId(id);
-                            adapter.add(0, call);
+                            mAdapter.add(0, call);
                         }
                     }
                     br.close();

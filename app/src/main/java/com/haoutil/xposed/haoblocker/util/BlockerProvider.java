@@ -37,36 +37,36 @@ public class BlockerProvider extends ContentProvider {
     private static final String CALL_TYPE = "vnd.android.cursor.dir/vnd.hblocker.call";
     private static final String CALL_ITEM_TYPE = "vnd.android.cursor.item/vnd.hblocker.call";
 
-    private static final UriMatcher matcher;
+    private static final UriMatcher sMatcher;
 
-    private ContentResolver resolver = null;
-    private DbHelper dbHelper;
+    private ContentResolver mResolver;
+    private DbHelper mDbHelper;
 
     static {
-        matcher = new UriMatcher(UriMatcher.NO_MATCH);
+        sMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
-        matcher.addURI(AUTHORITY, "rule", RULE_ALL);
-        matcher.addURI(AUTHORITY, "rule/#", RULE_ITEM);
-        matcher.addURI(AUTHORITY, "sms", SMS_ALL);
-        matcher.addURI(AUTHORITY, "sms/#", SMS_ITEM);
-        matcher.addURI(AUTHORITY, "call", CALL_ALL);
-        matcher.addURI(AUTHORITY, "call/#", CALL_ITEM);
+        sMatcher.addURI(AUTHORITY, "rule", RULE_ALL);
+        sMatcher.addURI(AUTHORITY, "rule/#", RULE_ITEM);
+        sMatcher.addURI(AUTHORITY, "sms", SMS_ALL);
+        sMatcher.addURI(AUTHORITY, "sms/#", SMS_ITEM);
+        sMatcher.addURI(AUTHORITY, "call", CALL_ALL);
+        sMatcher.addURI(AUTHORITY, "call/#", CALL_ITEM);
     }
 
     @Override
     public boolean onCreate() {
         Context context = getContext();
         if (context != null) {
-            resolver = context.getContentResolver();
+            mResolver = context.getContentResolver();
         }
-        dbHelper = new DbHelper(context);
+        mDbHelper = new DbHelper(context);
 
         return true;
     }
 
     @Override
     public String getType(@NonNull Uri uri) {
-        switch (matcher.match(uri)) {
+        switch (sMatcher.match(uri)) {
             case RULE_ALL:
                 return RULE_TYPE;
             case RULE_ITEM:
@@ -86,9 +86,9 @@ public class BlockerProvider extends ContentProvider {
 
     @Override
     public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
-        switch (matcher.match(uri)) {
+        switch (sMatcher.match(uri)) {
             case RULE_ALL:
             case RULE_ITEM:
                 return db.query(TABLE_RULE, projection, selection, selectionArgs, null, null, sortOrder);
@@ -105,10 +105,10 @@ public class BlockerProvider extends ContentProvider {
 
     @Override
     public Uri insert(@NonNull Uri uri, ContentValues values) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         long rowId;
-        switch (matcher.match(uri)) {
+        switch (sMatcher.match(uri)) {
             case RULE_ALL:
                 rowId = db.insert(TABLE_RULE, null, values);
                 break;
@@ -126,17 +126,17 @@ public class BlockerProvider extends ContentProvider {
         }
 
         Uri newUri = ContentUris.withAppendedId(uri, rowId);
-        resolver.notifyChange(newUri, null);
+        mResolver.notifyChange(newUri, null);
 
         return newUri;
     }
 
     @Override
     public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         int count;
-        switch (matcher.match(uri)) {
+        switch (sMatcher.match(uri)) {
             case RULE_ITEM:
                 count = db.update(TABLE_RULE, values, "_id=?", new String[]{String.valueOf(ContentUris.parseId(uri))});
                 break;
@@ -159,17 +159,17 @@ public class BlockerProvider extends ContentProvider {
                 throw new IllegalArgumentException("Error URI: " + uri);
         }
 
-        resolver.notifyChange(uri, null);
+        mResolver.notifyChange(uri, null);
 
         return count;
     }
 
     @Override
     public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
         int count;
-        switch (matcher.match(uri)) {
+        switch (sMatcher.match(uri)) {
             case RULE_ITEM:
                 count = db.delete(TABLE_RULE, "_id=?", new String[]{String.valueOf(ContentUris.parseId(uri))});
                 break;
@@ -183,7 +183,7 @@ public class BlockerProvider extends ContentProvider {
                 throw new IllegalArgumentException("Error URI: " + uri);
         }
 
-        resolver.notifyChange(uri, null);
+        mResolver.notifyChange(uri, null);
 
         return count;
     }

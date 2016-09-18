@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class SMSAdapter extends BaseRecycleAdapter<SMS> {
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
+    private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("MM-dd HH:mm", Locale.getDefault());
 
     public SMSAdapter(Context context, List<SMS> data, OnItemClick onItemClick) {
         super(context, data, onItemClick);
@@ -30,7 +30,7 @@ public class SMSAdapter extends BaseRecycleAdapter<SMS> {
             TextView tv_sender = holder.getView(R.id.tv_sender);
             tv_sender.setText(sms.getSender());
             TextView tv_date = holder.getView(R.id.tv_date);
-            tv_date.setText(simpleDateFormat.format(new Date(sms.getCreated())));
+            tv_date.setText(mSimpleDateFormat.format(new Date(sms.getCreated())));
             TextView tv_content = holder.getView(R.id.tv_content);
             tv_content.setText(sms.getContent());
         }

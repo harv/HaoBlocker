@@ -17,13 +17,13 @@ import de.robv.android.xposed.XposedHelpers;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class SMSHook implements BaseHook {
-    private SettingsHelper settingsHelper;
-    private BlockerManager blockerManager;
+    private SettingsHelper mSettingsHelper;
+    private BlockerManager mBlockerManager;
 
-    private SparseArray<String[]> smsArrays = new SparseArray<>();
+    private SparseArray<String[]> mSmsArrays = new SparseArray<>();
 
     public SMSHook() {
-        settingsHelper = new SettingsHelper();
+        mSettingsHelper = new SettingsHelper();
     }
 
     @Override
@@ -35,14 +35,14 @@ public class SMSHook implements BaseHook {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
                 Context context = (Context) param.args[0];
-                blockerManager = new BlockerManager(context);
+                mBlockerManager = new BlockerManager(context);
             }
         });
 
         XposedBridge.hookAllMethods(clazz, "processUnsolicited", new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(final MethodHookParam param) throws Throwable {
-                if (!settingsHelper.isEnable() || !settingsHelper.isEnableSMS()) {
+                if (!mSettingsHelper.isEnable() || !mSettingsHelper.isEnableSMS()) {
                     return;
                 }
 
@@ -74,16 +74,16 @@ public class SMSHook implements BaseHook {
                                 int seqNumber = XposedHelpers.getIntField(concatRef, "seqNumber");
                                 int msgCount = XposedHelpers.getIntField(concatRef, "msgCount");
 
-                                String[] smsArray = smsArrays.get(refNumber);
+                                String[] smsArray = mSmsArrays.get(refNumber);
                                 if (smsArray == null) {
                                     smsArray = new String[msgCount];
-                                    smsArrays.put(refNumber, smsArray);
+                                    mSmsArrays.put(refNumber, smsArray);
                                 }
                                 smsArray[seqNumber - 1] = content;
 
                                 if (isFullFilled(smsArray)) {
                                     content = TextUtils.join("", smsArray);
-                                    smsArrays.remove(refNumber);
+                                    mSmsArrays.remove(refNumber);
                                 } else {
                                     received = false;
                                 }
@@ -91,7 +91,7 @@ public class SMSHook implements BaseHook {
 
                             if (received) {
                                 Logger.log("New SMS: " + sender + "," + content);
-                                if (blockerManager.blockSMS(sender, content, sms.getTimestampMillis())) {
+                                if (mBlockerManager.blockSMS(sender, content, sms.getTimestampMillis())) {
                                     try {
                                         XposedHelpers.callMethod(param.thisObject, "acknowledgeLastIncomingGsmSms", true, 0, null);
                                     } catch (Throwable t) {

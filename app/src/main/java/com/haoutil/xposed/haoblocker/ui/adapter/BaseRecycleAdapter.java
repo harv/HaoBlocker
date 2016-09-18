@@ -15,28 +15,28 @@ public abstract class BaseRecycleAdapter<T> extends RecyclerView.Adapter<BaseRec
     private Handler mHandler = new Handler();
     private Thread mUiThread = Thread.currentThread();
 
-    protected Context context;
-    protected List<T> data;
-    private OnItemClick onItemClick;
+    protected Context mContext;
+    protected List<T> mData;
+    private OnItemClick mOnItemClick;
 
     public BaseRecycleAdapter(Context context, List<T> data, OnItemClick onItemClick) {
-        this.context = context;
-        this.data = data == null ? new ArrayList<T>() : data;
-        this.onItemClick = onItemClick;
+        this.mContext = context;
+        this.mData = data == null ? new ArrayList<T>() : data;
+        this.mOnItemClick = onItemClick;
     }
 
     @Override
     public int getItemCount() {
-        return data.size();
+        return mData.size();
     }
 
     public T getItem(int position) {
-        return data.get(position);
+        return mData.get(position);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ViewHolder(LayoutInflater.from(context).inflate(getItemResource(), parent, false), onItemClick);
+        return new ViewHolder(LayoutInflater.from(mContext).inflate(getItemResource(), parent, false), mOnItemClick);
     }
 
     @Override
@@ -50,38 +50,38 @@ public abstract class BaseRecycleAdapter<T> extends RecyclerView.Adapter<BaseRec
 
     @SuppressWarnings("unused")
     public void add(int index, T elem) {
-        data.add(index, elem);
+        mData.add(index, elem);
         notifyChanged();
     }
 
     @SuppressWarnings("unused")
     public void addAll(List<T> elem) {
-        data.addAll(elem);
+        mData.addAll(elem);
         notifyChanged();
     }
 
     @SuppressWarnings("unused")
     public void remove(T elem) {
-        data.remove(elem);
+        mData.remove(elem);
         notifyChanged();
     }
 
     @SuppressWarnings("unused")
     public void remove(int index) {
-        data.remove(index);
+        mData.remove(index);
         notifyChanged();
     }
 
     @SuppressWarnings("unused")
     public void replace(int index, T elem) {
-        data.set(index, elem);
+        mData.set(index, elem);
         notifyChanged();
     }
 
     @SuppressWarnings("unused")
     public void replaceAll(List<T> elem) {
-        data.clear();
-        data.addAll(elem);
+        mData.clear();
+        mData.addAll(elem);
         notifyChanged();
     }
 

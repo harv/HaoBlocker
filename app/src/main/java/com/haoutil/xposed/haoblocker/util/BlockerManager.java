@@ -43,16 +43,16 @@ public class BlockerManager {
     private static final Uri URI_SMS_ALL = Uri.parse("content://" + AUTHORITY + "/sms");
     private static final Uri URI_CALL_ALL = Uri.parse("content://" + AUTHORITY + "/call");
 
-    private Context context;
-    private ContentResolver resolver;
-    private Handler handler;
+    private Context mContext;
+    private ContentResolver mResolver;
+    private Handler mHandler;
 
     public BlockerManager(Context context) {
-        this.context = context.getApplicationContext();
-        resolver = this.context.getContentResolver();
+        mContext = context.getApplicationContext();
+        mResolver = mContext.getContentResolver();
         HandlerThread thread = new HandlerThread("HaoBlocker");
         thread.start();
-        handler = new Handler(thread.getLooper());
+        mHandler = new Handler(thread.getLooper());
     }
 
     public List<Rule> getRules(int type) {
@@ -60,13 +60,13 @@ public class BlockerManager {
 
         Cursor cursor = null;
         if (type == TYPE_ALL) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, null, null, "created DESC");
+            cursor = mResolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, null, null, "created DESC");
         } else if (type == TYPE_SMS) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, "sms = ?", new String[]{"1"}, "created DESC");
+            cursor = mResolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, "sms = ?", new String[]{"1"}, "created DESC");
         } else if (type == TYPE_CALL) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, "call = ?", new String[]{"1"}, "created DESC");
+            cursor = mResolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, "call = ?", new String[]{"1"}, "created DESC");
         } else if (type == TYPE_EXCEPT) {
-            cursor = resolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, "exception = ?", new String[]{"1"}, "created DESC");
+            cursor = mResolver.query(URI_RULE_ALL, new String[]{"_id", "content", "type", "sms", "call", "exception", "created", "remark"}, "exception = ?", new String[]{"1"}, "created DESC");
         }
 
         if (cursor != null && cursor.moveToFirst()) {
@@ -95,7 +95,7 @@ public class BlockerManager {
     public boolean hasRule(Rule rule) {
         boolean rtn = false;
 
-        Cursor cursor = resolver.query(URI_RULE_ALL, new String[]{"_id"}, "content = ? AND type = ? AND sms = ? AND call = ? AND exception = ?", new String[]{rule.getContent(), String.valueOf(rule.getType()), String.valueOf(rule.getSms()), String.valueOf(rule.getCall()), String.valueOf(rule.getException())}, "created DESC");
+        Cursor cursor = mResolver.query(URI_RULE_ALL, new String[]{"_id"}, "content = ? AND type = ? AND sms = ? AND call = ? AND exception = ?", new String[]{rule.getContent(), String.valueOf(rule.getType()), String.valueOf(rule.getSms()), String.valueOf(rule.getCall()), String.valueOf(rule.getException())}, "created DESC");
         if (cursor != null && cursor.getCount() > 0) {
             rtn = true;
         }
@@ -117,7 +117,7 @@ public class BlockerManager {
         values.put("created", rule.getCreated());
         values.put("remark", rule.getRemark());
 
-        return ContentUris.parseId(resolver.insert(URI_RULE_ALL, values));
+        return ContentUris.parseId(mResolver.insert(URI_RULE_ALL, values));
     }
 
     public long restoreRule(Rule rule) {
@@ -134,16 +134,16 @@ public class BlockerManager {
         values.put("created", rule.getCreated());
         values.put("remark", rule.getRemark());
 
-        resolver.update(ContentUris.withAppendedId(URI_RULE_ALL, rule.getId()), values, null, null);
+        mResolver.update(ContentUris.withAppendedId(URI_RULE_ALL, rule.getId()), values, null, null);
     }
 
     public void deleteRule(Rule rule) {
-        resolver.delete(ContentUris.withAppendedId(URI_RULE_ALL, rule.getId()), null, null);
+        mResolver.delete(ContentUris.withAppendedId(URI_RULE_ALL, rule.getId()), null, null);
     }
 
     public List<SMS> getSMSes(long id) {
         List<SMS> list = new ArrayList<>();
-        Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id", "sender", "content", "created", "read"}, "_id > ?", new String[]{String.valueOf(id)}, "created DESC");
+        Cursor cursor = mResolver.query(URI_SMS_ALL, new String[]{"_id", "sender", "content", "created", "read"}, "_id > ?", new String[]{String.valueOf(id)}, "created DESC");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 SMS sms = new SMS();
@@ -167,7 +167,7 @@ public class BlockerManager {
     public boolean hasSMS(SMS sms) {
         boolean rtn = false;
 
-        Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id"}, "sender = ? AND content = ? AND created = ?", new String[]{sms.getSender(), sms.getContent(), String.valueOf(sms.getCreated())}, "created DESC");
+        Cursor cursor = mResolver.query(URI_SMS_ALL, new String[]{"_id"}, "sender = ? AND content = ? AND created = ?", new String[]{sms.getSender(), sms.getContent(), String.valueOf(sms.getCreated())}, "created DESC");
         if (cursor != null && cursor.getCount() > 0) {
             rtn = true;
         }
@@ -186,7 +186,7 @@ public class BlockerManager {
         values.put("created", sms.getCreated());
         values.put("read", sms.getRead());
 
-        return ContentUris.parseId(resolver.insert(URI_SMS_ALL, values));
+        return ContentUris.parseId(mResolver.insert(URI_SMS_ALL, values));
     }
 
     public long restoreSMS(SMS sms) {
@@ -194,18 +194,18 @@ public class BlockerManager {
     }
 
     public void deleteSMS(SMS sms) {
-        resolver.delete(ContentUris.withAppendedId(URI_SMS_ALL, sms.getId()), null, null);
+        mResolver.delete(ContentUris.withAppendedId(URI_SMS_ALL, sms.getId()), null, null);
     }
 
     public void readAllSMS() {
         ContentValues values = new ContentValues();
         values.put("read", 1);
-        resolver.update(URI_SMS_ALL, values, "read=?", new String[]{"0"});
+        mResolver.update(URI_SMS_ALL, values, "read=?", new String[]{"0"});
     }
 
     public List<Call> getCalls(long id) {
         List<Call> list = new ArrayList<>();
-        Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id", "caller", "created", "read"}, "_id > ?", new String[]{String.valueOf(id)}, "created DESC");
+        Cursor cursor = mResolver.query(URI_CALL_ALL, new String[]{"_id", "caller", "created", "read"}, "_id > ?", new String[]{String.valueOf(id)}, "created DESC");
         if (cursor != null && cursor.moveToFirst()) {
             do {
                 Call call = new Call();
@@ -228,7 +228,7 @@ public class BlockerManager {
     public boolean hasCall(Call call) {
         boolean rtn = false;
 
-        Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id"}, "caller = ? AND created = ?", new String[]{call.getCaller(), String.valueOf(call.getCreated())}, "created DESC");
+        Cursor cursor = mResolver.query(URI_CALL_ALL, new String[]{"_id"}, "caller = ? AND created = ?", new String[]{call.getCaller(), String.valueOf(call.getCreated())}, "created DESC");
         if (cursor != null && cursor.getCount() > 0) {
             rtn = true;
         }
@@ -246,7 +246,7 @@ public class BlockerManager {
         values.put("created", call.getCreated());
         values.put("read", call.getRead());
 
-        return ContentUris.parseId(resolver.insert(URI_CALL_ALL, values));
+        return ContentUris.parseId(mResolver.insert(URI_CALL_ALL, values));
     }
 
     public long restoreCall(Call call) {
@@ -254,19 +254,19 @@ public class BlockerManager {
     }
 
     public void deleteCall(Call call) {
-        resolver.delete(ContentUris.withAppendedId(URI_CALL_ALL, call.getId()), null, null);
+        mResolver.delete(ContentUris.withAppendedId(URI_CALL_ALL, call.getId()), null, null);
     }
 
     public void readAllCall() {
         ContentValues values = new ContentValues();
         values.put("read", 1);
-        resolver.update(URI_CALL_ALL, values, "read=?", new String[]{"0"});
+        mResolver.update(URI_CALL_ALL, values, "read=?", new String[]{"0"});
     }
 
     public boolean blockSMS(final String sender, final String content, final long created) {
         boolean rtn = shouldBlockSMS(sender, content);
         if (rtn) {
-            handler.post(new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     SMS savedSMS = new SMS();
@@ -278,7 +278,7 @@ public class BlockerManager {
 
                     Intent intent = new Intent(BlockerReceiver.ACTION);
                     intent.putExtra("type", BlockerManager.TYPE_SMS);
-                    context.sendBroadcast(intent, BlockerReceiver.PERMISSION);
+                    mContext.sendBroadcast(intent, BlockerReceiver.PERMISSION);
                 }
             });
         }
@@ -337,7 +337,7 @@ public class BlockerManager {
     public boolean blockCall(final String caller) {
         boolean rtn = shouldBlockCall(caller);
         if (rtn) {
-            handler.post(new Runnable() {
+            mHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     Call savedCall = new Call();
@@ -348,7 +348,7 @@ public class BlockerManager {
 
                     Intent intent = new Intent(BlockerReceiver.ACTION);
                     intent.putExtra("type", BlockerManager.TYPE_CALL);
-                    context.sendBroadcast(intent, BlockerReceiver.PERMISSION);
+                    mContext.sendBroadcast(intent, BlockerReceiver.PERMISSION);
                 }
             });
         }
@@ -397,7 +397,7 @@ public class BlockerManager {
     public int getUnReadSMSCount() {
         int count = 0;
 
-        Cursor cursor = resolver.query(URI_SMS_ALL, new String[]{"_id"}, "read=?", new String[]{"0"}, null);
+        Cursor cursor = mResolver.query(URI_SMS_ALL, new String[]{"_id"}, "read=?", new String[]{"0"}, null);
         if (cursor != null) {
             count = cursor.getCount();
             cursor.close();
@@ -409,7 +409,7 @@ public class BlockerManager {
     public int getUnReadCallCount() {
         int count = 0;
 
-        Cursor cursor = resolver.query(URI_CALL_ALL, new String[]{"_id"}, "read=?", new String[]{"0"}, null);
+        Cursor cursor = mResolver.query(URI_CALL_ALL, new String[]{"_id"}, "read=?", new String[]{"0"}, null);
         if (cursor != null) {
             count = cursor.getCount();
             cursor.close();

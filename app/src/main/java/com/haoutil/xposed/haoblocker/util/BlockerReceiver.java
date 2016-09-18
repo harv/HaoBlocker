@@ -16,11 +16,11 @@ public class BlockerReceiver extends BroadcastReceiver {
     public static final String ACTION = BuildConfig.APPLICATION_ID + ".receiver.BlockerReceiver";
     public static final String PERMISSION = BuildConfig.APPLICATION_ID + ".permission.SHOW_BLOCKER_NOTIFICATION";
 
-    private SettingsHelper settingsHelper;
-    private BlockerManager blockerManager;
+    private SettingsHelper mSettingsHelper;
+    private BlockerManager mBlockerManager;
 
-    private NotificationManagerCompat notiManager;
-    private NotificationCompat.Builder notiBuilder;
+    private NotificationManagerCompat mNotiManager;
+    private NotificationCompat.Builder mNotiBuilder;
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -30,26 +30,26 @@ public class BlockerReceiver extends BroadcastReceiver {
         if (intent.getExtras() == null)
             return;
 
-        if (settingsHelper == null) {
-            settingsHelper = new SettingsHelper(context);
+        if (mSettingsHelper == null) {
+            mSettingsHelper = new SettingsHelper(context);
         }
 
-        if (blockerManager == null) {
-            blockerManager = new BlockerManager(context);
+        if (mBlockerManager == null) {
+            mBlockerManager = new BlockerManager(context);
         }
 
-        if (notiManager == null) {
-            notiManager = NotificationManagerCompat.from(context);
+        if (mNotiManager == null) {
+            mNotiManager = NotificationManagerCompat.from(context);
         }
 
-        if (notiBuilder == null) {
-            notiBuilder = new NotificationCompat.Builder(context)
+        if (mNotiBuilder == null) {
+            mNotiBuilder = new NotificationCompat.Builder(context)
                     .setContentTitle("HaoBlocker")
                     .setTicker("HaoBlocker")
                     .setAutoCancel(true);
         }
 
-        if (settingsHelper.isShowBlockNotification()) {
+        if (mSettingsHelper.isShowBlockNotification()) {
             int type = intent.getExtras().getInt("type");
             showNotification(context, type);
         }
@@ -60,8 +60,8 @@ public class BlockerReceiver extends BroadcastReceiver {
             return;
         }
 
-        int unreadSMSCount = blockerManager.getUnReadSMSCount();
-        int unreadCallCount = blockerManager.getUnReadCallCount();
+        int unreadSMSCount = mBlockerManager.getUnReadSMSCount();
+        int unreadCallCount = mBlockerManager.getUnReadCallCount();
         if (unreadSMSCount == 0 && unreadCallCount == 0) {
             return;
         }
@@ -75,7 +75,7 @@ public class BlockerReceiver extends BroadcastReceiver {
 
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        notiBuilder.setSmallIcon(R.drawable.ic_notification)
+        mNotiBuilder.setSmallIcon(R.drawable.ic_notification)
                 .setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
                 .setContentText(
                         String.format(
@@ -86,6 +86,6 @@ public class BlockerReceiver extends BroadcastReceiver {
                 )
                 .setContentIntent(pendingIntent);
 
-        notiManager.notify(0, notiBuilder.build());
+        mNotiManager.notify(0, mNotiBuilder.build());
     }
 }

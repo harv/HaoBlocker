@@ -25,10 +25,10 @@ public class RulePresenterImpl implements RulePresenter {
     private RuleModel mRuleModel;
     private RuleView mRuleView;
 
-    private RuleAdapter adapter;
+    private RuleAdapter mAdapter;
 
-    private int positionDeleted = -1;
-    private Rule ruleDeleted = null;
+    private int mPositionDeleted = -1;
+    private Rule mRuleDeleted = null;
 
     public RulePresenterImpl(RuleView mRuleView) {
         this.mRuleView = mRuleView;
@@ -46,8 +46,8 @@ public class RulePresenterImpl implements RulePresenter {
         Context context = mRuleView.getApplicationContext();
         List<Rule> rules = mRuleModel.getRules(ruleType);
         BaseRecycleAdapter.OnItemClick onItemClick = mRuleView.getOnItemClick();
-        adapter = new RuleAdapter(context, rules, onItemClick);
-        mRuleView.setRuleAdapter(adapter);
+        mAdapter = new RuleAdapter(context, rules, onItemClick);
+        mRuleView.setRuleAdapter(mAdapter);
     }
 
     @Override
@@ -63,9 +63,9 @@ public class RulePresenterImpl implements RulePresenter {
     @Override
     public void addOrUpdateRuleSuccess(int position, Rule rule) {
         if (position == -1) {
-            adapter.add(0, rule);
+            mAdapter.add(0, rule);
         } else {
-            adapter.replace(position, rule);
+            mAdapter.replace(position, rule);
         }
 
         mRuleView.showTip(R.string.rule_tip_rule_added, true);
@@ -73,38 +73,38 @@ public class RulePresenterImpl implements RulePresenter {
 
     @Override
     public void modifyRule(int position) {
-        Rule rule = adapter.getItem(position);
+        Rule rule = mAdapter.getItem(position);
         mRuleView.modifyRule(position, rule);
     }
 
     @Override
     public void deleteRuleConfirm(int position) {
-        positionDeleted = position;
+        mPositionDeleted = position;
         mRuleView.showConfirm();
     }
 
     @Override
     public void deleteRule() {
-        ruleDeleted = adapter.getItem(positionDeleted);
-        mRuleModel.deleteRule(ruleDeleted);
-        adapter.remove(positionDeleted);
+        mRuleDeleted = mAdapter.getItem(mPositionDeleted);
+        mRuleModel.deleteRule(mRuleDeleted);
+        mAdapter.remove(mPositionDeleted);
         mRuleView.showTip(R.string.rule_tip_rule_deleted, true);
     }
 
     @Override
     public void deleteRuleCancel() {
-        positionDeleted = -1;
+        mPositionDeleted = -1;
     }
 
     @Override
     public void restoreRule() {
-        if (-1 != positionDeleted && null != ruleDeleted) {
-            long newId = mRuleModel.restoreRule(ruleDeleted);
-            ruleDeleted.setId(newId);
-            adapter.add(positionDeleted, ruleDeleted);
+        if (-1 != mPositionDeleted && null != mRuleDeleted) {
+            long newId = mRuleModel.restoreRule(mRuleDeleted);
+            mRuleDeleted.setId(newId);
+            mAdapter.add(mPositionDeleted, mRuleDeleted);
 
-            positionDeleted = -1;
-            ruleDeleted = null;
+            mPositionDeleted = -1;
+            mRuleDeleted = null;
         }
     }
 
@@ -147,7 +147,7 @@ public class RulePresenterImpl implements RulePresenter {
                         id = mRuleModel.saveRule(rule);
                         if (id != -1) {
                             rule.setId(id);
-                            adapter.add(0, rule);
+                            mAdapter.add(0, rule);
                         }
                     }
                     br.close();
