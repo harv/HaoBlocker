@@ -68,7 +68,7 @@ public class RulePresenterImpl implements RulePresenter {
             mAdapter.replace(position, rule);
         }
 
-        mRuleView.showTip(R.string.rule_tip_rule_added, true);
+        mRuleView.showTip(R.string.rule_tip_rule_added, false);
     }
 
     @Override
