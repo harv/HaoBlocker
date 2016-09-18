@@ -1,6 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.haoutil.xposed.haoblocker">
 
+    <permission android:name="${applicationId}.permission.SHOW_BLOCKER_NOTIFICATION" />
+    <permission android:name="${applicationId}.permission.ACCESS_BLOCKER_DATA" />
+
+    <uses-permission android:name="${applicationId}.permission.SHOW_BLOCKER_NOTIFICATION" />
+    <uses-permission android:name="${applicationId}.permission.ACCESS_BLOCKER_DATA" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
@@ -15,26 +20,34 @@
                 <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.activity.RuleActivity" />
 
         <activity-alias
-            android:name=".activity.ShowInAppDrawer"
-            android:enabled="true"
+            android:name=".ui.activity.ShowInAppDrawer"
             android:icon="@drawable/ic_launcher"
             android:label="@string/app_name"
             android:targetActivity=".ui.activity.SettingsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity-alias>
+
+        <activity android:name=".ui.activity.RuleActivity" />
+
+        <receiver
+            android:name=".util.BlockerReceiver"
+            android:exported="true"
+            android:permission="${applicationId}.permission.SHOW_BLOCKER_NOTIFICATION">
+            <intent-filter>
+                <action android:name="${applicationId}.receiver.BlockerReceiver" />
+            </intent-filter>
+        </receiver>
 
         <provider
             android:name=".util.BlockerProvider"
             android:authorities="${applicationId}.provider.BlockProvider"
             android:exported="true"
-            android:multiprocess="true" />
+            android:permission="${applicationId}.permission.ACCESS_BLOCKER_DATA" />
 
         <meta-data
             android:name="xposedmodule"

@@ -20,7 +20,8 @@ public class BlockerProvider extends ContentProvider {
     private static final String TABLE_SMS = "sms";
     private static final String TABLE_CALL = "call";
 
-    private static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.BlockProvider";
+    public static final String AUTHORITY = BuildConfig.APPLICATION_ID + ".provider.BlockProvider";
+    public static final String PERMISSION = BuildConfig.APPLICATION_ID + ".permission.ACCESS_BLOCKER_DATA";
 
     private static final int RULE_ALL = 0;
     private static final int RULE_ITEM = 1;

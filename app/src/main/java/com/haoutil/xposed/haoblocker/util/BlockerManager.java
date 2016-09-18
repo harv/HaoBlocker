@@ -4,6 +4,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -13,6 +14,7 @@ import com.haoutil.xposed.haoblocker.model.entity.Rule;
 import com.haoutil.xposed.haoblocker.model.entity.SMS;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class BlockerManager {
@@ -39,9 +41,11 @@ public class BlockerManager {
     private static final Uri URI_SMS_ALL = Uri.parse("content://" + AUTHORITY + "/sms");
     private static final Uri URI_CALL_ALL = Uri.parse("content://" + AUTHORITY + "/call");
 
+    private Context context;
     private ContentResolver resolver;
 
     public BlockerManager(Context context) {
+        this.context = context;
         resolver = context.getApplicationContext().getContentResolver();
     }
 
@@ -253,7 +257,24 @@ public class BlockerManager {
         resolver.update(URI_CALL_ALL, values, "read=?", new String[]{"0"});
     }
 
-    public boolean blockSMS(String sender, String content) {
+    public boolean blockSMS(String sender, String content, long created) {
+        boolean rtn = shouldBlockSMS(sender, content);
+        if (rtn) {
+            SMS savedSMS = new SMS();
+            savedSMS.setSender(sender);
+            savedSMS.setContent(content);
+            savedSMS.setCreated(created);
+            savedSMS.setRead(SMS.SMS_UNREADED);
+            saveSMS(savedSMS);
+
+            Intent intent = new Intent(BlockerReceiver.ACTION);
+            intent.putExtra("type", BlockerManager.TYPE_SMS);
+            context.sendBroadcast(intent, BlockerReceiver.PERMISSION);
+        }
+        return rtn;
+    }
+
+    public boolean shouldBlockSMS(String sender, String content) {
         sender = trimCountryCode(sender);
         List<Rule> exceptions = getRules(TYPE_EXCEPT);
         if (exceptions != null && exceptions.size() > 0) {
@@ -303,6 +324,22 @@ public class BlockerManager {
     }
 
     public boolean blockCall(String caller) {
+        boolean rtn = shouldBlockCall(caller);
+        if (rtn) {
+            Call savedCall = new Call();
+            savedCall.setCaller(caller);
+            savedCall.setCreated(new Date().getTime());
+            savedCall.setRead(Call.CALL_UNREADED);
+            saveCall(savedCall);
+
+            Intent intent = new Intent(BlockerReceiver.ACTION);
+            intent.putExtra("type", BlockerManager.TYPE_CALL);
+            context.sendBroadcast(intent, BlockerReceiver.PERMISSION);
+        }
+        return rtn;
+    }
+
+    public boolean shouldBlockCall(String caller) {
         caller = trimCountryCode(caller);
         List<Rule> exceptions = getRules(TYPE_EXCEPT);
         if (exceptions != null && exceptions.size() > 0) {

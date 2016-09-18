@@ -1,10 +1,8 @@
 package com.haoutil.xposed.haoblocker.hook;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Build;
 
-import com.haoutil.xposed.haoblocker.XposedMod;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 import com.haoutil.xposed.haoblocker.util.Logger;
 import com.haoutil.xposed.haoblocker.util.SettingsHelper;
@@ -18,8 +16,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class CallHook implements BaseHook {
     private SettingsHelper settingsHelper;
     private BlockerManager blockerManager;
-
-    private Context mContext;
 
     private final boolean isLollipop = Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
     private final String className = isLollipop ? "com.android.services.telephony.PstnIncomingCallNotifier" : "com.android.phone.CallNotifier";
@@ -35,17 +31,17 @@ public class CallHook implements BaseHook {
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
-        Logger.log("Hook " + className + "...");
+//        Logger.log("Hook " + className + "...");
         Class<?> clazz = XposedHelpers.findClass(className, loadPackageParam.classLoader);
 
         XposedBridge.hookAllConstructors(clazz, new XC_MethodHook() {
             @Override
             protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                mContext = (Context) XposedHelpers.callMethod(
+                Context context = (Context) XposedHelpers.callMethod(
                         isLollipop ? XposedHelpers.getObjectField(param.thisObject, "mPhoneBase") : param.args[1],
                         "getContext"
                 );
-                blockerManager = new BlockerManager(mContext);
+                blockerManager = new BlockerManager(context);
             }
         });
 
@@ -68,10 +64,7 @@ public class CallHook implements BaseHook {
 
                         param.setResult(null);
 
-                        Intent intent = new Intent(XposedMod.FILTER_NOTIFY_BLOCKED);
-                        intent.putExtra("type", BlockerManager.TYPE_CALL);
-                        intent.putExtra("caller", caller);
-                        mContext.sendBroadcast(intent);
+                        Logger.log("Block call: " + caller);
                     }
                 } catch (Throwable t) {
                     Logger.log("Block Call error.");

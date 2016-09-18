@@ -1,13 +1,11 @@
 package com.haoutil.xposed.haoblocker.hook;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Parcel;
 import android.telephony.SmsMessage;
 import android.text.TextUtils;
 import android.util.SparseArray;
 
-import com.haoutil.xposed.haoblocker.XposedMod;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 import com.haoutil.xposed.haoblocker.util.Logger;
 import com.haoutil.xposed.haoblocker.util.SettingsHelper;
@@ -22,8 +20,6 @@ public class SMSHook implements BaseHook {
     private SettingsHelper settingsHelper;
     private BlockerManager blockerManager;
 
-    private Context mContext;
-
     private SparseArray<String[]> smsArrays = new SparseArray<>();
 
     public SMSHook() {
@@ -32,14 +28,14 @@ public class SMSHook implements BaseHook {
 
     @Override
     public void initZygote(IXposedHookZygoteInit.StartupParam startupParam) {
-        Logger.log("Hook com.android.internal.telephony.RIL...");
+//        Logger.log("Hook com.android.internal.telephony.RIL...");
         Class<?> clazz = XposedHelpers.findClass("com.android.internal.telephony.RIL", null);
 
         XposedBridge.hookAllConstructors(clazz, new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
-                mContext = (Context) param.args[0];
-                blockerManager = new BlockerManager(mContext);
+                Context context = (Context) param.args[0];
+                blockerManager = new BlockerManager(context);
             }
         });
 
@@ -95,7 +91,7 @@ public class SMSHook implements BaseHook {
 
                             if (received) {
                                 Logger.log("New SMS: " + sender + "," + content);
-                                if (blockerManager.blockSMS(sender, content)) {
+                                if (blockerManager.blockSMS(sender, content, sms.getTimestampMillis())) {
                                     try {
                                         XposedHelpers.callMethod(param.thisObject, "acknowledgeLastIncomingGsmSms", true, 0, null);
                                     } catch (Throwable t) {
@@ -104,12 +100,7 @@ public class SMSHook implements BaseHook {
 
                                     param.setResult(null);
 
-                                    Intent intent = new Intent(XposedMod.FILTER_NOTIFY_BLOCKED);
-                                    intent.putExtra("type", BlockerManager.TYPE_SMS);
-                                    intent.putExtra("sender", sender);
-                                    intent.putExtra("content", content);
-                                    intent.putExtra("created", sms.getTimestampMillis());
-                                    mContext.sendBroadcast(intent);
+                                    Logger.log("Block SMS: " + sender + "," + content);
                                 }
                             }
                         } catch (Throwable t) {

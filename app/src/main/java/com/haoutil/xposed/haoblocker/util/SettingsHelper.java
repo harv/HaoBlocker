@@ -3,21 +3,24 @@ package com.haoutil.xposed.haoblocker.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.haoutil.xposed.haoblocker.BuildConfig;
 import com.haoutil.xposed.haoblocker.XposedMod;
 
 import de.robv.android.xposed.XSharedPreferences;
 
 public class SettingsHelper {
+    public static final String MODULE_NAME = BuildConfig.APPLICATION_ID;
+
     private SharedPreferences mPreferences = null;
     private XSharedPreferences mXPreferences = null;
 
     public SettingsHelper() {
-        mXPreferences = new XSharedPreferences(XposedMod.MODULE_NAME);
+        mXPreferences = new XSharedPreferences(MODULE_NAME);
         mXPreferences.makeWorldReadable();
     }
 
     public SettingsHelper(Context context) {
-        mPreferences = context.getSharedPreferences(XposedMod.MODULE_NAME + "_preferences", 1);
+        mPreferences = context.getSharedPreferences(MODULE_NAME + "_preferences", 1);
     }
 
     public boolean isEnable() {
