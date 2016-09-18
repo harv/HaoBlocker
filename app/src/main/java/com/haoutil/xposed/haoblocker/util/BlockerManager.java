@@ -7,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
+import android.os.HandlerThread;
 
 import com.haoutil.xposed.haoblocker.BuildConfig;
 import com.haoutil.xposed.haoblocker.model.entity.Call;
@@ -43,10 +45,14 @@ public class BlockerManager {
 
     private Context context;
     private ContentResolver resolver;
+    private Handler handler;
 
     public BlockerManager(Context context) {
-        this.context = context;
-        resolver = context.getApplicationContext().getContentResolver();
+        this.context = context.getApplicationContext();
+        resolver = this.context.getContentResolver();
+        HandlerThread thread = new HandlerThread("HaoBlocker");
+        thread.start();
+        handler = new Handler(thread.getLooper());
     }
 
     public List<Rule> getRules(int type) {
@@ -257,19 +263,24 @@ public class BlockerManager {
         resolver.update(URI_CALL_ALL, values, "read=?", new String[]{"0"});
     }
 
-    public boolean blockSMS(String sender, String content, long created) {
+    public boolean blockSMS(final String sender, final String content, final long created) {
         boolean rtn = shouldBlockSMS(sender, content);
         if (rtn) {
-            SMS savedSMS = new SMS();
-            savedSMS.setSender(sender);
-            savedSMS.setContent(content);
-            savedSMS.setCreated(created);
-            savedSMS.setRead(SMS.SMS_UNREADED);
-            saveSMS(savedSMS);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    SMS savedSMS = new SMS();
+                    savedSMS.setSender(sender);
+                    savedSMS.setContent(content);
+                    savedSMS.setCreated(created);
+                    savedSMS.setRead(SMS.SMS_UNREADED);
+                    saveSMS(savedSMS);
 
-            Intent intent = new Intent(BlockerReceiver.ACTION);
-            intent.putExtra("type", BlockerManager.TYPE_SMS);
-            context.sendBroadcast(intent, BlockerReceiver.PERMISSION);
+                    Intent intent = new Intent(BlockerReceiver.ACTION);
+                    intent.putExtra("type", BlockerManager.TYPE_SMS);
+                    context.sendBroadcast(intent, BlockerReceiver.PERMISSION);
+                }
+            });
         }
         return rtn;
     }
@@ -323,18 +334,23 @@ public class BlockerManager {
         return false;
     }
 
-    public boolean blockCall(String caller) {
+    public boolean blockCall(final String caller) {
         boolean rtn = shouldBlockCall(caller);
         if (rtn) {
-            Call savedCall = new Call();
-            savedCall.setCaller(caller);
-            savedCall.setCreated(new Date().getTime());
-            savedCall.setRead(Call.CALL_UNREADED);
-            saveCall(savedCall);
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Call savedCall = new Call();
+                    savedCall.setCaller(caller);
+                    savedCall.setCreated(new Date().getTime());
+                    savedCall.setRead(Call.CALL_UNREADED);
+                    saveCall(savedCall);
 
-            Intent intent = new Intent(BlockerReceiver.ACTION);
-            intent.putExtra("type", BlockerManager.TYPE_CALL);
-            context.sendBroadcast(intent, BlockerReceiver.PERMISSION);
+                    Intent intent = new Intent(BlockerReceiver.ACTION);
+                    intent.putExtra("type", BlockerManager.TYPE_CALL);
+                    context.sendBroadcast(intent, BlockerReceiver.PERMISSION);
+                }
+            });
         }
         return rtn;
     }
