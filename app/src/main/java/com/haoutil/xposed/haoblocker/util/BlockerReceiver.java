@@ -4,8 +4,6 @@ import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.app.TaskStackBuilder;
@@ -24,52 +22,37 @@ public class BlockerReceiver extends BroadcastReceiver {
     private NotificationManagerCompat notiManager;
     private NotificationCompat.Builder notiBuilder;
 
-    private Handler mHandler;
-
-    public BlockerReceiver() {
-        HandlerThread thread = new HandlerThread("HaoBlocker");
-        thread.start();
-        mHandler = new Handler(thread.getLooper());
-    }
-
     @Override
     public void onReceive(Context context, Intent intent) {
-        if (!BlockerReceiver.ACTION.equals(intent.getAction())) {
+        if (!BlockerReceiver.ACTION.equals(intent.getAction()))
             return;
+
+        if (intent.getExtras() == null)
+            return;
+
+        if (settingsHelper == null) {
+            settingsHelper = new SettingsHelper(context);
         }
 
-        final Context mContext = context.getApplicationContext();
-        final Intent mIntent = intent;
-        mHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (settingsHelper == null) {
-                    settingsHelper = new SettingsHelper(mContext);
-                }
+        if (blockerManager == null) {
+            blockerManager = new BlockerManager(context);
+        }
 
-                if (blockerManager == null) {
-                    blockerManager = new BlockerManager(mContext);
-                }
+        if (notiManager == null) {
+            notiManager = NotificationManagerCompat.from(context);
+        }
 
-                if (notiManager == null) {
-                    notiManager = NotificationManagerCompat.from(mContext);
-                }
+        if (notiBuilder == null) {
+            notiBuilder = new NotificationCompat.Builder(context)
+                    .setContentTitle("HaoBlocker")
+                    .setTicker("HaoBlocker")
+                    .setAutoCancel(true);
+        }
 
-                if (notiBuilder == null) {
-                    notiBuilder = new NotificationCompat.Builder(mContext)
-                            .setContentTitle("HaoBlocker")
-                            .setTicker("HaoBlocker")
-                            .setAutoCancel(true);
-                }
-
-                if (settingsHelper.isShowBlockNotification()) {
-                    if (mIntent != null && mIntent.getExtras() != null) {
-                        int type = mIntent.getExtras().getInt("type");
-                        showNotification(mContext, type);
-                    }
-                }
-            }
-        });
+        if (settingsHelper.isShowBlockNotification()) {
+            int type = intent.getExtras().getInt("type");
+            showNotification(context, type);
+        }
     }
 
     private void showNotification(Context context, int type) {
