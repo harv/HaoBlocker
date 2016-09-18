@@ -11,6 +11,7 @@ import com.haoutil.xposed.haoblocker.model.entity.Call;
 import com.haoutil.xposed.haoblocker.ui.CallView;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 import com.haoutil.xposed.haoblocker.ui.adapter.CallAdapter;
+import com.haoutil.xposed.haoblocker.util.ThreadPool;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -87,7 +88,7 @@ public class CallPresenterImpl implements CallPresenter {
 
     @Override
     public void importCalls() {
-        new Thread(new Runnable() {
+        ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -124,12 +125,12 @@ public class CallPresenterImpl implements CallPresenter {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     @Override
     public void exportCalls() {
-        new Thread(new Runnable() {
+        ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -156,6 +157,6 @@ public class CallPresenterImpl implements CallPresenter {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 }

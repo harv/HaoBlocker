@@ -12,6 +12,7 @@ import com.haoutil.xposed.haoblocker.ui.RuleView;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 import com.haoutil.xposed.haoblocker.ui.adapter.RuleAdapter;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
+import com.haoutil.xposed.haoblocker.util.ThreadPool;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -110,7 +111,7 @@ public class RulePresenterImpl implements RulePresenter {
 
     @Override
     public void importRules() {
-        new Thread(new Runnable() {
+        ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -157,12 +158,12 @@ public class RulePresenterImpl implements RulePresenter {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     @Override
     public void exportRules() {
-        new Thread(new Runnable() {
+        ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -193,7 +194,7 @@ public class RulePresenterImpl implements RulePresenter {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     @Override

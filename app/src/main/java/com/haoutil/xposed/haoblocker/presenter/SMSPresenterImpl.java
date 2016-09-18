@@ -11,6 +11,7 @@ import com.haoutil.xposed.haoblocker.model.entity.SMS;
 import com.haoutil.xposed.haoblocker.ui.SMSView;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 import com.haoutil.xposed.haoblocker.ui.adapter.SMSAdapter;
+import com.haoutil.xposed.haoblocker.util.ThreadPool;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -87,7 +88,7 @@ public class SMSPresenterImpl implements SMSPresenter {
 
     @Override
     public void importSMSes() {
-        new Thread(new Runnable() {
+        ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -127,12 +128,12 @@ public class SMSPresenterImpl implements SMSPresenter {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 
     @Override
     public void exportSMSes() {
-        new Thread(new Runnable() {
+        ThreadPool.execute(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -160,6 +161,6 @@ public class SMSPresenterImpl implements SMSPresenter {
                     e.printStackTrace();
                 }
             }
-        }).start();
+        });
     }
 }

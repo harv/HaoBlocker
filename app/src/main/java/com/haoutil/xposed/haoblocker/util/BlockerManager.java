@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Handler;
-import android.os.HandlerThread;
 
 import com.haoutil.xposed.haoblocker.BuildConfig;
 import com.haoutil.xposed.haoblocker.model.entity.Call;
@@ -45,14 +43,10 @@ public class BlockerManager {
 
     private Context mContext;
     private ContentResolver mResolver;
-    private Handler mHandler;
 
     public BlockerManager(Context context) {
         mContext = context.getApplicationContext();
         mResolver = mContext.getContentResolver();
-        HandlerThread thread = new HandlerThread("HaoBlocker");
-        thread.start();
-        mHandler = new Handler(thread.getLooper());
     }
 
     public List<Rule> getRules(int type) {
@@ -266,7 +260,7 @@ public class BlockerManager {
     public boolean blockSMS(final String sender, final String content, final long created) {
         boolean rtn = shouldBlockSMS(sender, content);
         if (rtn) {
-            mHandler.post(new Runnable() {
+            ThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
                     SMS savedSMS = new SMS();
@@ -337,7 +331,7 @@ public class BlockerManager {
     public boolean blockCall(final String caller) {
         boolean rtn = shouldBlockCall(caller);
         if (rtn) {
-            mHandler.post(new Runnable() {
+            ThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
                     Call savedCall = new Call();
