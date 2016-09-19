@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Environment;
 import android.view.Menu;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.RuleModel;
 import com.haoutil.xposed.haoblocker.model.impl.RuleModelImpl;
@@ -40,13 +41,13 @@ public class RulePresenterImpl implements RulePresenter {
 
     @Override
     public void init() {
-        Context context = mRuleView.getApplicationContext();
+        Context context = AppContext.getsInstance().getApplicationContext();
         mRuleModel.init(context);
     }
 
     @Override
     public void setListItems(int ruleType) {
-        Context context = mRuleView.getApplicationContext();
+        Context context = AppContext.getsInstance().getApplicationContext();
         List<Rule> rules = mRuleModel.getRules(ruleType);
         BaseRecycleAdapter.OnItemClick onItemClick = mRuleView.getOnItemClick();
         mAdapter = new RuleAdapter(context, rules, onItemClick);

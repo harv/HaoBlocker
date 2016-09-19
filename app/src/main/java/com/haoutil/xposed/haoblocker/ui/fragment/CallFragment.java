@@ -1,5 +1,6 @@
 package com.haoutil.xposed.haoblocker.ui.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.presenter.CallPresenter;
 import com.haoutil.xposed.haoblocker.presenter.impl.CallPresenterImpl;
@@ -33,7 +35,8 @@ public class CallFragment extends PromptFragment implements CallView, BaseRecycl
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (view != null) {
             rv_call = (RecyclerView) view.findViewById(R.id.rv_call);
-            rv_call.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            Context context = AppContext.getsInstance().getApplicationContext();
+            rv_call.setLayoutManager(new LinearLayoutManager(context));
             mCallPresenter.setListItems();
         }
         return view;

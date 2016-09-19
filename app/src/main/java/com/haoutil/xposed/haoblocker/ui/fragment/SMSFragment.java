@@ -1,5 +1,6 @@
 package com.haoutil.xposed.haoblocker.ui.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.presenter.SMSPresenter;
 import com.haoutil.xposed.haoblocker.presenter.impl.SMSPresenterImpl;
@@ -33,7 +35,8 @@ public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleA
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (view != null) {
             rv_sms = (RecyclerView) view.findViewById(R.id.rv_sms);
-            rv_sms.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            Context context = AppContext.getsInstance().getApplicationContext();
+            rv_sms.setLayoutManager(new LinearLayoutManager(context));
             mSMSPresenter.setListItems();
         }
         return view;

@@ -1,6 +1,7 @@
 package com.haoutil.xposed.haoblocker.ui.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
 import com.haoutil.xposed.haoblocker.presenter.RulePresenter;
@@ -38,7 +40,8 @@ public class RuleFragment extends PromptFragment implements RuleView, BaseRecycl
         View view = super.onCreateView(inflater, container, savedInstanceState);
         if (view != null) {
             rv_rule = (RecyclerView) view.findViewById(R.id.rv_rule);
-            rv_rule.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+            Context context = AppContext.getsInstance().getApplicationContext();
+            rv_rule.setLayoutManager(new LinearLayoutManager(context));
             mRulePresenter.setListItems(BlockerManager.TYPE_ALL);
         }
         return view;

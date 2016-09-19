@@ -2,6 +2,7 @@ package com.haoutil.xposed.haoblocker.presenter.impl;
 
 import android.content.Context;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.RuleAddModel;
 import com.haoutil.xposed.haoblocker.model.impl.RuleAddModelImpl;
@@ -27,7 +28,7 @@ public class RuleAddPresenterImpl implements RuleAddPresenter {
 
     @Override
     public void init() {
-        Context context = mRuleAddView.getApplicationContext();
+        Context context = AppContext.getsInstance().getApplicationContext();
         mRuleAddModel.init(context);
     }
 

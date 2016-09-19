@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Environment;
 import android.view.Menu;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.CallModel;
 import com.haoutil.xposed.haoblocker.model.impl.CallModelImpl;
@@ -39,13 +40,13 @@ public class CallPresenterImpl implements CallPresenter {
 
     @Override
     public void init() {
-        Context context = mCallView.getApplicationContext();
+        Context context = AppContext.getsInstance().getApplicationContext();
         mCallModel.init(context);
     }
 
     @Override
     public void setListItems() {
-        Context context = mCallView.getApplicationContext();
+        Context context = AppContext.getsInstance().getApplicationContext();
         List<Call> calls = mCallModel.getCalls(-1);
         BaseRecycleAdapter.OnItemClick onItemClick = mCallView.getOnItemClick();
         mAdapter = new CallAdapter(context, calls, onItemClick);

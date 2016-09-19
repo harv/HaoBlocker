@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.os.Environment;
 import android.view.Menu;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.SMSModel;
 import com.haoutil.xposed.haoblocker.model.impl.SMSModelImpl;
@@ -39,13 +40,13 @@ public class SMSPresenterImpl implements SMSPresenter {
 
     @Override
     public void init() {
-        Context context = mSMSView.getApplicationContext();
+        Context context = AppContext.getsInstance().getApplicationContext();
         mSMSModel.init(context);
     }
 
     @Override
     public void setListItems() {
-        Context context = mSMSView.getApplicationContext();
+        Context context = AppContext.getsInstance().getApplicationContext();
         List<SMS> smses = mSMSModel.getSMSes(-1);
         BaseRecycleAdapter.OnItemClick onItemClick = mSMSView.getOnItemClick();
         mAdapter = new SMSAdapter(context, smses, onItemClick);

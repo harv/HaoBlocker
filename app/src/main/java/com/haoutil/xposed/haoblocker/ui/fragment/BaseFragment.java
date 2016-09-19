@@ -1,7 +1,6 @@
 package com.haoutil.xposed.haoblocker.ui.fragment;
 
 import android.app.Fragment;
-import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,10 +13,5 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         return inflater.inflate(getLayoutResource(), container, false);
-    }
-
-    @Override
-    public Context getApplicationContext() {
-        return getActivity().getApplicationContext();
     }
 }
