@@ -36,12 +36,7 @@ public class CallPresenterImpl implements CallPresenter {
     public CallPresenterImpl(CallView mCallView) {
         this.mCallView = mCallView;
         mCallModel = new CallModelImpl();
-    }
-
-    @Override
-    public void init() {
-        Context context = AppContext.getsInstance().getApplicationContext();
-        mCallModel.init(context);
+        mCallModel.readAllCall();
     }
 
     @Override

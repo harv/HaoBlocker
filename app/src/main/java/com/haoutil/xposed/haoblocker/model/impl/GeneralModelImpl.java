@@ -2,14 +2,15 @@ package com.haoutil.xposed.haoblocker.model.impl;
 
 import android.content.Context;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.model.GeneralModel;
 import com.haoutil.xposed.haoblocker.util.SettingsHelper;
 
 public class GeneralModelImpl implements GeneralModel {
     private SettingsHelper mSettingsHelper;
 
-    @Override
-    public void init(Context context) {
+    public GeneralModelImpl() {
+        Context context = AppContext.getsInstance().getApplicationContext();
         mSettingsHelper = new SettingsHelper(context);
     }
 

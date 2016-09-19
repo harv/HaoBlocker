@@ -27,12 +27,6 @@ public class RuleAddPresenterImpl implements RuleAddPresenter {
     }
 
     @Override
-    public void init() {
-        Context context = AppContext.getsInstance().getApplicationContext();
-        mRuleAddModel.init(context);
-    }
-
-    @Override
     public void initView(String operation, int position, Rule rule) {
         if ("add".equalsIgnoreCase(operation)) {
         } else if ("modify".equalsIgnoreCase(operation)) {

@@ -27,7 +27,6 @@ public class CallFragment extends PromptFragment implements CallView, BaseRecycl
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mCallPresenter = new CallPresenterImpl(this);
-        mCallPresenter.init();
     }
 
     @Override

@@ -27,7 +27,6 @@ public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleA
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mSMSPresenter = new SMSPresenterImpl(this);
-        mSMSPresenter.init();
     }
 
     @Override

@@ -18,12 +18,6 @@ public class GeneralPresenterImpl implements GeneralPresenter {
     }
 
     @Override
-    public void init() {
-        Context context = AppContext.getsInstance().getApplicationContext();
-        mGeneralModel.init(context);
-    }
-
-    @Override
     public void initView() {
         mGeneralView.setOnCheckedChangeListener();
         mGeneralView.setAbout();

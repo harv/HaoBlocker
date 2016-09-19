@@ -32,7 +32,6 @@ public class RuleFragment extends PromptFragment implements RuleView, BaseRecycl
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         mRulePresenter = new RulePresenterImpl(this);
-        mRulePresenter.init();
     }
 
     @Override

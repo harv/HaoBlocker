@@ -27,7 +27,6 @@ public class GeneralFragment extends BaseFragment implements GeneralView, Compou
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mGeneralPresenter = new GeneralPresenterImpl(this);
-        mGeneralPresenter.init();
     }
 
     @Override

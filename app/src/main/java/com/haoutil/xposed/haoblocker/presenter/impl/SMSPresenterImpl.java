@@ -36,12 +36,7 @@ public class SMSPresenterImpl implements SMSPresenter {
     public SMSPresenterImpl(SMSView mSMSView) {
         this.mSMSView = mSMSView;
         mSMSModel = new SMSModelImpl();
-    }
-
-    @Override
-    public void init() {
-        Context context = AppContext.getsInstance().getApplicationContext();
-        mSMSModel.init(context);
+        mSMSModel.readAllSMS();
     }
 
     @Override

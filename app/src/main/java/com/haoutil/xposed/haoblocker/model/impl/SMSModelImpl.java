@@ -2,6 +2,7 @@ package com.haoutil.xposed.haoblocker.model.impl;
 
 import android.content.Context;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.model.SMSModel;
 import com.haoutil.xposed.haoblocker.model.entity.SMS;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
@@ -11,10 +12,9 @@ import java.util.List;
 public class SMSModelImpl implements SMSModel {
     private BlockerManager mBlockerManager;
 
-    @Override
-    public void init(Context context) {
+    public SMSModelImpl() {
+        Context context = AppContext.getsInstance().getApplicationContext();
         mBlockerManager = new BlockerManager(context);
-        readAllSMS();
     }
 
     @Override

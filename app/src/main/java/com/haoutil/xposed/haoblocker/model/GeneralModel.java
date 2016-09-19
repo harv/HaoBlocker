@@ -1,10 +1,6 @@
 package com.haoutil.xposed.haoblocker.model;
 
-import android.content.Context;
-
 public interface GeneralModel {
-    void init(Context context);
-
     boolean isEnable();
 
     boolean isEnableSMS();

@@ -40,12 +40,6 @@ public class RulePresenterImpl implements RulePresenter {
     }
 
     @Override
-    public void init() {
-        Context context = AppContext.getsInstance().getApplicationContext();
-        mRuleModel.init(context);
-    }
-
-    @Override
     public void setListItems(int ruleType) {
         Context context = AppContext.getsInstance().getApplicationContext();
         List<Rule> rules = mRuleModel.getRules(ruleType);

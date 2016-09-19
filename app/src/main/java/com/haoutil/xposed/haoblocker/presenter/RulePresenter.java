@@ -5,8 +5,6 @@ import android.view.Menu;
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
 
 public interface RulePresenter {
-    void init();
-
     void setListItems(int ruleType);
 
     void setMenuItems(Menu menu);

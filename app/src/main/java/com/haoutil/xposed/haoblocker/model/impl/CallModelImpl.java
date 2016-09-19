@@ -2,6 +2,7 @@ package com.haoutil.xposed.haoblocker.model.impl;
 
 import android.content.Context;
 
+import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.model.CallModel;
 import com.haoutil.xposed.haoblocker.model.entity.Call;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
@@ -11,10 +12,9 @@ import java.util.List;
 public class CallModelImpl implements CallModel {
     private BlockerManager mBlockerManager;
 
-    @Override
-    public void init(Context context) {
+    public CallModelImpl() {
+        Context context = AppContext.getsInstance().getApplicationContext();
         mBlockerManager = new BlockerManager(context);
-        readAllCall();
     }
 
     @Override

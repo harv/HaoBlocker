@@ -35,7 +35,6 @@ public class RuleActivity extends BaseActivity implements RuleAddView, CompoundB
         super.onCreate(savedInstanceState);
         enableBackable();
         mRuleAddPresenter = new RuleAddPresenterImpl(this);
-        mRuleAddPresenter.init();
 
         ll_container = (LinearLayout) findViewById(R.id.ll_container);
         et_rule = (EditText) findViewById(R.id.et_rule);

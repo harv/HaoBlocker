@@ -1,8 +1,6 @@
 package com.haoutil.xposed.haoblocker.presenter;
 
 public interface GeneralPresenter {
-    void init();
-
     void initView();
 
     void enable(boolean enabled);
