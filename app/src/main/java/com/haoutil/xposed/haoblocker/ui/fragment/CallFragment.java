@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.presenter.CallPresenter;
-import com.haoutil.xposed.haoblocker.presenter.CallPresenterImpl;
+import com.haoutil.xposed.haoblocker.presenter.impl.CallPresenterImpl;
 import com.haoutil.xposed.haoblocker.ui.CallView;
 import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;

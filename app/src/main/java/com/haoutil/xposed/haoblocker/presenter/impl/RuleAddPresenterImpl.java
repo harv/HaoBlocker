@@ -1,11 +1,12 @@
-package com.haoutil.xposed.haoblocker.presenter;
+package com.haoutil.xposed.haoblocker.presenter.impl;
 
 import android.content.Context;
 
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.RuleAddModel;
-import com.haoutil.xposed.haoblocker.model.RuleAddModelImpl;
+import com.haoutil.xposed.haoblocker.model.impl.RuleAddModelImpl;
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
+import com.haoutil.xposed.haoblocker.presenter.RuleAddPresenter;
 import com.haoutil.xposed.haoblocker.ui.RuleAddView;
 
 import java.util.Date;

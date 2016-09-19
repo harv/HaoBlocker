@@ -17,7 +17,7 @@ import android.widget.Spinner;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
 import com.haoutil.xposed.haoblocker.presenter.RuleAddPresenter;
-import com.haoutil.xposed.haoblocker.presenter.RuleAddPresenterImpl;
+import com.haoutil.xposed.haoblocker.presenter.impl.RuleAddPresenterImpl;
 import com.haoutil.xposed.haoblocker.ui.RuleAddView;
 
 public class RuleActivity extends BaseActivity implements RuleAddView, CompoundButton.OnCheckedChangeListener, View.OnClickListener, AdapterView.OnItemSelectedListener {

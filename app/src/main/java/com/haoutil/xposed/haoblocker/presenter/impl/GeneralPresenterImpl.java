@@ -1,9 +1,10 @@
-package com.haoutil.xposed.haoblocker.presenter;
+package com.haoutil.xposed.haoblocker.presenter.impl;
 
 import android.content.Context;
 
 import com.haoutil.xposed.haoblocker.model.GeneralModel;
-import com.haoutil.xposed.haoblocker.model.GeneralModelImpl;
+import com.haoutil.xposed.haoblocker.model.impl.GeneralModelImpl;
+import com.haoutil.xposed.haoblocker.presenter.GeneralPresenter;
 import com.haoutil.xposed.haoblocker.ui.GeneralView;
 
 public class GeneralPresenterImpl implements GeneralPresenter {

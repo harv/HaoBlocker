@@ -1,7 +1,8 @@
-package com.haoutil.xposed.haoblocker.model;
+package com.haoutil.xposed.haoblocker.model.impl;
 
 import android.content.Context;
 
+import com.haoutil.xposed.haoblocker.model.SMSModel;
 import com.haoutil.xposed.haoblocker.model.entity.SMS;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 

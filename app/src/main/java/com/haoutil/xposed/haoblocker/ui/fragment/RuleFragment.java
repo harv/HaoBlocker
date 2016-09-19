@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
 import com.haoutil.xposed.haoblocker.presenter.RulePresenter;
-import com.haoutil.xposed.haoblocker.presenter.RulePresenterImpl;
+import com.haoutil.xposed.haoblocker.presenter.impl.RulePresenterImpl;
 import com.haoutil.xposed.haoblocker.ui.RuleView;
 import com.haoutil.xposed.haoblocker.ui.activity.RuleActivity;
 import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.presenter.SMSPresenter;
-import com.haoutil.xposed.haoblocker.presenter.SMSPresenterImpl;
+import com.haoutil.xposed.haoblocker.presenter.impl.SMSPresenterImpl;
 import com.haoutil.xposed.haoblocker.ui.SMSView;
 import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;

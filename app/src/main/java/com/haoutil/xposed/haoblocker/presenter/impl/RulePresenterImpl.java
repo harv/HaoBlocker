@@ -1,4 +1,4 @@
-package com.haoutil.xposed.haoblocker.presenter;
+package com.haoutil.xposed.haoblocker.presenter.impl;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -7,8 +7,9 @@ import android.view.Menu;
 
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.RuleModel;
-import com.haoutil.xposed.haoblocker.model.RuleModelImpl;
+import com.haoutil.xposed.haoblocker.model.impl.RuleModelImpl;
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
+import com.haoutil.xposed.haoblocker.presenter.RulePresenter;
 import com.haoutil.xposed.haoblocker.ui.RuleView;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 import com.haoutil.xposed.haoblocker.ui.adapter.RuleAdapter;

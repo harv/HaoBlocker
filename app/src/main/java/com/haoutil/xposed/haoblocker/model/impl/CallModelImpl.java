@@ -1,7 +1,8 @@
-package com.haoutil.xposed.haoblocker.model;
+package com.haoutil.xposed.haoblocker.model.impl;
 
 import android.content.Context;
 
+import com.haoutil.xposed.haoblocker.model.CallModel;
 import com.haoutil.xposed.haoblocker.model.entity.Call;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 

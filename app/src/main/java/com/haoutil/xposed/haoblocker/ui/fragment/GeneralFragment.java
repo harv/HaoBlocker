@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.presenter.GeneralPresenter;
-import com.haoutil.xposed.haoblocker.presenter.GeneralPresenterImpl;
+import com.haoutil.xposed.haoblocker.presenter.impl.GeneralPresenterImpl;
 import com.haoutil.xposed.haoblocker.ui.GeneralView;
 
 public class GeneralFragment extends BaseFragment implements GeneralView, CompoundButton.OnCheckedChangeListener {
