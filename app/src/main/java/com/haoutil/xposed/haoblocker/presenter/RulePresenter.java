@@ -17,11 +17,7 @@ public interface RulePresenter {
 
     void modifyRule(int position);
 
-    void deleteRuleConfirm(int position);
-
-    void deleteRule();
-
-    void deleteRuleCancel();
+    void deleteRule(int position);
 
     void restoreRule();
 

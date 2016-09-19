@@ -9,11 +9,7 @@ public interface SMSPresenter {
 
     void setMenuItems(Menu menu);
 
-    void deleteSMSConfirm(int position);
-
-    void deleteSMS();
-
-    void deleteSMSCancel();
+    void deleteSMS(int position);
 
     void restoreSMS();
 

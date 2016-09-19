@@ -1,6 +1,7 @@
 package com.haoutil.xposed.haoblocker.presenter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.view.Menu;
 
@@ -56,22 +57,23 @@ public class CallPresenterImpl implements CallPresenter {
     }
 
     @Override
-    public void deleteCallConfirm(int position) {
+    public void deleteCall(int position) {
         mPositionDeleted = position;
-        mCallView.showConfirm();
-    }
-
-    @Override
-    public void deleteCall() {
-        mCallDeleted = mAdapter.getItem(mPositionDeleted);
-        mCallModel.deleteCall(mCallDeleted);
-        mAdapter.remove(mPositionDeleted);
-        mCallView.showTip(R.string.rule_tip_call_deleted, true);
-    }
-
-    @Override
-    public void deleteCallCancel() {
-        mPositionDeleted = -1;
+        mCallView.showConfirm(R.string.discard_dialog_message, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mCallDeleted = mAdapter.getItem(mPositionDeleted);
+                mCallModel.deleteCall(mCallDeleted);
+                mAdapter.remove(mPositionDeleted);
+                mCallView.showTip(R.string.rule_tip_call_deleted, true);
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mPositionDeleted = -1;
+                mCallDeleted = null;
+            }
+        });
     }
 
     @Override

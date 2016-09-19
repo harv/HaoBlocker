@@ -9,11 +9,7 @@ public interface CallPresenter {
 
     void setMenuItems(Menu menu);
 
-    void deleteCallConfirm(int position);
-
-    void deleteCall();
-
-    void deleteCallCancel();
+    void deleteCall(int position);
 
     void restoreCall();
 

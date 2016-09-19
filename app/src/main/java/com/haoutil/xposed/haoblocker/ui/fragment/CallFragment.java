@@ -52,16 +52,6 @@ public class CallFragment extends PromptFragment implements CallView, BaseRecycl
     }
 
     @Override
-    public void onConfirmOK() {
-        mCallPresenter.deleteCall();
-    }
-
-    @Override
-    public void onConfirmCancel() {
-        mCallPresenter.deleteCallCancel();
-    }
-
-    @Override
     public void onActionClick(View action) {
         mCallPresenter.restoreCall();
     }
@@ -72,7 +62,7 @@ public class CallFragment extends PromptFragment implements CallView, BaseRecycl
 
     @Override
     public void onItemLongClick(int position) {
-        mCallPresenter.deleteCallConfirm(position);
+        mCallPresenter.deleteCall(position);
     }
 
     @Override

@@ -89,14 +89,17 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         return R.layout.activity_settings;
     }
 
-    public void showConfirm(DialogInterface.OnClickListener onPositiveListener, DialogInterface.OnClickListener onNegativeListener) {
-        new AlertDialog.Builder(SettingsActivity.this)
+    public void showConfirm(int resId, DialogInterface.OnClickListener onPositiveListener, DialogInterface.OnClickListener onNegativeListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this)
                 .setTitle(getResources().getString(R.string.discard_dialog_title))
-                .setMessage(getResources().getString(R.string.discard_dialog_message))
-                .setPositiveButton(R.string.discard_dialog_button_ok, onPositiveListener)
-                .setNegativeButton(R.string.discard_dialog_button_cancel, onNegativeListener)
-                .create()
-                .show();
+                .setMessage(resId);
+        if (onPositiveListener != null) {
+            builder.setPositiveButton(R.string.discard_dialog_button_ok, onPositiveListener);
+        }
+        if (onNegativeListener != null) {
+            builder.setNegativeButton(R.string.discard_dialog_button_cancel, onNegativeListener);
+        }
+        builder.create().show();
     }
 
     public void showTip(final int resId, final View.OnClickListener onClickListener) {

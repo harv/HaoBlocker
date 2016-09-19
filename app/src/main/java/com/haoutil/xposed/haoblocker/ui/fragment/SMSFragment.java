@@ -52,16 +52,6 @@ public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleA
     }
 
     @Override
-    public void onConfirmOK() {
-        mSMSPresenter.deleteSMS();
-    }
-
-    @Override
-    public void onConfirmCancel() {
-        mSMSPresenter.deleteSMSCancel();
-    }
-
-    @Override
     public void onActionClick(View action) {
         mSMSPresenter.restoreSMS();
     }
@@ -72,7 +62,7 @@ public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleA
 
     @Override
     public void onItemLongClick(int position) {
-        mSMSPresenter.deleteSMSConfirm(position);
+        mSMSPresenter.deleteSMS(position);
     }
 
     @Override

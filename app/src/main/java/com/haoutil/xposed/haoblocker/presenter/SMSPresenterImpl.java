@@ -1,6 +1,7 @@
 package com.haoutil.xposed.haoblocker.presenter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.view.Menu;
 
@@ -56,22 +57,23 @@ public class SMSPresenterImpl implements SMSPresenter {
     }
 
     @Override
-    public void deleteSMSConfirm(int position) {
+    public void deleteSMS(int position) {
         mPositionDeleted = position;
-        mSMSView.showConfirm();
-    }
-
-    @Override
-    public void deleteSMS() {
-        mSmsDeleted = mAdapter.getItem(mPositionDeleted);
-        mSMSModel.deleteSMS(mSmsDeleted);
-        mAdapter.remove(mPositionDeleted);
-        mSMSView.showTip(R.string.rule_tip_sms_deleted, true);
-    }
-
-    @Override
-    public void deleteSMSCancel() {
-        mPositionDeleted = -1;
+        mSMSView.showConfirm(R.string.discard_dialog_message, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mSmsDeleted = mAdapter.getItem(mPositionDeleted);
+                mSMSModel.deleteSMS(mSmsDeleted);
+                mAdapter.remove(mPositionDeleted);
+                mSMSView.showTip(R.string.rule_tip_sms_deleted, true);
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mPositionDeleted = -1;
+                mSmsDeleted = null;
+            }
+        });
     }
 
     @Override

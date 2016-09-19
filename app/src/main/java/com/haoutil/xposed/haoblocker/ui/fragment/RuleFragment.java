@@ -56,16 +56,6 @@ public class RuleFragment extends PromptFragment implements RuleView, BaseRecycl
         return R.layout.fragment_rule;
     }
 
-    @Override
-    public void onConfirmOK() {
-        mRulePresenter.deleteRule();
-    }
-
-    @Override
-    public void onConfirmCancel() {
-        mRulePresenter.deleteRuleCancel();
-    }
-
     // click on action button of Snackbar
     @Override
     public void onActionClick(View action) {
@@ -81,7 +71,7 @@ public class RuleFragment extends PromptFragment implements RuleView, BaseRecycl
     // long click on list item
     @Override
     public void onItemLongClick(int position) {
-        mRulePresenter.deleteRuleConfirm(position);
+        mRulePresenter.deleteRule(position);
     }
 
     // click on FloatingActionButton

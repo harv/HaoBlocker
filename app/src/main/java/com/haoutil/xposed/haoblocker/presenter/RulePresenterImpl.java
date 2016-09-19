@@ -1,6 +1,7 @@
 package com.haoutil.xposed.haoblocker.presenter;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Environment;
 import android.view.Menu;
 
@@ -79,22 +80,23 @@ public class RulePresenterImpl implements RulePresenter {
     }
 
     @Override
-    public void deleteRuleConfirm(int position) {
+    public void deleteRule(int position) {
         mPositionDeleted = position;
-        mRuleView.showConfirm();
-    }
-
-    @Override
-    public void deleteRule() {
-        mRuleDeleted = mAdapter.getItem(mPositionDeleted);
-        mRuleModel.deleteRule(mRuleDeleted);
-        mAdapter.remove(mPositionDeleted);
-        mRuleView.showTip(R.string.rule_tip_rule_deleted, true);
-    }
-
-    @Override
-    public void deleteRuleCancel() {
-        mPositionDeleted = -1;
+        mRuleView.showConfirm(R.string.discard_dialog_message, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mRuleDeleted = mAdapter.getItem(mPositionDeleted);
+                mRuleModel.deleteRule(mRuleDeleted);
+                mAdapter.remove(mPositionDeleted);
+                mRuleView.showTip(R.string.rule_tip_rule_deleted, true);
+            }
+        }, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                mPositionDeleted = -1;
+                mRuleDeleted = null;
+            }
+        });
     }
 
     @Override

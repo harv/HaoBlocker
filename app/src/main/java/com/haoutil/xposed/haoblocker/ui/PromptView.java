@@ -1,13 +1,10 @@
 package com.haoutil.xposed.haoblocker.ui;
 
+import android.content.DialogInterface;
 import android.view.View;
 
 public interface PromptView {
-    void showConfirm();
-
-    void onConfirmOK();
-
-    void onConfirmCancel();
+    void showConfirm(int resId, DialogInterface.OnClickListener onPositiveListener, DialogInterface.OnClickListener onNegativeListener);
 
     void showTip(int resId, boolean showAction);
 

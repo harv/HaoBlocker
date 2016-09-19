@@ -19,18 +19,8 @@ public abstract class PromptFragment extends Fragment implements BaseView, Promp
     }
 
     @Override
-    public void showConfirm() {
-        ((SettingsActivity) getActivity()).showConfirm(new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onConfirmOK();
-            }
-        }, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                onConfirmCancel();
-            }
-        });
+    public void showConfirm(int resId, DialogInterface.OnClickListener onPositiveListener, DialogInterface.OnClickListener onNegativeListener) {
+        ((SettingsActivity) getActivity()).showConfirm(resId, onPositiveListener, onNegativeListener);
     }
 
     @Override
