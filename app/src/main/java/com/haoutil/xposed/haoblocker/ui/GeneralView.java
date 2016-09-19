@@ -1,10 +1,6 @@
 package com.haoutil.xposed.haoblocker.ui;
 
-import android.content.Context;
-
 public interface GeneralView extends BaseView {
-    Context getApplicationContext();
-
     void setOnCheckedChangeListener();
 
     void setAbout();

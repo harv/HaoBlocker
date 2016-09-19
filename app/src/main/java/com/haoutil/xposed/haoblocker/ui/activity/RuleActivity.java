@@ -109,9 +109,8 @@ public class RuleActivity extends BaseActivity implements RuleAddView, CompoundB
         return R.layout.activity_rule;
     }
 
-    @Override
-    public Context getAppContext() {
-        return getApplicationContext();
+    public Context getApplicationContext() {
+        return super.getApplicationContext();
     }
 
     @Override

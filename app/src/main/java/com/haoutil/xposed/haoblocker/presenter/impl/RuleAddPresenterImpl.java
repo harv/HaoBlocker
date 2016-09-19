@@ -27,7 +27,7 @@ public class RuleAddPresenterImpl implements RuleAddPresenter {
 
     @Override
     public void init() {
-        Context context = mRuleAddView.getAppContext();
+        Context context = mRuleAddView.getApplicationContext();
         mRuleAddModel.init(context);
     }
 

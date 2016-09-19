@@ -1,6 +1,5 @@
 package com.haoutil.xposed.haoblocker.ui.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -77,11 +76,6 @@ public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleA
     @Override
     public void onRestore(MenuItem item) {
         mSMSPresenter.importSMSes();
-    }
-
-    @Override
-    public Context getApplicationContext() {
-        return getActivity().getApplicationContext();
     }
 
     @Override

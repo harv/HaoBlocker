@@ -1,6 +1,5 @@
 package com.haoutil.xposed.haoblocker.ui.fragment;
 
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -68,11 +67,6 @@ public class GeneralFragment extends BaseFragment implements GeneralView, Compou
                 mGeneralPresenter.enableNotification(b);
                 break;
         }
-    }
-
-    @Override
-    public Context getApplicationContext() {
-        return getActivity().getApplicationContext();
     }
 
     @Override

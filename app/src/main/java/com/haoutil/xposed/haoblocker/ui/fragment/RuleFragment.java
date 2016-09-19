@@ -1,7 +1,6 @@
 package com.haoutil.xposed.haoblocker.ui.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -126,11 +125,6 @@ public class RuleFragment extends PromptFragment implements RuleView, BaseRecycl
         if (mRulePresenter != null) {
             mRulePresenter.toggleAddButton(isVisibleToUser);
         }
-    }
-
-    @Override
-    public Context getApplicationContext() {
-        return getActivity().getApplicationContext();
     }
 
     @Override
