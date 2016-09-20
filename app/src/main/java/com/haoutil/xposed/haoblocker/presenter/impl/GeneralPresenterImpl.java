@@ -1,8 +1,5 @@
 package com.haoutil.xposed.haoblocker.presenter.impl;
 
-import android.content.Context;
-
-import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.model.GeneralModel;
 import com.haoutil.xposed.haoblocker.model.impl.GeneralModelImpl;
 import com.haoutil.xposed.haoblocker.presenter.GeneralPresenter;

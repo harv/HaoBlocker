@@ -4,12 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.haoutil.xposed.haoblocker.BuildConfig;
-import com.haoutil.xposed.haoblocker.XposedMod;
 
 import de.robv.android.xposed.XSharedPreferences;
 
 public class SettingsHelper {
-    public static final String MODULE_NAME = BuildConfig.APPLICATION_ID;
+    private static final String MODULE_NAME = BuildConfig.APPLICATION_ID;
 
     private SharedPreferences mPreferences = null;
     private XSharedPreferences mXPreferences = null;

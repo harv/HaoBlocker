@@ -3,7 +3,6 @@ package com.haoutil.xposed.haoblocker.ui.fragment;
 import android.content.DialogInterface;
 import android.view.View;
 
-import com.haoutil.xposed.haoblocker.ui.BaseView;
 import com.haoutil.xposed.haoblocker.ui.PromptView;
 import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
 

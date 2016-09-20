@@ -4,7 +4,6 @@ import android.os.Build;
 
 import com.haoutil.xposed.haoblocker.util.BlockerProvider;
 import com.haoutil.xposed.haoblocker.util.BlockerReceiver;
-import com.haoutil.xposed.haoblocker.util.Logger;
 
 import java.util.ArrayList;
 
