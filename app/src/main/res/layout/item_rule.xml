@@ -11,7 +11,7 @@
     android:padding="16sp">
 
     <ImageView
-        android:id="@+id/iv_block_except"
+        android:id="@+id/iv_block_type"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -25,10 +25,10 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
-        android:layout_toEndOf="@+id/iv_block_except"
-        android:layout_toRightOf="@+id/iv_block_except"
+        android:layout_toEndOf="@+id/iv_block_type"
+        android:layout_toRightOf="@+id/iv_block_type"
         android:ellipsize="end"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textColor="@color/textColor"
         android:textSize="16sp"
         tools:text="13600000000" />
@@ -46,7 +46,7 @@
         android:layout_toRightOf="@+id/tv_rule"
         android:ellipsize="end"
         android:gravity="end"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textColor="@color/textColorSecondary"
         android:textSize="12sp"
         tools:text="test" />

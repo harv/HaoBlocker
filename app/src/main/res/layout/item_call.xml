@@ -21,7 +21,7 @@
         android:layout_toLeftOf="@+id/tv_date"
         android:layout_toStartOf="@+id/tv_date"
         android:ellipsize="end"
-        android:singleLine="true"
+        android:maxLines="1"
         android:textColor="@color/textColor"
         android:textSize="16sp"
         tools:text="13600000000" />
