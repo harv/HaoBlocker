@@ -8,8 +8,8 @@ import android.view.Menu;
 import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.SMSModel;
-import com.haoutil.xposed.haoblocker.model.impl.SMSModelImpl;
 import com.haoutil.xposed.haoblocker.model.entity.SMS;
+import com.haoutil.xposed.haoblocker.model.impl.SMSModelImpl;
 import com.haoutil.xposed.haoblocker.presenter.SMSPresenter;
 import com.haoutil.xposed.haoblocker.ui.SMSView;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public class SMSPresenterImpl implements SMSPresenter {
+public class SMSPresenterImpl implements SMSPresenter, BaseRecycleAdapter.OnItemClick {
     private SMSModel mSMSModel;
     private SMSView mSMSView;
 
@@ -43,8 +43,7 @@ public class SMSPresenterImpl implements SMSPresenter {
     public void setListItems() {
         Context context = AppContext.getsInstance().getApplicationContext();
         List<SMS> smses = mSMSModel.getSMSes(-1);
-        BaseRecycleAdapter.OnItemClick onItemClick = mSMSView.getOnItemClick();
-        mAdapter = new SMSAdapter(context, smses, onItemClick);
+        mAdapter = new SMSAdapter(context, smses, this);
         mSMSView.setSMSAdapter(mAdapter);
     }
 
@@ -161,5 +160,14 @@ public class SMSPresenterImpl implements SMSPresenter {
                 }
             }
         });
+    }
+
+    @Override
+    public void onItemClick(int position) {
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
+        deleteSMS(position);
     }
 }

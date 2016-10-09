@@ -8,8 +8,8 @@ import android.view.Menu;
 import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.CallModel;
-import com.haoutil.xposed.haoblocker.model.impl.CallModelImpl;
 import com.haoutil.xposed.haoblocker.model.entity.Call;
+import com.haoutil.xposed.haoblocker.model.impl.CallModelImpl;
 import com.haoutil.xposed.haoblocker.presenter.CallPresenter;
 import com.haoutil.xposed.haoblocker.ui.CallView;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public class CallPresenterImpl implements CallPresenter {
+public class CallPresenterImpl implements CallPresenter, BaseRecycleAdapter.OnItemClick {
     private CallModel mCallModel;
     private CallView mCallView;
 
@@ -43,8 +43,7 @@ public class CallPresenterImpl implements CallPresenter {
     public void setListItems() {
         Context context = AppContext.getsInstance().getApplicationContext();
         List<Call> calls = mCallModel.getCalls(-1);
-        BaseRecycleAdapter.OnItemClick onItemClick = mCallView.getOnItemClick();
-        mAdapter = new CallAdapter(context, calls, onItemClick);
+        mAdapter = new CallAdapter(context, calls, this);
         mCallView.setCallAdapter(mAdapter);
     }
 
@@ -157,5 +156,14 @@ public class CallPresenterImpl implements CallPresenter {
                 }
             }
         });
+    }
+
+    @Override
+    public void onItemClick(int position) {
+    }
+
+    @Override
+    public void onItemLongClick(int position) {
+        deleteCall(position);
     }
 }

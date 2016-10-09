@@ -8,8 +8,8 @@ import android.view.Menu;
 import com.haoutil.xposed.haoblocker.AppContext;
 import com.haoutil.xposed.haoblocker.R;
 import com.haoutil.xposed.haoblocker.model.RuleModel;
-import com.haoutil.xposed.haoblocker.model.impl.RuleModelImpl;
 import com.haoutil.xposed.haoblocker.model.entity.Rule;
+import com.haoutil.xposed.haoblocker.model.impl.RuleModelImpl;
 import com.haoutil.xposed.haoblocker.presenter.RulePresenter;
 import com.haoutil.xposed.haoblocker.ui.RuleView;
 import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public class RulePresenterImpl implements RulePresenter {
+public class RulePresenterImpl implements RulePresenter, BaseRecycleAdapter.OnItemClick {
     private RuleModel mRuleModel;
     private RuleView mRuleView;
 
@@ -43,8 +43,7 @@ public class RulePresenterImpl implements RulePresenter {
     public void setListItems(int ruleType) {
         Context context = AppContext.getsInstance().getApplicationContext();
         List<Rule> rules = mRuleModel.getRules(ruleType);
-        BaseRecycleAdapter.OnItemClick onItemClick = mRuleView.getOnItemClick();
-        mAdapter = new RuleAdapter(context, rules, onItemClick);
+        mAdapter = new RuleAdapter(context, rules, this);
         mRuleView.setRuleAdapter(mAdapter);
     }
 
@@ -198,5 +197,17 @@ public class RulePresenterImpl implements RulePresenter {
     @Override
     public void toggleAddButton(boolean visible) {
         mRuleView.toggleAddButton(visible);
+    }
+
+    // click on list item
+    @Override
+    public void onItemClick(int position) {
+        modifyRule(position);
+    }
+
+    // long click on list item
+    @Override
+    public void onItemLongClick(int position) {
+        deleteRule(position);
     }
 }

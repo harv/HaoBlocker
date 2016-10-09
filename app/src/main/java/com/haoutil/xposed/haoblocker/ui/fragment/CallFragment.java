@@ -16,9 +16,8 @@ import com.haoutil.xposed.haoblocker.presenter.CallPresenter;
 import com.haoutil.xposed.haoblocker.presenter.impl.CallPresenterImpl;
 import com.haoutil.xposed.haoblocker.ui.CallView;
 import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
-import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 
-public class CallFragment extends PromptFragment implements CallView, BaseRecycleAdapter.OnItemClick, SettingsActivity.OnMenuItemClickListener {
+public class CallFragment extends PromptFragment implements CallView, SettingsActivity.OnMenuItemClickListener {
     private CallPresenter mCallPresenter;
     private RecyclerView rv_call;
 
@@ -58,15 +57,6 @@ public class CallFragment extends PromptFragment implements CallView, BaseRecycl
     }
 
     @Override
-    public void onItemClick(int position) {
-    }
-
-    @Override
-    public void onItemLongClick(int position) {
-        mCallPresenter.deleteCall(position);
-    }
-
-    @Override
     public void onFilter(MenuItem item) {
     }
 
@@ -90,10 +80,5 @@ public class CallFragment extends PromptFragment implements CallView, BaseRecycl
         menu.findItem(R.id.backup).setVisible(true);
         menu.findItem(R.id.restore).setVisible(true);
         ((SettingsActivity) getActivity()).setOnMenuItemClickListener(this);
-    }
-
-    @Override
-    public BaseRecycleAdapter.OnItemClick getOnItemClick() {
-        return this;
     }
 }

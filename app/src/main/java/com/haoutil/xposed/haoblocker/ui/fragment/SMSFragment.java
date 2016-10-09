@@ -16,9 +16,8 @@ import com.haoutil.xposed.haoblocker.presenter.SMSPresenter;
 import com.haoutil.xposed.haoblocker.presenter.impl.SMSPresenterImpl;
 import com.haoutil.xposed.haoblocker.ui.SMSView;
 import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
-import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 
-public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleAdapter.OnItemClick, SettingsActivity.OnMenuItemClickListener {
+public class SMSFragment extends PromptFragment implements SMSView, SettingsActivity.OnMenuItemClickListener {
     private SMSPresenter mSMSPresenter;
     private RecyclerView rv_sms;
 
@@ -58,15 +57,6 @@ public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleA
     }
 
     @Override
-    public void onItemClick(int position) {
-    }
-
-    @Override
-    public void onItemLongClick(int position) {
-        mSMSPresenter.deleteSMS(position);
-    }
-
-    @Override
     public void onFilter(MenuItem item) {
     }
 
@@ -90,10 +80,5 @@ public class SMSFragment extends PromptFragment implements SMSView, BaseRecycleA
         menu.findItem(R.id.backup).setVisible(true);
         menu.findItem(R.id.restore).setVisible(true);
         ((SettingsActivity) getActivity()).setOnMenuItemClickListener(this);
-    }
-
-    @Override
-    public BaseRecycleAdapter.OnItemClick getOnItemClick() {
-        return this;
     }
 }

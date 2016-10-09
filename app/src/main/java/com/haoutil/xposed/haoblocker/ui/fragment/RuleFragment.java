@@ -20,10 +20,9 @@ import com.haoutil.xposed.haoblocker.presenter.impl.RulePresenterImpl;
 import com.haoutil.xposed.haoblocker.ui.RuleView;
 import com.haoutil.xposed.haoblocker.ui.activity.RuleActivity;
 import com.haoutil.xposed.haoblocker.ui.activity.SettingsActivity;
-import com.haoutil.xposed.haoblocker.ui.adapter.BaseRecycleAdapter;
 import com.haoutil.xposed.haoblocker.util.BlockerManager;
 
-public class RuleFragment extends PromptFragment implements RuleView, BaseRecycleAdapter.OnItemClick, SettingsActivity.OnAddListener, SettingsActivity.OnMenuItemClickListener {
+public class RuleFragment extends PromptFragment implements RuleView, SettingsActivity.OnAddListener, SettingsActivity.OnMenuItemClickListener {
     private RulePresenter mRulePresenter;
     private RecyclerView rv_rule;
 
@@ -61,18 +60,6 @@ public class RuleFragment extends PromptFragment implements RuleView, BaseRecycl
     @Override
     public void onActionClick(View action) {
         mRulePresenter.restoreRule();
-    }
-
-    // click on list item
-    @Override
-    public void onItemClick(int position) {
-        mRulePresenter.modifyRule(position);
-    }
-
-    // long click on list item
-    @Override
-    public void onItemLongClick(int position) {
-        mRulePresenter.deleteRule(position);
     }
 
     // click on FloatingActionButton
@@ -140,11 +127,6 @@ public class RuleFragment extends PromptFragment implements RuleView, BaseRecycl
         menu.findItem(R.id.backup).setVisible(true);
         menu.findItem(R.id.restore).setVisible(true);
         ((SettingsActivity) getActivity()).setOnMenuItemClickListener(this);
-    }
-
-    @Override
-    public BaseRecycleAdapter.OnItemClick getOnItemClick() {
-        return this;
     }
 
     @Override
