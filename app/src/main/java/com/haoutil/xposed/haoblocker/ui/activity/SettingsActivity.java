@@ -1,12 +1,16 @@
 package com.haoutil.xposed.haoblocker.ui.activity;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +44,8 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
         if (position > -1 && position < viewPager.getAdapter().getCount()) {
             viewPager.setCurrentItem(position);
         }
+
+        checkStoragePermission();
     }
 
     @Override
@@ -126,6 +132,18 @@ public class SettingsActivity extends BaseActivity implements View.OnClickListen
 
     public void setOnMenuItemClickListener(OnMenuItemClickListener onMenuItemClickListener) {
         this.mOnMenuItemClickListener = onMenuItemClickListener;
+    }
+
+    private void checkStoragePermission() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                showTip(R.string.permission_description, null);
+            }
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 0);
+        }
     }
 
     public interface OnAddListener {

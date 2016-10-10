@@ -47,4 +47,6 @@
     <string name="menu_restore_sms_tip">restore sms history succeed</string>
     <string name="menu_restore_call_miss_tip">blocker_call.csv must be placed in the root directory of the SD card</string>
     <string name="menu_restore_call_tip">restore call history succeed</string>
+
+    <string name="permission_description">The app uses SD card backup settings, please grant the permission.</string>
 </resources>
